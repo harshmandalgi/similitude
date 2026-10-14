@@ -194,3 +194,12 @@ def test_two_ledgers_on_one_file_add_up(tmp_path):
     b.charge(0.2, "y")
     with pytest.raises(BudgetExceeded):
         a.check()
+
+
+def test_parse_fused_reads_prefixed_lines():
+    steps, final = parse_fused(
+        'USER: hi\nAGENT: ACTION: lookup {"q": "x"}\nOBSERVATION: found\n'
+        "AGENT: all done\nAGENT: FINAL REPLY: bye"
+    )
+    assert [(s[0], s[1]) for s in steps] == [("lookup", {"q": "x"})]
+    assert steps[0][2].startswith("found") and final == "bye"

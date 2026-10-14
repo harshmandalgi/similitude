@@ -29,8 +29,13 @@ Use at most {max_steps} ACTION steps. Tools available:
 When you are done, write a line "FINAL REPLY:" followed by your final reply, exactly as you \
 would normally give it to the user (same format rules as above)."""
 
-_ACTION = re.compile(r"^ACTION:\s*(\w+)\s*(.*)$", re.MULTILINE)
-_OBS = re.compile(r"^OBSERVATION:\s*(.*?)(?=^ACTION:|^FINAL REPLY:|\Z)", re.MULTILINE | re.DOTALL)
+# Lines may carry a speaker prefix ("AGENT: ACTION: ..."), as in fused conversations.
+_WHO = r"(?:[A-Za-z_ ]{1,30}:\s*)?"
+_ACTION = re.compile(rf"^{_WHO}ACTION:\s*(\w+)\s*(.*)$", re.MULTILINE)
+_OBS = re.compile(
+    rf"^{_WHO}OBSERVATION:\s*(.*?)(?=^{_WHO}ACTION:|^{_WHO}FINAL REPLY:|\Z)",
+    re.MULTILINE | re.DOTALL,
+)
 
 
 def fused_system(system: str, tools: list[Tool], max_steps: int) -> str:
