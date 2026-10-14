@@ -3,6 +3,7 @@ file exists is skipped. Stops cleanly at the budget cap."""
 
 from __future__ import annotations
 
+import json
 import os
 import random
 import re
@@ -75,6 +76,13 @@ def run_one(
     return trace
 
 
+def _done(path: Path) -> bool:
+    """A run is done when its trace exists without an error; errored runs are retried."""
+    if not path.exists():
+        return False
+    return not json.loads(path.read_text()).get("error")
+
+
 def run_grid(
     lab: Lab,
     wf: Workflow,
@@ -94,7 +102,7 @@ def run_grid(
         for v in ordered
         for task in chosen
         for rep in range(replicates)
-        if not trace_path(lab.runs, wf.name, recipe.name, v.name, task["id"], rep).exists()
+        if not _done(trace_path(lab.runs, wf.name, recipe.name, v.name, task["id"], rep))
     ]
     if not jobs:
         return 0
@@ -122,7 +130,8 @@ def run_grid(
             if done % 25 == 0 or done == len(jobs):
                 print(
                     f"  {recipe.name}: {done}/{len(jobs)} runs, {errors} errors, "
-                    f"${lab.ledger.spent_usd:.3f} spent, {time.time() - start:.0f}s",
+                    f"{lab.client.retries} retries, ${lab.ledger.spent_usd:.3f} spent, "
+                    f"{time.time() - start:.0f}s",
                     file=sys.stderr,
                 )
     return done

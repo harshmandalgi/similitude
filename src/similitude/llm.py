@@ -203,11 +203,12 @@ class _Vertex:
 class LLMClient:
     """Thin wrapper over the openai SDK. Retries rate limits and server errors."""
 
-    def __init__(self, ledger: Ledger, *, max_retries: int = 6) -> None:
+    def __init__(self, ledger: Ledger, *, max_retries: int = 12) -> None:
         from openai import OpenAI
 
         self.ledger = ledger
         self.max_retries = max_retries
+        self.retries = 0  # rate-limit and server-error retries so far, for progress logs
         env = load_env()
         self._clients = {}
         for provider, (base_url, key_name) in PROVIDERS.items():
@@ -272,19 +273,20 @@ class LLMClient:
                 if exc.status_code < 500:
                     raise
                 error = exc
-            time.sleep(min(60, 2**attempt + random.random()))
+            self.retries += 1
+            time.sleep(min(60, 2**attempt) * (0.5 + random.random()))  # jitter spreads retries
         else:
             raise RuntimeError(f"{model}: gave up after {self.max_retries} attempts: {error}")
         latency = time.perf_counter() - start
 
         choice = response.choices[0].message
         u = response.usage
-        output = u.completion_tokens
+        output = u.completion_tokens or 0  # Vertex sometimes leaves counts out
         if provider == "vertex":  # Vertex leaves thinking out of completion_tokens, bills it
             details = getattr(u, "completion_tokens_details", None)
             output += (getattr(details, "reasoning_tokens", 0) or 0) if details else 0
         usage = Usage(
-            input=u.prompt_tokens,
+            input=u.prompt_tokens or 0,
             cached=getattr(getattr(u, "prompt_tokens_details", None), "cached_tokens", 0) or 0,
             output=output,
         )
