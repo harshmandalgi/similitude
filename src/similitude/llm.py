@@ -262,11 +262,19 @@ class LLMClient:
 
         from openai import APIConnectionError, APIStatusError, APITimeoutError, RateLimitError
 
+        empties = 0
         for attempt in range(self.max_retries):
             start = time.perf_counter()
             try:
                 response = self._client_for(provider).chat.completions.create(**kwargs)
-                break
+                if response.choices and response.choices[0].message is not None:
+                    break
+                # Seen on Vertex: a reply with no message. Retry twice, then accept it as an
+                # empty answer (the run goes on; the judge sees no answer).
+                empties += 1
+                error = RuntimeError("the reply had no message")
+                if empties >= 3:
+                    break
             except (RateLimitError, APIConnectionError, APITimeoutError) as exc:
                 error = exc
             except APIStatusError as exc:
@@ -279,8 +287,13 @@ class LLMClient:
             raise RuntimeError(f"{model}: gave up after {self.max_retries} attempts: {error}")
         latency = time.perf_counter() - start
 
-        choice = response.choices[0].message
+        empty = not response.choices or response.choices[0].message is None
+        choice = None if empty else response.choices[0].message
         u = response.usage
+        if u is None:  # an empty reply may carry no usage either
+            from types import SimpleNamespace
+
+            u = SimpleNamespace(prompt_tokens=0, completion_tokens=0, prompt_tokens_details=None)
         output = u.completion_tokens or 0  # Vertex sometimes leaves counts out
         if provider == "vertex":  # Vertex leaves thinking out of completion_tokens, bills it
             details = getattr(u, "completion_tokens_details", None)
@@ -295,7 +308,7 @@ class LLMClient:
 
         tool_calls = []
         raw_calls = []
-        for call in choice.tool_calls or []:
+        for call in (choice.tool_calls if choice else None) or []:
             try:
                 arguments = json.loads(call.function.arguments or "{}")
             except json.JSONDecodeError:
@@ -304,7 +317,8 @@ class LLMClient:
             # Kept whole: Gemini 3 puts a thought signature in extra_content that must be sent
             # back with the call on the next turn.
             raw_calls.append(call.model_dump(exclude_none=True))
-        message: dict[str, Any] = {"role": "assistant", "content": choice.content or ""}
+        text = (choice.content if choice else "") or ""
+        message: dict[str, Any] = {"role": "assistant", "content": text}
         if raw_calls:
             message["tool_calls"] = raw_calls
-        return Completion(model, choice.content or "", tool_calls, message, usage, cost, latency)
+        return Completion(model, text, tool_calls, message, usage, cost, latency)
