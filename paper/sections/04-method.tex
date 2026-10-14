@@ -1,0 +1,73 @@
+\section{Method}
+\label{sec:method}
+
+\subsection{One interception point}
+Every LLM call and tool call of a workflow goes through a single runtime object. Workflow code asks
+for \texttt{llm(node, messages)}, \texttt{tool(name, args)} or \texttt{agent(node, prompt, tools)}
+(a standard tool-calling loop); a recipe tells the runtime what to do with each request: answer it
+from a recording, fake it with an LLM, merge it with its neighbours into one call, or run it for
+real. The workflow's own code never changes, so every miniature is the same program as the full
+workflow with different call semantics, and every run leaves a trace (calls, sources, tokens,
+cost, latency) from which the judge and the analysis work.
+
+\subsection{Reduction operators}
+Table~\ref{tab:operators} lists the operators, grouped by how much validity they put at risk.
+
+\begin{table*}[t]
+\centering\small
+\begin{tabular}{@{}llp{6.3cm}p{5.4cm}@{}}
+\toprule
+& \textbf{Operator} & \textbf{What it does} & \textbf{Risk to validity} \\
+\midrule
+\multirow{3}{*}{A} & \op{A1} prefix replay & Calls before the focus have identical inputs to a recorded run of the base variant; answer them from the recording. & None: the inputs are identical. \\
+& \op{A2} tool cache & Replay recorded real tool outputs for identical calls. & Stale outputs for stateful tools. \\
+& \op{A3} paired runs & Variants share identical calls (and simulated outputs). & None; reduces variance. \\
+\midrule
+\multirow{4}{*}{B} & \op{B1} slice & Drop nodes whose output never reaches what the judge scores. & Hidden shared state. \\
+& \op{B2} cap loops & Bound agent steps or conversation turns. & Variants that win through persistence. \\
+& \op{B3} cheaper model off-focus & Run the nodes not under test on a cheaper model. & Changes the focus's inputs. \\
+& \op{B4} fewer tasks & A fixed random subset of the tasks. & Sampling noise. \\
+\midrule
+\multirow{6}{*}{C} & \op{C1} simulated tools & An LLM writes each tool's output: from the description (\emph{pure}), with recorded examples from other tasks (\emph{grounded}), or only for calls never recorded (\emph{cache-first}). & Too clean (no errors, no mess); no state. \\
+& \op{C2} call fusion & One call writes a whole agent loop (or a whole pipeline) as a transcript with imagined tool results. & The model imagines results that suit its plan. \\
+& \op{C3} prompt shrinking & Compress the fixed part of a prompt. & Behaviour shifts silently. \\
+& \op{C4} sub-agent stub & A non-focus sub-agent becomes one fused call. & Misses what real search finds. \\
+& \op{C5} early stop & Stop after the node whose output the judge needs. & Drops a later correction. \\
+& \op{C6} short observations & Cut every tool output to a fixed length. & Facts beyond the cut. \\
+\bottomrule
+\end{tabular}
+\caption{Reduction operators. Group A cannot change any decision; group B rarely does; group C must
+be checked.}
+\label{tab:operators}
+\end{table*}
+
+Two design choices keep the simulated parts honest. First, a tool simulator never sees the user's
+question, only the tool's description and arguments (and, when grounded, real outputs of the same
+tool): a real tool does not know the question either, and a simulator that does is an easy-mode
+oracle. Second, simulated outputs are memoised per call, so all variants see the same fake world
+and differences between them come from the variants.
+
+\subsection{Choosing operators}
+For each part of a workflow, six properties decide which operators are safe: its \emph{distance}
+from the focus (far parts can be shrunk hard), its \emph{cost share}, whether it is
+\emph{deterministic} (replay it), whether its output \emph{reaches the judge} (else slice it), how
+\emph{fakeable} it is (a calculator is, a stateful database is not), and whether the focus
+\emph{reacts} to its output (then a fake must reproduce failures too). In short: keep real what you
+change, replay what you did not change, simulate what you cannot replay, and check before you
+trust.
+
+\subsection{Scoring miniatures of stateful benchmarks}
+Some benchmarks score the world a run leaves behind; $\tau$-bench \citep{yao2024tau} compares the
+final database with the one the expected actions produce. A miniature whose tools are simulated
+changes no database, so we score every run, full or miniature, by replaying the agent's
+\emph{write} calls from its trace on a fresh copy of the real database. For real runs this equals
+$\tau$-bench's own check; for miniatures it scores the agent's decisions rather than the
+simulator's side effects.
+
+\subsection{Judging}
+Clear-cut runs are scored by rule (normalised exact match, or the benchmark's own check). All
+others go to a blind LLM judge, a fresh Claude Code instance with no tools, given batches of runs
+under random codes: the task, the reference, the final answer and a short log. It never sees the
+recipe, the variant, or whether a run came from a miniature. For every failure it returns one
+reason from a fixed per-workflow taxonomy and one sentence of explanation. When a benchmark has
+its own pass/fail check, the judge supplies only the reason.

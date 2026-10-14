@@ -1,0 +1,47 @@
+\section{Problem: evaluation-preserving reduction}
+\label{sec:problem}
+
+\paragraph{Workflows and variants.}
+A \emph{workflow} $W$ is a program whose steps are calls to LLM \emph{nodes} (a planner, a writer,
+a tool-calling agent) and to \emph{tools} (search, a database, a code runner). A
+\emph{configuration} $\theta$ fixes every node's prompt, model and parameters. During development a
+team compares \emph{variants} $\theta_1,\dots,\theta_k$ that differ in one node, the \emph{focus}
+$f$: a prompt edit, a model swap, a new instruction.
+
+\paragraph{Evaluation.}
+An evaluation runs $W_\theta$ on tasks $D$ and passes every run to a \emph{judge} that returns a
+score $s\in\{0,1\}$ and a \emph{reason} $r\in\mathcal{C}$, one of a fixed set of failure
+categories (or ``correct''). The variant's score is $S(\theta)=\frac{1}{|D|}\sum_{x\in D}s(x)$.
+Both parts matter in practice: the score decides which variant ships; the reasons decide what to
+fix next.
+
+\paragraph{Reductions.}
+A \emph{reduction} $R$ turns $W$ into a cheaper \emph{miniature} $W^R$ that runs the same
+variants on the same tasks with a lower cost per run. $R$ is a \emph{recipe}: a set of
+\emph{operators}, each of which replaces one expensive part of a run by something cheaper
+(\S\ref{sec:method}). A reduction may depend on the focus: the part under test stays real.
+
+\paragraph{Validity is about decisions, not scores.}
+A miniature need not reproduce $S(\theta)$; simulated tools are often too easy, and a cheaper
+model is often worse. It must lead to the same \emph{decisions}. We measure four:
+\begin{enumerate}
+  \item \textbf{Pairwise decisions}: for each pair of variants, does $W^R$ pick the same winner as
+  $W$? We report agreement over all pairs and over \emph{clear} pairs, those whose full-workflow
+  gap exceeds two paired standard errors.
+  \item \textbf{Rankings}: Kendall's $\tau$ between the variants' scores under $W$ and $W^R$, and
+  MMRV \citep{li2024evaluating}, which weights each ranking error by the size of the real gap, so
+  swapping two near-equal variants costs little.
+  \item \textbf{Diagnoses}: do the judge's reasons agree? We compare each variant's mix of failure
+  reasons (Jensen--Shannon distance), the most common reason, and the reasons given for the same
+  task under $W$ and $W^R$ (Scott's $\pi$).
+  \item \textbf{Fix transfer}: when a developer reads the miniature's failures and writes fixes, do
+  the fixes improve the full workflow?
+\end{enumerate}
+The first two are standard for cheap proxies of expensive evaluations
+\citep{magnusson2025datadecide,li2024evaluating}. The last two are, to our knowledge, new.
+
+\paragraph{The noise ceiling.}
+Agent runs are stochastic and test sets are small, so the full workflow does not agree perfectly
+with itself. We therefore also run $W$ a second time with fresh samples. Its agreement with the
+first run is the ceiling against which every miniature is read: a miniature that matches the
+re-run is as good as an evaluation can be at that test-set size.

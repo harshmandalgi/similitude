@@ -1,0 +1,54 @@
+% Similitude — preprint draft. Build: tectonic main.tex  (refs.bib, sections/, figures/ local)
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[11pt]{article}
+\usepackage[preprint]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{multirow}
+\setlist{nosep,leftmargin=*}
+\graphicspath{{figures/}}
+
+\newcommand{\sys}{\textsc{Similitude}}
+\newcommand{\op}[1]{\textsf{#1}}            % a reduction operator, e.g. \op{C1}
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+
+\title{Similitude: Cheap Miniature Workflows\\that Keep Agent Evaluations Valid}
+
+\author{Harsh Mandalgi \\
+  {\small Independent Researcher} \\
+  {\small\texttt{harshmandalgi@gmail.com}} \\
+  {\small ORCID: \href{https://orcid.org/0009-0000-9956-3636}{0009-0000-9956-3636}}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\input{sections/00-abstract}
+\end{abstract}
+
+\input{sections/01-intro}
+\input{sections/02-related}
+\input{sections/03-problem}
+\input{sections/04-method}
+\input{sections/05-setup}
+\input{sections/06-results}
+\input{sections/07-limits}
+\input{sections/08-conclusion}
+
+\bibliography{refs}
+\bibliographystyle{acl_natbib}
+
+\appendix
+\input{sections/09-appendix}
+
+\end{document}
