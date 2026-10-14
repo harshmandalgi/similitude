@@ -24,6 +24,7 @@ packages = ["src/similitude"]
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+extend-exclude = ["src/similitude/third_party"]  # vendored code stays as published
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

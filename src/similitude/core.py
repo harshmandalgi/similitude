@@ -20,6 +20,7 @@ class Tool:
     parameters: dict[str, Any]  # JSON schema of the arguments
     fn: Callable[[dict[str, Any]], str]
     is_failure: Callable[[str], bool] = lambda output: False  # "no results", "not found", ...
+    stateful: bool = False  # output depends on earlier calls (a database): never memoised
 
     def spec(self) -> dict[str, Any]:
         return {

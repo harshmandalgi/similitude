@@ -9,7 +9,7 @@ from typing import Any
 
 from similitude.core import Variant, Workflow
 from similitude.reduce import GENERIC, Recipe
-from similitude.workflows import research, wikiqa
+from similitude.workflows import research, tau, wikiqa
 
 
 @dataclass
@@ -23,6 +23,7 @@ class Spec:
     judge_item: Callable
     rule: Callable
     categories: list[str]
+    truth: Callable | None = None  # a benchmark's own pass/fail, if it has one
 
 
 W1_RECIPES = [
@@ -68,6 +69,21 @@ W3_PLANNER = [
            focus="planner", fuse_all=True),
 ]  # fmt: skip
 
+W2_RECIPES = [
+    Recipe("A-replay", "Replay identical LLM and tool calls from recordings and across variants.",
+           llm_replay=True, tool_cache=True),
+    Recipe("B3-cheap-user", "The simulated customer on gpt-4.1-nano.", off_focus_model=CHEAP),
+    Recipe("B2-cap-turns", "At most 6 agent replies to the customer.", max_steps=6),
+    Recipe("B4-half", "A fixed random half of the tasks.", task_fraction=0.5),
+    Recipe("C1-pure", "An LLM fakes the shop's tools (database included).", tool_sim="pure"),
+    Recipe("C1-cache-sim", "Replay recorded tool outputs; fake only calls never seen.",
+           llm_replay=True, tool_cache=True, tool_sim="cache_sim"),
+    Recipe("C3-shrink-policy", "The shop policy compressed to about a third.",
+           shrink=frozenset({"policy"})),
+    Recipe("C2-all", "The whole conversation as ONE call: agent, customer and tools imagined.",
+           fuse_all=True),
+]  # fmt: skip
+
 SPECS = {
     "wikiqa": Spec(
         wikiqa.WikiQA(), wikiqa.load_tasks, wikiqa.variants,
@@ -78,5 +94,10 @@ SPECS = {
         research.Research(), research.load_tasks, research.variants, research.groups,
         {"writer": W3_WRITER, "planner": W3_PLANNER},
         research.JUDGE_SYSTEM, research.judge_item, research.rule, research.CATEGORIES,
+    ),
+    "tau": Spec(
+        tau.TauRetail(), tau.load_tasks, tau.variants, lambda vs: {"agent": [v.name for v in vs]},
+        {"agent": W2_RECIPES}, tau.JUDGE_SYSTEM, tau.judge_item, tau.rule, tau.CATEGORIES,
+        tau.truth,
     ),
 }  # fmt: skip

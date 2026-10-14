@@ -76,6 +76,7 @@ def main() -> int:
             traces, verdicts, system=spec.judge_system, item_text=spec.judge_item(by_id),
             rule=spec.rule(by_id), categories=spec.categories,
             raw_dir=lab.runs / "claude" / f"judge-{wf.name}", workers=args.judge_workers,
+            truth=spec.truth(by_id) if spec.truth else None,
         )  # fmt: skip
         print(f"sent {n} traces to Claude; {len(verdicts.items)} verdicts in total")
     elif args.command == "analyse":

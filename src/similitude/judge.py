@@ -65,7 +65,10 @@ def judge_traces(
     workers: int = 3,
     model: str = OPUS,
     effort: str = "high",
+    truth: Callable[[Trace], bool] | None = None,
 ) -> int:
+    """`truth`, when given, decides pass/fail (e.g. a benchmark's own check); the judge then
+    supplies only the reason."""
     """Judge every trace that has no verdict yet. Returns how many Claude judged."""
     todo = [t for t in traces if t.run_id not in verdicts.items]
     by_rule = [v for t in todo if (v := rule(t)) is not None]
@@ -88,7 +91,7 @@ def judge_traces(
             if a is None:
                 continue  # left for the next pass
             category = str(a.get("category", "")).strip()
-            correct = bool(a.get("correct"))
+            correct = truth(t) if truth else bool(a.get("correct"))
             if correct:
                 category = "correct"
             elif category not in categories:

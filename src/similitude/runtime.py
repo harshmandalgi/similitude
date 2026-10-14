@@ -79,6 +79,10 @@ class Runtime:
 
     # ── what the workflow asks ────────────────────────────────────────────────
 
+    def use_tools(self, tools: dict[str, Tool]) -> None:
+        """Swap in tools bound to this run's own state (e.g. a fresh copy of a database)."""
+        self.tools = tools
+
     def model_for(self, node: str) -> str:
         if node == "workflow":  # a fused whole-workflow call runs on the focus node's model
             node = self.focus
@@ -185,7 +189,7 @@ class Runtime:
         return output
 
     def _real(self, tool: Tool, args: dict[str, Any], key: str) -> tuple[str, str, float]:
-        memo = self.cache.get(MEMO, key)
+        memo = None if tool.stateful else self.cache.get(MEMO, key)
         if memo is not None:
             return memo["output"], "memo", memo["latency_s"]
         start = time.perf_counter()
@@ -195,7 +199,8 @@ class Runtime:
             output = f"Error: {type(exc).__name__}: {exc}"
             return output, "real", time.perf_counter() - start  # errors are not memoised
         latency = time.perf_counter() - start
-        self.cache.put(MEMO, key, "tool", {"output": output, "latency_s": latency})
+        if not tool.stateful:
+            self.cache.put(MEMO, key, "tool", {"output": output, "latency_s": latency})
         return output, "real", latency
 
     def _simulate(self, tool: Tool, args: dict[str, Any], key: str):
