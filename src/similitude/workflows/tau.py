@@ -119,7 +119,7 @@ class TauRetail(Workflow):
             {"role": "system", "content": user_system},
             {"role": "user", "content": "Hi! How can I help you today?"},
         ]
-        said = rt.llm("user", user_msgs, max_tokens=400).text
+        said = rt.llm("user", user_msgs, max_tokens=400).text.strip() or "Hi."
         user_msgs.append({"role": "assistant", "content": said})
         agent_msgs = [
             {"role": "system", "content": agent_system},
@@ -136,9 +136,13 @@ class TauRetail(Workflow):
                     out = rt.tool("agent", call["name"], call["arguments"])
                     agent_msgs.append({"role": "tool", "tool_call_id": call["id"], "content": out})
                 continue
+            # Gemini drops empty messages, and a request that then ends on the model's own turn
+            # is refused; so silence is passed on as an explicit marker.
+            reply = c.text.strip() or "(the agent sent an empty message)"
             responses.append(c.text)
-            user_msgs.append({"role": "user", "content": c.text})
-            said = rt.llm("user", user_msgs, max_tokens=400).text
+            user_msgs.append({"role": "user", "content": reply})
+            said = rt.llm("user", user_msgs, max_tokens=400).text.strip()
+            said = said or "(the customer sent an empty message)"
             user_msgs.append({"role": "assistant", "content": said})
             if STOP in said:
                 break
