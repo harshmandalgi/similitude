@@ -2,7 +2,8 @@
 
 **Cheap mini versions of agent workflows that keep your evals valid.**
 
-Status: M0 (research + plan), 14 Oct 2026. No code yet.
+Status (14 Oct 2026): library + 3 workflows built; experiments running on Gemini (Vertex), $40 cap.
+Paper draft started in [paper/](paper/). Private repo: github.com/harshmandalgi/similitude.
 
 ---
 
@@ -41,6 +42,8 @@ Details: [docs/01-PRIOR-WORK.md](docs/01-PRIOR-WORK.md).
 | [02-IDEAS.md](docs/02-IDEAS.md) | How to build a mini: operators, 6 rules, validity checks, risks | 12 min |
 | [03-PLAN.md](docs/03-PLAN.md) | Research questions, experiments, milestones, **decisions I need from you** | 5 min |
 | [04-PAPER-OUTLINE.md](docs/04-PAPER-OUTLINE.md) | Title, draft abstract, contributions, sections | 3 min |
+| [05-IMPLEMENTATION.md](docs/05-IMPLEMENTATION.md) | How the code works, the 3 workflows, models, money, how to run | 6 min |
+| results/ | Tables per workflow, written by `scripts/run.py <workflow> analyse` | when ready |
 
 ## Words used in these docs
 

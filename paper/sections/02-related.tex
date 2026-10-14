@@ -1,0 +1,43 @@
+\section{Related work}
+
+\paragraph{Cheaper evaluation by fewer items.}
+Benchmark compression chooses a small set of items whose scores predict the full benchmark:
+anchor points \citep{@anchorpoints}, item-response models \citep{@tinybenchmarks,@metabench}, and
+compute-aware subsets \citep{@flashhelm}. For agents, keeping tasks of intermediate difficulty
+preserves rankings \citep{@efficientagents}, scores can be predicted from cheaper non-agent items
+\citep{@pace}, and runs can be stopped once their outcome is predictable \citep{@earlyeval}. These
+methods shrink the \emph{test set} or the \emph{run length}; we shrink the \emph{system under test},
+and the two combine.
+
+\paragraph{Simulated tools, users and environments.}
+LLMs can emulate tools to expose risky agent behaviour \citep{@toolemu}, stabilise flaky APIs
+\citep{@stabletoolbench,@mirrorapi}, stand in for a stateful backend \citep{@proxystate}, or play
+the user \citep{@taubench,@tau2bench}; simulators built from recorded real calls are far more
+faithful than those built from documentation \citep{@mcppersona}. Whole benchmarks now run in
+simulated environments \citep{@occubench}, and production teams screen agent versions in simulation
+before release \citep{@screen}. The evidence also warns: the choice of user simulator moves success
+rates by up to nine points \citep{@lostinsim}, simulated users are an ``easy mode''
+\citep{@sim2real}, faults in how tools behave hurt agents far more than noise in what they return
+\citep{@whensimlies}, simulators fail when several things change at once \citep{@envsimbench}, and
+the choice of simulator model can reorder agent rankings \citep{@occubench}. None of these measures
+whether decisions about variants of an existing workflow survive the simulation, which is our
+question.
+
+\paragraph{Cheap proxies whose decisions transfer.}
+Small models predict which pretraining data wins at scale \citep{@datadecide,@regmix}; robot
+policies evaluated in simulation can be ranked like real ones, measured by rank-violation metrics
+we adopt \citep{@simpler}. Compound-AI optimisers search on a cheap model and deploy on a strong one
+\citep{@gepa,@aflow,@adas,@cheapstrong}, learn local rewards aligned with the global score
+\citep{@optimas}, or predict a design's score without running it \citep{@agentsquare}. A single
+agent can replace a homogeneous multi-agent workflow \citep{@oneflow}, while merging a refinement
+chain into one prompt lets the model fake the refinement \citep{@chaining}. We study these moves as
+\emph{evaluation} shortcuts and measure what they preserve.
+
+\paragraph{Replay and test reduction.}
+Recording agent runs and replaying chosen steps supports regression testing \citep{@chronicle}. Our
+operators borrow from software testing more broadly: test doubles, program slicing
+\citep{@slicing}, mutation testing \citep{@mutation}, and above all test-case reduction, which
+shrinks an input while an ``interestingness'' check still passes \citep{@deltadebugging}; we shrink a
+workflow while its evaluation still makes the same decisions. Multi-fidelity methods combine many
+cheap evaluations with a few expensive ones \citep{@multifidelity,@hyperband}, a natural use for
+validated miniatures.

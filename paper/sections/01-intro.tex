@@ -1,0 +1,41 @@
+\section{Introduction}
+
+Agentic workflows (an LLM that plans, calls tools, delegates to sub-agents, and revises) are
+evaluated end to end: run the whole workflow on a test set and score the outcome. That is slow and
+expensive. A single public agent leaderboard spent about \$40{,}000 on 21{,}730 runs
+\citep{@hal}, and cost is now reported next to accuracy because it decides which evaluations get
+run at all \citep{@agentsthatmatter}. In practice, teams test few changes, on few tasks, and trust
+noisy results.
+
+Existing ways to cut this cost shrink something else. Benchmark compression keeps a few
+informative test items \citep{@tinybenchmarks,@metabench,@efficientagents}. Simulators replace one
+expensive component, such as the tools \citep{@toolemu,@stabletoolbench} or the user
+\citep{@taubench}, often to build a new benchmark rather than to stand in for an existing system.
+Prompt optimisers search on a cheaper model and carry the result to a stronger one
+\citep{@cheapstrong,@gepa}. None of these asks the question a developer faces every day: \emph{can
+I run a smaller version of my own workflow, and still make the same decisions about it?}
+
+Engineers faced the same question a century ago with aircraft. A wind-tunnel model is not a small
+aeroplane; it is valid because the few dimensionless quantities that govern the flow match those of
+the real aircraft \citep{@buckingham}. This is the theory of \emph{similitude}. We ask what
+similitude means for agent workflows: which parts of a workflow can be replayed, simulated, merged
+or cut, and which properties must be kept, so that an evaluation of the miniature leads to the
+same decisions as an evaluation of the original.
+
+We make four contributions.
+\begin{enumerate}
+  \item \textbf{A problem and its yardstick.} We define \emph{evaluation-preserving reduction} and
+  measure validity by decisions rather than scores: the same winner between variants, the same
+  ranking, the same \emph{diagnosis} (the judge's reasons for failure) and \emph{fix transfer}
+  (fixes found on the miniature improve the original). We read every miniature against a noise
+  ceiling: the full workflow re-run with fresh samples.
+  \item \textbf{A toolbox.} Thirteen reduction operators in three risk groups, from lossless
+  prefix replay to fusing a whole pipeline into one LLM call with imagined tool results, and six
+  rules for choosing among them.
+  \item \textbf{A library} that applies the operators to unmodified workflow code through a single
+  interception point, with a blind LLM judge that returns a score and a reason for every run.
+  \item \textbf{A study} on three workflows (a single tool-calling agent on live Wikipedia, a
+  customer-service agent on $\tau$-bench, and a five-role research pipeline) with \todo{N} variants
+  each, including deliberately broken ones.
+\end{enumerate}
+\todo{one paragraph of headline findings once the results are in}
