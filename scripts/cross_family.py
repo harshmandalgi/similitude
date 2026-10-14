@@ -35,8 +35,9 @@ def main() -> None:
     result = compare(rows, "openai-full", shared, base="base", mutants=mutants)
 
     lines = ["# W1: do OpenAI's decisions carry over to Gemini?\n",
-             "Same tasks, prompts and tools; only the model family differs. Read the OpenAI run "
-             "as a miniature of the Gemini run.\n",
+             ("Same tasks, prompts and tools; only the model family differs. Read the OpenAI "
+              "run as a miniature of the Gemini run. (Judges differ: Opus for OpenAI runs, "
+              "Sonnet for Gemini runs.)\n"),
              "| variant | Gemini acc | OpenAI acc |", "|---|---|---|"]  # fmt: skip
     for v in shared:
         g = mean_se(list(per_task(rows, "full", v).values()))[0]
