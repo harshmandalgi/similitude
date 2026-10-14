@@ -44,6 +44,8 @@ W3_WRITER = [
     RERUN.but("W-rerun", focus="writer"),
     Recipe("W-A-replay", "Replay planner and research from the base's recordings.",
            focus="writer", llm_replay=True, tool_cache=True),
+    Recipe("W-A-replay-2", "W-A-replay again with fresh writer samples: the mini's own noise.",
+           focus="writer", llm_replay=True, tool_cache=True),
     Recipe("W-B1-slice", "Drop the unscored summary branch.", focus="writer", skip=_W),
     Recipe("W-C5-stop", "Stop after the writer: no review, no revision.", focus="writer",
            stop_after="writer", skip=_W),
