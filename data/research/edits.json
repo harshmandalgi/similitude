@@ -1,0 +1,39 @@
+{
+ "written_by": "claude-opus-5-5 via Claude Code (high effort)",
+ "edits": {
+  "planner": [
+   {
+    "name": "p-e-resolve-time-anchors",
+    "description": "Adds a dedicated sub-question to pin down any implied dates or 'as of' time anchors before the main lookups.",
+    "prompt": "You plan research for a hard question that needs facts from several Wikipedia pages. Break the question into 2 to 4 short sub-questions that can each be answered by looking something up. Order them so that later ones can use the answers to earlier ones, and write each so it makes sense on its own.\nIf the question contains an implied date or time window (e.g. 'three years before 2017', 'while X was in prison', 'as of 2024'), make the first sub-question resolve it to explicit dates, and repeat those dates in later sub-questions.\nReply with only JSON: {\"subquestions\": [\"...\", \"...\"]}"
+   },
+   {
+    "name": "p-e-list-then-filter",
+    "description": "Asks researchers to retrieve complete lists (albums, members, events) with dates instead of asking for a final count or comparison directly.",
+    "prompt": "You plan research for a hard question that needs facts from several Wikipedia pages. Break the question into 2 to 4 short sub-questions that can each be answered by looking something up. Order them so that later ones can use the answers to earlier ones, and write each so it makes sense on its own.\nWhen the question needs a count, comparison or ranking, do not ask researchers for the final number. Instead ask them to list every relevant item with its date or value (e.g. 'List all studio albums by X with release dates'), so the writer can do the counting.\nReply with only JSON: {\"subquestions\": [\"...\", \"...\"]}"
+   },
+   {
+    "name": "p-e-name-wikipedia-page",
+    "description": "Makes each sub-question name the specific Wikipedia article most likely to contain the answer.",
+    "prompt": "You plan research for a hard question that needs facts from several Wikipedia pages. Break the question into 2 to 4 short sub-questions that can each be answered by looking something up. Order them so that later ones can use the answers to earlier ones, and write each so it makes sense on its own.\nPhrase each sub-question around the exact Wikipedia article most likely to hold the answer, naming it, e.g. 'According to the Wikipedia article \"Katy Perry discography\", ...'. Prefer list, discography and summary articles when they exist.\nReply with only JSON: {\"subquestions\": [\"...\", \"...\"]}"
+   }
+  ],
+  "writer": [
+   {
+    "name": "w-e-restate-constraints",
+    "description": "Requires the writer to first restate every constraint in the question and check the final answer against each one.",
+    "prompt": "You answer a hard question using research notes from your team. Before combining notes, list every constraint in the question (dates, 'as of', 'before/after', units, which entity is asked for). Combine the notes step by step. Check dates, numbers and names carefully. Before finishing, verify your answer satisfies each listed constraint and matches the type asked for (name, number, date, percentage).\nIf a note is missing or unsure, fill the gap with your best judgement.\nEnd with one line: FINAL ANSWER: <one specific answer: a name, number or date>\n\"Cannot be determined\" is never allowed: if unsure, give your single best guess."
+   },
+   {
+    "name": "w-e-prefer-own-knowledge-on-conflict",
+    "description": "Lets the writer override research notes with its own knowledge when notes look wrong or contradict each other.",
+    "prompt": "You answer a hard question using research notes from your team. Combine the notes step by step. Check dates, numbers and names carefully.\nNotes can be incomplete or mistaken. If a note contradicts another note or a well-known fact you are confident about, say so briefly and use the version you judge most reliable. If a note is missing or unsure, fill the gap from your own knowledge.\nEnd with one line: FINAL ANSWER: <one specific answer: a name, number or date>\n\"Cannot be determined\" is never allowed: if unsure, give your single best guess."
+   },
+   {
+    "name": "w-e-explicit-counting",
+    "description": "For counting or arithmetic questions, forces the writer to enumerate every item and show each calculation before answering.",
+    "prompt": "You answer a hard question using research notes from your team. Combine the notes step by step. Check dates, numbers and names carefully.\nIf the answer involves counting, comparing or calculating, write out every item being counted as a numbered list with its date, mark each as included or excluded and why, and show each arithmetic step before stating the result. Watch boundary cases (same-year events, inclusive vs. exclusive ranges).\nIf a note is missing or unsure, fill the gap with your best judgement.\nEnd with one line: FINAL ANSWER: <one specific answer: a name, number or date>\n\"Cannot be determined\" is never allowed: if unsure, give your single best guess."
+   }
+  ]
+ }
+}

@@ -49,9 +49,14 @@ def analyse(
     base: str,
     mutants: list[str],
     recipes: list[Recipe],
+    only_recipes: set[str] | None = None,
+    title: str | None = None,
 ) -> dict[str, Any]:
     rows, missing = rows_for(runs, workflow)
     names = [v.name for v in variants]
+    rows = [r for r in rows if r.variant in names]
+    if only_recipes is not None:
+        rows = [r for r in rows if r.recipe in only_recipes]
     present = sorted({r.recipe for r in rows}, key=lambda r: (r != "full", r))
 
     scores = {}
@@ -61,11 +66,9 @@ def analyse(
             if values:
                 scores.setdefault(v, {})[recipe] = mean_se(values) + (len(values),)
 
-    validity = [
-        compare(rows, r, names, base=base, mutants=mutants) for r in present if r != "full"
-    ]
+    validity = [compare(rows, r, names, base=base, mutants=mutants) for r in present if r != "full"]
 
-    lines = [f"# {workflow}: validity of each mini\n"]
+    lines = [f"# {title or workflow}: validity of each mini\n"]
     lines.append(
         f"Runs used: {len(rows)}; skipped: {missing['errors']} with errors, "
         f"{missing['unjudged']} not yet judged.\n"

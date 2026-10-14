@@ -183,3 +183,14 @@ def test_compare_perfect_mini_agrees_everywhere():
     assert out["decision_acc"] == 1 and out["mmrv"] == 0
     assert out["mutant_caught_by_mini"] == 1
     assert out["cost_ratio"] == pytest.approx(0.1)
+
+
+def test_two_ledgers_on_one_file_add_up(tmp_path):
+    a, b = Ledger(1.0, tmp_path / "l.json"), Ledger(1.0, tmp_path / "l.json")
+    a.charge(0.3, "x")
+    b.charge(0.4, "y")
+    a.charge(0.2, "x")
+    assert Ledger(1.0, tmp_path / "l.json").spent_usd == pytest.approx(0.9)
+    b.charge(0.2, "y")
+    with pytest.raises(BudgetExceeded):
+        a.check()

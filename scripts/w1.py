@@ -55,8 +55,10 @@ def main() -> int:
     if args.command == "smoke":
         run_grid(lab, wf, tasks[:3], [wikiqa.BASE], FULL, workers=3)
         for t in load_traces(lab.runs, wf.name, "full", "base")[:3]:
-            print(f"\n{t.task_id}: final={t.final!r} error={t.error!r} cost=${t.cost_usd:.4f} "
-                  f"latency={t.latency_s:.1f}s llm={t.count('llm')} tools={t.count('tool')}")
+            print(
+                f"\n{t.task_id}: final={t.final!r} error={t.error!r} cost=${t.cost_usd:.4f} "
+                f"latency={t.latency_s:.1f}s llm={t.count('llm')} tools={t.count('tool')}"
+            )
             print(t.trajectory(120))
     elif args.command == "full":
         run_grid(lab, wf, tasks, variants, FULL, workers=args.workers)
@@ -65,22 +67,30 @@ def main() -> int:
         if not records.llm:
             sys.exit("run `full` first: minis replay the base variant's recorded runs")
         for name in args.recipes:
-            run_grid(lab, wf, tasks, variants, RECIPES[name], workers=args.workers,
-                     records=records)
+            run_grid(lab, wf, tasks, variants, RECIPES[name], workers=args.workers, records=records)
     elif args.command == "judge":
         by_id = {t["id"]: t for t in tasks}
         traces = [t for t in load_traces(lab.runs, wf.name, "") if not t.error]
         verdicts = Verdicts(lab.runs / "verdicts" / "wikiqa.jsonl")
         n = judge_traces(
-            traces, verdicts, system=wikiqa.JUDGE_SYSTEM, item_text=wikiqa.judge_item(by_id),
-            rule=wikiqa.rule(by_id), categories=wikiqa.CATEGORIES,
+            traces,
+            verdicts,
+            system=wikiqa.JUDGE_SYSTEM,
+            item_text=wikiqa.judge_item(by_id),
+            rule=wikiqa.rule(by_id),
+            categories=wikiqa.CATEGORIES,
             raw_dir=lab.runs / "claude" / "judge-wikiqa",
         )
         print(f"judged {n} traces with Claude; {len(verdicts.items)} verdicts in total")
     elif args.command == "analyse":
-        result = analyse(lab.runs, wf.name, variants, base="base",
-                         mutants=[v.name for v in variants if v.kind == "mutant"],
-                         recipes=[r for r in RECIPES.values()])
+        result = analyse(
+            lab.runs,
+            wf.name,
+            variants,
+            base="base",
+            mutants=[v.name for v in variants if v.kind == "mutant"],
+            recipes=[r for r in RECIPES.values()],
+        )
         out = ROOT / "results"
         out.mkdir(exist_ok=True)
         (out / "w1.json").write_text(json.dumps(result, indent=1, default=str))

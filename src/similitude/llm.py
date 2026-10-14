@@ -99,7 +99,10 @@ class Completion:
 
 @dataclass
 class Ledger:
-    """Running total of real spend. Saved to disk so the cap holds across runs."""
+    """Running total of real spend, shared by every process through one file.
+
+    Each charge is a locked read-add-write, so parallel runs never overwrite each other's
+    spend, and the cap holds across all of them."""
 
     cap_usd: float
     path: Path | None = None
@@ -108,24 +111,37 @@ class Ledger:
     _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
     def __post_init__(self) -> None:
+        self._refresh()
+
+    def _refresh(self) -> None:
         if self.path and self.path.exists():
-            saved = json.loads(self.path.read_text())
-            self.spent_usd = saved["spent_usd"]
-            self.by_tag = saved["by_tag"]
+            saved = json.loads(self.path.read_text() or "{}")
+            self.spent_usd = saved.get("spent_usd", 0.0)
+            self.by_tag = saved.get("by_tag", {})
 
     def check(self) -> None:
-        if self.spent_usd >= self.cap_usd:
-            raise BudgetExceeded(f"spent ${self.spent_usd:.4f} of the ${self.cap_usd:.2f} cap")
+        with self._lock:
+            self._refresh()
+            if self.spent_usd >= self.cap_usd:
+                raise BudgetExceeded(f"spent ${self.spent_usd:.4f} of the ${self.cap_usd:.2f} cap")
 
     def charge(self, usd: float, tag: str) -> None:
         with self._lock:
-            self.spent_usd += usd
-            self.by_tag[tag] = self.by_tag.get(tag, 0.0) + usd
-            if self.path:
-                self.path.parent.mkdir(parents=True, exist_ok=True)
-                self.path.write_text(
-                    json.dumps({"spent_usd": self.spent_usd, "by_tag": self.by_tag}, indent=1)
-                )
+            if not self.path:
+                self.spent_usd += usd
+                self.by_tag[tag] = self.by_tag.get(tag, 0.0) + usd
+                return
+            import fcntl
+
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            with open(self.path.with_suffix(".lock"), "w") as lock:
+                fcntl.flock(lock, fcntl.LOCK_EX)
+                self._refresh()
+                self.spent_usd += usd
+                self.by_tag[tag] = self.by_tag.get(tag, 0.0) + usd
+                tmp = self.path.with_suffix(".tmp")
+                tmp.write_text(json.dumps({"spent_usd": self.spent_usd, "by_tag": self.by_tag}))
+                tmp.replace(self.path)
 
 
 def load_env() -> dict[str, str]:

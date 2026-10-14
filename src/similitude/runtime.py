@@ -80,6 +80,8 @@ class Runtime:
     # ── what the workflow asks ────────────────────────────────────────────────
 
     def model_for(self, node: str) -> str:
+        if node == "workflow":  # a fused whole-workflow call runs on the focus node's model
+            node = self.focus
         if self.recipe.off_focus_model and node != self.focus:
             return self.recipe.off_focus_model
         return self.config["models"][node]
@@ -246,6 +248,18 @@ class Runtime:
         )
         c = self.llm(node, messages, tools=specs, tool_choice="none")
         return AgentResult(c.text, max_steps, exhausted=True)
+
+    def fused_workflow(
+        self, roles: list[tuple[str, str]], user: str, tool_names: list[str], max_steps: int
+    ) -> AgentResult:
+        """C2 at workflow level: one call plays every role in turn, imagining the tool results.
+        `roles` is [(node, that node's system prompt)], in pipeline order."""
+        system = (
+            "You are a whole team working through one task, playing each role below in order. "
+            "Follow each role's instructions as written.\n\n"
+            + "\n\n".join(f"=== ROLE: {node} ===\n{prompt}" for node, prompt in roles)
+        )
+        return self._fused("workflow", system, user, [self.tools[n] for n in tool_names], max_steps)
 
     def _fused(
         self, node: str, system: str, user: str, tools: list[Tool], max_steps: int

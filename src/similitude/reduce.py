@@ -12,6 +12,7 @@ from dataclasses import dataclass, field, replace
 class Recipe:
     name: str
     description: str = ""
+    focus: str | None = None  # the node under test, when the recipe is built for one focus
     # Group A: free wins
     llm_replay: bool = False  # A1 prefix replay + A3 paired runs: reuse identical LLM calls
     tool_cache: bool = False  # A2: replay recorded real tool outputs for identical calls
@@ -22,9 +23,10 @@ class Recipe:
     task_fraction: float = 1.0  # B4: run on a subset of tasks
     # Group C: must be checked
     tool_sim: str | None = None  # C1: None | "pure" | "grounded" | "cache_sim"
-    sim_model: str = "openai:gpt-5.4-nano"
+    sim_model: str = "openai:gpt-4.1-nano"  # cheap: fake pages are long, output tokens cost
     error_injection: bool = False  # C1 guard: fail at the real tool's measured failure rate
     fuse: frozenset[str] = field(default_factory=frozenset)  # C2/C4: agent nodes run as one call
+    fuse_all: bool = False  # C2 at workflow level: the whole pipeline as one call
     shrink: frozenset[str] = field(default_factory=frozenset)  # C3: compress these nodes' prompts
     stop_after: str | None = None  # C5: stop after this node and judge its output
     obs_chars: int | None = None  # C6: cut every tool output to this many characters

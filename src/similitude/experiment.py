@@ -3,6 +3,7 @@ file exists is skipped. Stops cleanly at the budget cap."""
 
 from __future__ import annotations
 
+import os
 import random
 import re
 import sys
@@ -32,7 +33,7 @@ class Lab:
     @classmethod
     def open(cls, cap_usd: float, runs: Path | None = None) -> Lab:
         runs = runs or ROOT / "runs"
-        ledger = Ledger(cap_usd, runs / "ledger.json")
+        ledger = Ledger(cap_usd, runs / os.environ.get("SIMILITUDE_LEDGER", "ledger.json"))
         return cls(runs, LLMClient(ledger), Cache(runs / "cache.sqlite"), ledger)
 
 
@@ -61,7 +62,8 @@ def run_one(
     trace = Trace(wf.name, recipe.name, variant.name, task["id"], rep)
     rt = Runtime(
         workflow=wf, client=lab.client, cache=lab.cache, recipe=recipe,
-        config=wf.config_for(variant), focus=variant.focus, trace=trace, records=records,
+        config=wf.config_for(variant), focus=recipe.focus or variant.focus, trace=trace,
+        records=records,
     )  # fmt: skip
     try:
         trace.final = wf.run(task, rt, wf.config_for(variant))
