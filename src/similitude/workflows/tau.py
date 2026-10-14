@@ -90,7 +90,10 @@ class TauRetail(Workflow):
 
     def base_config(self) -> dict[str, Any]:
         return {
-            "models": {"agent": "openai:gpt-5.4-nano", "user": "openai:gpt-4.1-mini"},
+            "models": {
+                "agent": "vertex:google/gemini-3.5-flash-lite",
+                "user": "vertex:google/gemini-3.5-flash-lite",
+            },
             "prompts": {"preamble": "", "policy": POLICY},
             "max_steps": 30,
         }
@@ -265,7 +268,9 @@ def judge_item(tasks: dict[str, dict[str, Any]]):
 
 # ── variants ─────────────────────────────────────────────────────────────────
 
-BASE = Variant("base", "base", "agent", "tau-bench's policy as the prompt, agent on gpt-5.4-nano.")
+BASE = Variant(
+    "base", "base", "agent", "tau-bench's policy as the prompt, on gemini-3.5-flash-lite."
+)
 
 
 def _policy_without(fragment: str) -> str:
@@ -288,10 +293,10 @@ MUTANTS = [
 ]  # fmt: skip
 
 MODELS = [
-    Variant("model-gpt-4.1-mini", "model", "agent", "Agent on gpt-4.1-mini.",
-            {"models": {"agent": "openai:gpt-4.1-mini"}}),
-    Variant("model-gpt-4.1-nano", "model", "agent", "Agent on gpt-4.1-nano.",
-            {"models": {"agent": "openai:gpt-4.1-nano"}}),
+    Variant("model-gemini-3.8-flash", "model", "agent", "Agent on gemini-3.8-flash.",
+            {"models": {"agent": "vertex:google/gemini-3.8-flash"}}),
+    Variant("model-gemini-3.1-flash-lite", "model", "agent", "Agent on gemini-3.1-flash-lite.",
+            {"models": {"agent": "vertex:google/gemini-3.1-flash-lite"}}),
 ]  # fmt: skip
 
 EDITS_FILE = Path(__file__).resolve().parents[3] / "data" / "tau" / "edits.json"

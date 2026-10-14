@@ -121,7 +121,7 @@ class WikiQA(Workflow):
 
     def base_config(self) -> dict[str, Any]:
         return {
-            "models": {"agent": "openai:gpt-5.4-nano"},
+            "models": {"agent": "vertex:google/gemini-3.5-flash-lite"},
             "prompts": {"agent": BASE_PROMPT},
             "max_steps": 10,
         }
@@ -236,7 +236,7 @@ def judge_item(tasks: dict[str, dict[str, Any]]):
 
 # ── variants ─────────────────────────────────────────────────────────────────
 
-BASE = Variant("base", "base", "agent", "The base prompt on gpt-5.4-nano.")
+BASE = Variant("base", "base", "agent", "The base prompt on gemini-3.5-flash-lite.")
 
 
 def _prompt(name: str, kind: str, description: str, prompt: str, **extra) -> Variant:
@@ -264,12 +264,10 @@ MUTANTS = [
 ]  # fmt: skip
 
 MODELS = [
-    Variant("model-gpt-5.4-mini", "model", "agent", "Same prompt on gpt-5.4-mini.",
-            {"models": {"agent": "openai:gpt-5.4-mini"}}),
-    Variant("model-gpt-4.1-mini", "model", "agent", "Same prompt on gpt-4.1-mini.",
-            {"models": {"agent": "openai:gpt-4.1-mini"}}),
-    Variant("model-gpt-4.1-nano", "model", "agent", "Same prompt on gpt-4.1-nano.",
-            {"models": {"agent": "openai:gpt-4.1-nano"}}),
+    Variant("model-gemini-3.8-flash", "model", "agent", "Same prompt on gemini-3.8-flash.",
+            {"models": {"agent": "vertex:google/gemini-3.8-flash"}}),
+    Variant("model-gemini-3.1-flash-lite", "model", "agent", "Same prompt on gemini-3.1-flash-lite.",
+            {"models": {"agent": "vertex:google/gemini-3.1-flash-lite"}}),
 ]  # fmt: skip
 
 EDITS_FILE = DATA.parent / "edits.json"
@@ -287,3 +285,28 @@ def edits() -> list[Variant]:
 
 def variants() -> list[Variant]:
     return [BASE, *edits(), *MUTANTS, *MODELS]
+
+
+class WikiQAOpenAI(WikiQA):
+    """The first W1 ground truth, run on OpenAI before the switch to Gemini (2026-10-14). Kept
+    as a second model family: same tasks, prompts and tools."""
+
+    name = "wikiqa-openai"
+
+    def base_config(self) -> dict[str, Any]:
+        return {**super().base_config(), "models": {"agent": "openai:gpt-5.4-nano"}}
+
+
+OPENAI_MODELS = [
+    Variant("model-gpt-5.4-mini", "model", "agent", "Same prompt on gpt-5.4-mini.",
+            {"models": {"agent": "openai:gpt-5.4-mini"}}),
+    Variant("model-gpt-4.1-mini", "model", "agent", "Same prompt on gpt-4.1-mini.",
+            {"models": {"agent": "openai:gpt-4.1-mini"}}),
+    Variant("model-gpt-4.1-nano", "model", "agent", "Same prompt on gpt-4.1-nano.",
+            {"models": {"agent": "openai:gpt-4.1-nano"}}),
+]  # fmt: skip
+
+
+def openai_variants() -> list[Variant]:
+    base = Variant("base", "base", "agent", "The base prompt on gpt-5.4-nano.")
+    return [base, *edits(), *MUTANTS, *OPENAI_MODELS]

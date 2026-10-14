@@ -37,7 +37,7 @@ W1_RECIPES = [
            task_fraction=0.25),
 ]  # fmt: skip
 
-CHEAP = "openai:gpt-4.1-nano"
+CHEAP = "vertex:google/gemini-3.1-flash-lite"
 _W = frozenset({"summary"})
 W3_WRITER = [
     Recipe("W-A-replay", "Replay planner and research from the base's recordings.",
@@ -45,7 +45,7 @@ W3_WRITER = [
     Recipe("W-B1-slice", "Drop the unscored summary branch.", focus="writer", skip=_W),
     Recipe("W-C5-stop", "Stop after the writer: no review, no revision.", focus="writer",
            stop_after="writer", skip=_W),
-    Recipe("W-B3-cheap", "Every node but the writer on gpt-4.1-nano.", focus="writer",
+    Recipe("W-B3-cheap", "Every node but the writer on gemini-3.1-flash-lite.", focus="writer",
            off_focus_model=CHEAP),
     Recipe("W-C4-stub", "Each researcher is one call that imagines its searches.",
            focus="writer", fuse=frozenset({"researcher"})),
@@ -61,7 +61,7 @@ W3_PLANNER = [
            tool_sim="pure"),
     Recipe("P-C4-stub", "Each researcher is one call that imagines its searches.",
            focus="planner", fuse=frozenset({"researcher"})),
-    Recipe("P-B3-cheap", "Every node but the planner on gpt-4.1-nano.", focus="planner",
+    Recipe("P-B3-cheap", "Every node but the planner on gemini-3.1-flash-lite.", focus="planner",
            off_focus_model=CHEAP),
     Recipe("P-C4+B1+C5", "Stubbed researchers, no summary, stop after the writer.",
            focus="planner", fuse=frozenset({"researcher"}), skip=_W, stop_after="writer"),
@@ -72,7 +72,7 @@ W3_PLANNER = [
 W2_RECIPES = [
     Recipe("A-replay", "Replay identical LLM and tool calls from recordings and across variants.",
            llm_replay=True, tool_cache=True),
-    Recipe("B3-cheap-user", "The simulated customer on gpt-4.1-nano.", off_focus_model=CHEAP),
+    Recipe("B3-cheap-user", "The simulated customer on gemini-3.1-flash-lite.", off_focus_model=CHEAP),
     Recipe("B2-cap-turns", "At most 6 agent replies to the customer.", max_steps=6),
     Recipe("B4-half", "A fixed random half of the tasks.", task_fraction=0.5),
     Recipe("C1-pure", "An LLM fakes the shop's tools (database included).", tool_sim="pure"),
@@ -87,6 +87,11 @@ W2_RECIPES = [
 SPECS = {
     "wikiqa": Spec(
         wikiqa.WikiQA(), wikiqa.load_tasks, wikiqa.variants,
+        lambda vs: {"agent": [v.name for v in vs]}, {"agent": W1_RECIPES},
+        wikiqa.JUDGE_SYSTEM, wikiqa.judge_item, wikiqa.rule, wikiqa.CATEGORIES,
+    ),
+    "wikiqa-openai": Spec(
+        wikiqa.WikiQAOpenAI(), wikiqa.load_tasks, wikiqa.openai_variants,
         lambda vs: {"agent": [v.name for v in vs]}, {"agent": W1_RECIPES},
         wikiqa.JUDGE_SYSTEM, wikiqa.judge_item, wikiqa.rule, wikiqa.CATEGORIES,
     ),

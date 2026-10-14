@@ -23,7 +23,7 @@ class Recipe:
     task_fraction: float = 1.0  # B4: run on a subset of tasks
     # Group C: must be checked
     tool_sim: str | None = None  # C1: None | "pure" | "grounded" | "cache_sim"
-    sim_model: str = "openai:gpt-4.1-nano"  # cheap: fake pages are long, output tokens cost
+    sim_model: str = "vertex:google/gemini-3.1-flash-lite"  # cheapest output: fake pages are long
     error_injection: bool = False  # C1 guard: fail at the real tool's measured failure rate
     fuse: frozenset[str] = field(default_factory=frozenset)  # C2/C4: agent nodes run as one call
     fuse_all: bool = False  # C2 at workflow level: the whole pipeline as one call

@@ -73,12 +73,9 @@ class Research(Workflow):
         return wikiqa.WikiQA().tools()
 
     def base_config(self) -> dict[str, Any]:
-        # Mixed models, as many real pipelines are: cheap nano for planning and research,
-        # gpt-4.1-mini (which follows answer-format rules reliably) for writing and review.
-        nano, mini = "openai:gpt-5.4-nano", "openai:gpt-4.1-mini"
+        model = "vertex:google/gemini-3.5-flash-lite"
         return {
-            "models": {"planner": nano, "researcher": nano, "summary": nano,
-                       "writer": mini, "reviewer": mini, "reviser": mini},
+            "models": {n: model for n in self.nodes},
             "prompts": {
                 "planner": PLANNER, "researcher": RESEARCHER, "writer": WRITER,
                 "reviewer": REVIEWER, "reviser": REVISER, "summary": SUMMARY,
@@ -225,7 +222,7 @@ def judge_item(tasks: dict[str, dict[str, Any]]):
 
 # ── variants ─────────────────────────────────────────────────────────────────
 
-BASE = Variant("base", "base", "writer", "The base pipeline: nano researches, 4.1-mini writes.")
+BASE = Variant("base", "base", "writer", "The base pipeline, every node on gemini-3.5-flash-lite.")
 
 
 def _p(name: str, kind: str, focus: str, description: str, prompt: str) -> Variant:
@@ -247,10 +244,10 @@ MUTANTS = [
 ]  # fmt: skip
 
 MODELS = [
-    Variant("w-model-mini", "model", "writer", "Writer on gpt-5.4-mini.",
-            {"models": {"writer": "openai:gpt-5.4-mini", "reviser": "openai:gpt-5.4-mini"}}),
-    Variant("p-model-mini", "model", "planner", "Planner on gpt-5.4-mini.",
-            {"models": {"planner": "openai:gpt-5.4-mini"}}),
+    Variant("w-model-3.8", "model", "writer", "Writer and reviser on gemini-3.8-flash.",
+            {"models": {"writer": "vertex:google/gemini-3.8-flash", "reviser": "vertex:google/gemini-3.8-flash"}}),
+    Variant("p-model-3.8", "model", "planner", "Planner on gemini-3.8-flash.",
+            {"models": {"planner": "vertex:google/gemini-3.8-flash"}}),
 ]  # fmt: skip
 
 EDITS_FILE = DATA / "edits.json"

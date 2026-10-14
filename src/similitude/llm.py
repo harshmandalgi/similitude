@@ -1,6 +1,8 @@
 """One client for every OpenAI-compatible provider, with prices and a hard spending cap.
 
-A model is named "provider:model", e.g. "openai:gpt-5.4-nano" or "xai:grok-4.20-0309-non-reasoning".
+A model is named "provider:model", e.g. "vertex:google/gemini-3.5-flash-lite" or
+"openai:gpt-5.4-nano". Vertex is Gemini on Google Cloud through its OpenAI-compatible endpoint,
+authenticated with Application Default Credentials (as in cheeku-v2's Vertex provider).
 Every call is priced from the provider's own token counts and charged to a Ledger, which refuses
 new calls once the cap is reached.
 """
@@ -45,6 +47,17 @@ PRICES = {
     "openai:gpt-4.1-mini": Price(0.40, 0.10, 1.60),
     "xai:grok-4.20-0309-non-reasoning": Price(1.25, 0.20, 2.50),
     "xai:grok-4.3": Price(1.25, 0.20, 2.50),
+    # Gemini on Vertex. Flash-Lite: Google's pricing page, 2026-10-14. 3.8 Flash: the higher
+    # rate cheeku-v2 records (Google lists $0.75/$3.75 as an introductory rate), so the cap holds.
+    "vertex:google/gemini-3.5-flash-lite": Price(0.30, 0.03, 2.50),
+    "vertex:google/gemini-3.1-flash-lite": Price(0.25, 0.025, 1.50),
+    "vertex:google/gemini-3.8-flash": Price(1.50, 0.15, 7.50),
+}
+
+# Per-model request settings. Gemini 3.8 Flash thinks by default; "low" turns it off (probed
+# 2026-10-14). The Flash-Lite models do not think unless asked, so they get nothing.
+MODEL_PARAMS: dict[str, dict[str, Any]] = {
+    "vertex:google/gemini-3.8-flash": {"reasoning_effort": "low"},
 }
 
 
@@ -155,6 +168,38 @@ def load_env() -> dict[str, str]:
     return {**env, **{k: v for k, v in os.environ.items() if k in env}}
 
 
+class _Vertex:
+    """An OpenAI client for Vertex whose bearer token is refreshed before it goes stale."""
+
+    SCOPE = "https://www.googleapis.com/auth/cloud-platform"
+
+    def __init__(self, project: str, location: str = "global") -> None:
+        host = "aiplatform.googleapis.com" if location == "global" else (
+            f"{location}-aiplatform.googleapis.com"
+        )  # fmt: skip
+        self.base_url = (
+            f"https://{host}/v1beta1/projects/{project}/locations/{location}/endpoints/openapi"
+        )
+        self._lock = threading.Lock()
+        self._credentials = None
+        self._client = None
+
+    def client(self):
+        import google.auth
+        import google.auth.transport.requests
+        from openai import OpenAI
+
+        with self._lock:
+            if self._credentials is None:
+                self._credentials, _ = google.auth.default(scopes=[self.SCOPE])
+            if not self._credentials.valid or self._client is None:
+                self._credentials.refresh(google.auth.transport.requests.Request())
+                self._client = OpenAI(
+                    api_key=self._credentials.token, base_url=self.base_url, timeout=120
+                )
+            return self._client
+
+
 class LLMClient:
     """Thin wrapper over the openai SDK. Retries rate limits and server errors."""
 
@@ -167,7 +212,21 @@ class LLMClient:
         self._clients = {}
         for provider, (base_url, key_name) in PROVIDERS.items():
             if env.get(key_name):
-                self._clients[provider] = OpenAI(api_key=env[key_name], base_url=base_url)
+                self._clients[provider] = OpenAI(
+                    api_key=env[key_name], base_url=base_url, timeout=120
+                )
+        self._vertex = (
+            _Vertex(env["GOOGLE_CLOUD_PROJECT"], env.get("GOOGLE_CLOUD_LOCATION") or "global")
+            if env.get("GOOGLE_CLOUD_PROJECT")
+            else None
+        )
+
+    def _client_for(self, provider: str):
+        if provider == "vertex":
+            if self._vertex is None:
+                raise KeyError("GOOGLE_CLOUD_PROJECT is not set")
+            return self._vertex.client()
+        return self._clients[provider]
 
     def chat(
         self,
@@ -183,9 +242,12 @@ class LLMClient:
         provider, name = model.split(":", 1)
         if model not in PRICES:
             raise KeyError(f"no price for {model}; add it to PRICES before spending")
-        client = self._clients[provider]
         self.ledger.check()
-        kwargs: dict[str, Any] = {"model": name, "messages": messages}
+        kwargs: dict[str, Any] = {
+            "model": name,
+            "messages": messages,
+            **MODEL_PARAMS.get(model, {}),
+        }
         if provider == "openai":
             kwargs["max_completion_tokens"] = max_tokens
         else:
@@ -197,14 +259,14 @@ class LLMClient:
         if json_mode:
             kwargs["response_format"] = {"type": "json_object"}
 
-        from openai import APIConnectionError, APIStatusError, RateLimitError
+        from openai import APIConnectionError, APIStatusError, APITimeoutError, RateLimitError
 
         for attempt in range(self.max_retries):
             start = time.perf_counter()
             try:
-                response = client.chat.completions.create(**kwargs)
+                response = self._client_for(provider).chat.completions.create(**kwargs)
                 break
-            except (RateLimitError, APIConnectionError) as exc:
+            except (RateLimitError, APIConnectionError, APITimeoutError) as exc:
                 error = exc
             except APIStatusError as exc:
                 if exc.status_code < 500:
@@ -216,10 +278,15 @@ class LLMClient:
         latency = time.perf_counter() - start
 
         choice = response.choices[0].message
+        u = response.usage
+        output = u.completion_tokens
+        if provider == "vertex":  # Vertex leaves thinking out of completion_tokens, bills it
+            details = getattr(u, "completion_tokens_details", None)
+            output += (getattr(details, "reasoning_tokens", 0) or 0) if details else 0
         usage = Usage(
-            input=response.usage.prompt_tokens,
-            cached=getattr(response.usage.prompt_tokens_details, "cached_tokens", 0) or 0,
-            output=response.usage.completion_tokens,
+            input=u.prompt_tokens,
+            cached=getattr(getattr(u, "prompt_tokens_details", None), "cached_tokens", 0) or 0,
+            output=output,
         )
         cost = usage.cost(PRICES[model])
         self.ledger.charge(cost, tag or model)
@@ -232,13 +299,9 @@ class LLMClient:
             except json.JSONDecodeError:
                 arguments = {"_unparsed": call.function.arguments}
             tool_calls.append({"id": call.id, "name": call.function.name, "arguments": arguments})
-            raw_calls.append(
-                {
-                    "id": call.id,
-                    "type": "function",
-                    "function": {"name": call.function.name, "arguments": call.function.arguments},
-                }
-            )
+            # Kept whole: Gemini 3 puts a thought signature in extra_content that must be sent
+            # back with the call on the next turn.
+            raw_calls.append(call.model_dump(exclude_none=True))
         message: dict[str, Any] = {"role": "assistant", "content": choice.content or ""}
         if raw_calls:
             message["tool_calls"] = raw_calls
