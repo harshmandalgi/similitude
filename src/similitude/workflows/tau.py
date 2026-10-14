@@ -146,7 +146,7 @@ class TauRetail(Workflow):
         return json.dumps({"responses": responses})
 
 
-def load_tasks(split: str = "test", n: int = 50) -> list[dict[str, Any]]:
+def load_tasks(split: str = "test", n: int = 40) -> list[dict[str, Any]]:
     """The first n tau-bench retail test tasks (dev: the next 10)."""
     out = []
     for i, t in enumerate(tasks_test.TASKS_TEST):

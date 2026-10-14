@@ -40,6 +40,9 @@ class Recipe:
 
 
 FULL = Recipe("full", "The real workflow, unchanged. Ground truth.")
+# The noise ceiling: the full workflow run a second time with fresh samples. No mini can agree
+# with the full workflow more than the full workflow agrees with itself.
+RERUN = Recipe("full-rerun", "The full workflow again, fresh samples: the noise ceiling.")
 
 # Recipes that apply to any workflow. Workflow-specific ones (slice, early stop, shrink) are
 # built next to the workflow.

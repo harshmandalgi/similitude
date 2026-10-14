@@ -91,7 +91,8 @@ def analyse(
 
     lines.append("\n## Does each mini make the same decisions as the full workflow?\n")
     cols = [
-        ("cost_ratio", "cost ×"), ("latency_ratio", "latency ×"), ("kendall", "Kendall τ"),
+        ("cost_ratio", "cost ×"), ("latency_ratio_median", "latency × (median)"),
+        ("kendall", "Kendall τ"),
         ("spearman", "Spearman ρ"), ("decision_acc", "pair acc"),
         ("decision_acc_clear", "pair acc (clear)"), ("clear_pairs", "clear pairs"),
         ("mmrv", "MMRV"), ("top1_match", "same best"), ("mae", "MAE"),

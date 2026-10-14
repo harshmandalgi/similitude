@@ -148,6 +148,15 @@ def compare(
     out["latency_ratio"] = (
         spend(mini, "latency") / spend(full, "latency") if spend(full, "latency") else math.nan
     )
+
+    def median_of(recipe: str, field: str) -> float:
+        values = [getattr(r, field) for r in rows if r.recipe == recipe and r.variant in present]
+        return float(np.median(values)) if values else math.nan
+
+    # Medians per run resist the odd stalled call, which can dominate a total.
+    full_lat = median_of(full, "latency")
+    out["latency_ratio_median"] = median_of(mini, "latency") / full_lat if full_lat else math.nan
+    out["cost_per_run"] = median_of(mini, "cost")
     return out
 
 

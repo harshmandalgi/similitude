@@ -26,7 +26,7 @@ import random
 import sys
 from pathlib import Path
 
-from similitude.claude_code import OPUS, ask_claude
+from similitude.claude_code import OPUS, SONNET, ask_claude
 from similitude.core import Variant
 from similitude.experiment import Lab, load_traces, run_grid
 from similitude.judge import Verdicts, judge_traces
@@ -79,7 +79,7 @@ def evidence(minis: list[str]) -> None:
     judge_traces(
         traces, Verdicts(lab.runs / "verdicts" / "wikiqa.jsonl"), system=spec.judge_system,
         item_text=spec.judge_item(by_id), rule=spec.rule(by_id), categories=spec.categories,
-        raw_dir=lab.runs / "claude" / "judge-wikiqa",
+        raw_dir=lab.runs / "claude" / "judge-wikiqa", model=SONNET, effort="medium", batch=25,
     )  # fmt: skip
 
 
@@ -150,7 +150,7 @@ def run(minis: list[str]) -> None:
     judge_traces(
         traces, Verdicts(lab.runs / "verdicts" / "wikiqa.jsonl"), system=spec.judge_system,
         item_text=spec.judge_item(by_id), rule=spec.rule(by_id), categories=spec.categories,
-        raw_dir=lab.runs / "claude" / "judge-wikiqa",
+        raw_dir=lab.runs / "claude" / "judge-wikiqa", model=SONNET, effort="medium", batch=25,
     )  # fmt: skip
 
 

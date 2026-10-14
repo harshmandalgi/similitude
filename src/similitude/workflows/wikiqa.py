@@ -257,6 +257,11 @@ MUTANTS = [
     _prompt("m-rush", "mutant", "Told to guess after two tool calls.",
             BASE_PROMPT + "\nBe fast: give your best guess after at most two tool calls."),
     Variant("m-3-steps", "mutant", "agent", "Loop capped at 3 steps.", {"max_steps": 3}),
+    Variant("m-2-steps", "mutant", "agent", "Loop capped at 2 steps.", {"max_steps": 2}),
+    _prompt("m-no-tools", "mutant", "Told to answer at once from memory, without tools.",
+            BASE_PROMPT + "\nIMPORTANT: do not call any tools. Answer immediately from memory."),
+    _prompt("m-snippets-only", "mutant", "Never reads pages; answers from search snippets.",
+            BASE_PROMPT + "\nNever call read_page. Answer only from search result snippets."),
     _prompt("m-no-format", "mutant", "Loses the short-answer rule; answers in full sentences.",
             BASE_PROMPT.replace(
                 "The answer must be short: a name, date, number, or yes/no. No explanation.",

@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from similitude.core import Variant, Workflow
-from similitude.reduce import GENERIC, Recipe
+from similitude.reduce import GENERIC, RERUN, Recipe
 from similitude.workflows import research, tau, wikiqa
 
 
@@ -27,6 +27,7 @@ class Spec:
 
 
 W1_RECIPES = [
+    RERUN,
     *GENERIC,
     Recipe("C2-fused", "The whole agent loop as one call with imagined tool results.",
            fuse=frozenset({"agent"})),
@@ -40,6 +41,7 @@ W1_RECIPES = [
 CHEAP = "vertex:google/gemini-3.1-flash-lite"
 _W = frozenset({"summary"})
 W3_WRITER = [
+    RERUN.but("W-rerun", focus="writer"),
     Recipe("W-A-replay", "Replay planner and research from the base's recordings.",
            focus="writer", llm_replay=True, tool_cache=True),
     Recipe("W-B1-slice", "Drop the unscored summary branch.", focus="writer", skip=_W),
@@ -53,6 +55,7 @@ W3_WRITER = [
            focus="writer", llm_replay=True, tool_cache=True, skip=_W, stop_after="writer"),
 ]  # fmt: skip
 W3_PLANNER = [
+    RERUN.but("P-rerun", focus="planner"),
     Recipe("P-A-replay", "Replay identical calls; tool outputs cached.", focus="planner",
            llm_replay=True, tool_cache=True),
     Recipe("P-C1-cache-sim", "Researchers' tools: recorded if seen, else faked.",
@@ -70,6 +73,7 @@ W3_PLANNER = [
 ]  # fmt: skip
 
 W2_RECIPES = [
+    RERUN,
     Recipe("A-replay", "Replay identical LLM and tool calls from recordings and across variants.",
            llm_replay=True, tool_cache=True),
     Recipe("B3-cheap-user", "The simulated customer on gemini-3.1-flash-lite.", off_focus_model=CHEAP),

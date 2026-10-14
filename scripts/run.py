@@ -18,6 +18,7 @@ import os
 import sys
 from pathlib import Path
 
+from similitude.claude_code import SONNET
 from similitude.experiment import Lab, load_traces, records_for, run_grid
 from similitude.judge import Verdicts, judge_traces
 from similitude.reduce import FULL
@@ -34,7 +35,10 @@ def main() -> int:
     parser.add_argument("recipes", nargs="*")
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--variants", nargs="*", help="only these variants")
-    parser.add_argument("--judge-workers", type=int, default=3)
+    parser.add_argument("--judge-workers", type=int, default=4)
+    parser.add_argument("--judge-model", default=SONNET, help="one judge per workflow, always")
+    parser.add_argument("--judge-effort", default="medium")
+    parser.add_argument("--judge-batch", type=int, default=25)
     args = parser.parse_args()
 
     spec = SPECS[args.workflow]
@@ -76,7 +80,8 @@ def main() -> int:
             traces, verdicts, system=spec.judge_system, item_text=spec.judge_item(by_id),
             rule=spec.rule(by_id), categories=spec.categories,
             raw_dir=lab.runs / "claude" / f"judge-{wf.name}", workers=args.judge_workers,
-            truth=spec.truth(by_id) if spec.truth else None,
+            truth=spec.truth(by_id) if spec.truth else None, model=args.judge_model,
+            effort=args.judge_effort, batch=args.judge_batch,
         )  # fmt: skip
         print(f"sent {n} traces to Claude; {len(verdicts.items)} verdicts in total")
     elif args.command == "analyse":

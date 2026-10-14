@@ -45,9 +45,9 @@ Status 14 Oct 2026: library + 3 workflows built; ground truth running on Gemini.
 |---|---|---|---|
 | **Shape** | One tool-calling agent | Agent + simulated customer | 5-role pipeline |
 | **Tools** | Live Wikipedia (search, read) | 16 shop tools over a database | Live Wikipedia |
-| **Tasks** | 80 HotpotQA questions | 50 τ-bench retail tasks | 80 FRAMES questions (2–3 pages) |
+| **Tasks** | 80 HotpotQA questions | 40 τ-bench retail tasks | 80 FRAMES questions (2–3 pages) |
 | **Score** | Correct answer (rule, else Claude judge) | τ-bench's own check (database + facts told) | Correct answer (rule, else Claude judge) |
-| **Variants** | 15: base, 6 edits, 6 mutants, 2 models | 11: base, 4 edits, 4 mutants, 2 models | 13: base + writer group + planner group |
+| **Variants** | 18: base, 6 edits, 9 mutants, 2 models | 11: base, 4 edits, 4 mutants, 2 models | 13: base + writer group + planner group |
 | **Focus** | the agent | the agent | the writer, or the planner |
 
 Edits were written by Claude Code (synthetic variants). Mutants are hand-written breakages.
