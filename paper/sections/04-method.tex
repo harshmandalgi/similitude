@@ -15,7 +15,7 @@ Table~\ref{tab:operators} lists the operators, grouped by how much validity they
 
 \begin{table*}[t]
 \centering\small
-\begin{tabular}{@{}llp{6.3cm}p{5.4cm}@{}}
+\begin{tabular}{@{}llp{6.0cm}p{5.2cm}@{}}
 \toprule
 & \textbf{Operator} & \textbf{What it does} & \textbf{Risk to validity} \\
 \midrule
@@ -57,7 +57,7 @@ change, replay what you did not change, simulate what you cannot replay, and che
 trust.
 
 \subsection{Scoring miniatures of stateful benchmarks}
-Some benchmarks score the world a run leaves behind; $\tau$-bench \citep{@taubench} compares the
+Some benchmarks score the world a run leaves behind; $\tau$-bench \citep{yao2024taubench} compares the
 final database with the one the expected actions produce. A miniature whose tools are simulated
 changes no database, so we score every run, full or miniature, by replaying the agent's
 \emph{write} calls from its trace on a fresh copy of the real database. For real runs this equals

@@ -29,7 +29,7 @@ model is often worse. It must lead to the same \emph{decisions}. We measure four
   $W$? We report agreement over all pairs and over \emph{clear} pairs, those whose full-workflow
   gap exceeds two paired standard errors.
   \item \textbf{Rankings}: Kendall's $\tau$ between the variants' scores under $W$ and $W^R$, and
-  MMRV \citep{@simpler}, which weights each ranking error by the size of the real gap, so
+  MMRV \citep{li2024evaluating}, which weights each ranking error by the size of the real gap, so
   swapping two near-equal variants costs little.
   \item \textbf{Diagnoses}: do the judge's reasons agree? We compare each variant's mix of failure
   reasons (Jensen--Shannon distance), the most common reason, and the reasons given for the same
@@ -38,7 +38,7 @@ model is often worse. It must lead to the same \emph{decisions}. We measure four
   the fixes improve the full workflow?
 \end{enumerate}
 The first two are standard for cheap proxies of expensive evaluations
-\citep{@datadecide,@simpler}. The last two are, to our knowledge, new.
+\citep{magnusson2025datadecide,li2024evaluating}. The last two are, to our knowledge, new.
 
 \paragraph{The noise ceiling.}
 Agent runs are stochastic and test sets are small, so the full workflow does not agree perfectly

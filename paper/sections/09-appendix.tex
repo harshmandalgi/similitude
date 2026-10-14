@@ -5,7 +5,7 @@
 One tool-calling agent (at most 10 steps) with two live tools over the English Wikipedia API:
 \texttt{search\_wikipedia} (up to five titles with snippets) and \texttt{read\_page} (3{,}000
 characters of plain text at a time, from an offset). Tasks: 80 test and 20 development questions
-sampled from the HotpotQA distractor validation split \citep{@hotpotqa}, keeping its natural
+sampled from the HotpotQA distractor validation split \citep{yang2018hotpotqa}, keeping its natural
 mix (64 bridge, 16 comparison). The agent ends with \texttt{FINAL ANSWER: <answer>}; a normalised
 exact match is correct by rule, anything else goes to the judge. Base prompt:
 
@@ -18,7 +18,7 @@ yes/no. No explanation.
 \end{quote}
 
 \paragraph{W2: $\tau$-bench retail.}
-The retail domain of $\tau$-bench \citep{@taubench}, vendored unchanged (tools, data, policy,
+The retail domain of $\tau$-bench \citep{yao2024taubench}, vendored unchanged (tools, data, policy,
 tasks; MIT licence). The agent's system prompt is the shop policy, optionally preceded by a
 preamble (the edit variants change only the preamble); it has the 16 retail tools and at most 30
 steps. The customer is simulated by an LLM with $\tau$-bench's own user prompt, verbatim. Tasks:
@@ -26,7 +26,7 @@ the first 40 test tasks. Pass/fail is $\tau$-bench's check (database state and r
 computed by replaying the agent's write calls on a fresh database (\S\ref{sec:method}).
 
 \paragraph{W3: research pipeline.}
-A planner splits a FRAMES question \citep{@frames} into two to four sub-questions; for each,
+A planner splits a FRAMES question \citep{krishna2024fact} into two to four sub-questions; for each,
 a researcher (a tool-calling agent with the W1 tools, at most six steps, seeing earlier notes)
 returns notes; a writer combines the notes into an answer; a reviewer flags concrete errors; a
 reviser applies them if asked. A side branch writes a two-sentence log summary that nobody scores.
