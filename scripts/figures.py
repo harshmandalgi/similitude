@@ -19,7 +19,7 @@ from pathlib import Path
 import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
+import matplotlib.pyplot as plt
 
 ROOT = Path(__file__).resolve().parents[1]
 GROUP_COLOURS = {"A": "#2a78d6", "B": "#eb6834", "C": "#1baf7a"}
