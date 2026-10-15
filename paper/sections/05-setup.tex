@@ -31,8 +31,8 @@ researchers (alone and with slicing and early stopping) and the whole pipeline a
 
 \paragraph{Ground truth and the noise ceiling.}
 Every variant runs once on every task under the full workflow. A second full run with fresh samples
-gives the noise ceiling, for W1 and for W3's writer group (budget did not allow one for W2 or
-W3's planner group).
+gives the noise ceiling, for W1 and for both of W3's focus groups (budget did not allow one for
+W2).
 
 \paragraph{Statistics.}
 Scores are task means. Pairwise differences use paired standard errors over tasks; a pair is
@@ -44,5 +44,6 @@ published prices; latencies are wall-clock per call, reported as medians per run
 
 \paragraph{Budget.}
 The whole study, including two complete ground truths for W1 (one per model family), cost
-\todo{\$X} in API calls under a hard cap enforced before every call. Judging used a Claude
+\$74.4 in API calls (\$72.1 on Gemini, \$2.3 on OpenAI), pilot runs included, under a hard cap
+enforced before every call. Judging used a Claude
 subscription and no API spend.

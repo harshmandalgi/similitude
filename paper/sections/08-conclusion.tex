@@ -3,7 +3,8 @@
 A miniature of an agent workflow can make the same decisions as the full workflow at a fraction
 of its cost, but only some miniatures can. The rule that held across our three workflows is short:
 keep real what you change, replay what you did not change, fake the tools rather than the agent's
-thinking, and ground the fakes in what the real tools returned. Shortcuts that let the model imagine
+thinking, ground the fakes in what the real tools returned, and never fake a tool whose answer
+depends on state the fake cannot see. Shortcuts that let the model imagine
 the results of its own actions (merged calls, stubbed sub-agents, a whole pipeline in one call)
 measure the model's knowledge, not the workflow's behaviour, and fail exactly where the change under
 test acts through the tools.

@@ -38,9 +38,10 @@ We make four contributions.
   customer-service agent on $\tau$-bench, and a five-role research pipeline) with 7--18 variants
   each, including deliberately broken ones, and sixteen miniatures.
 \end{enumerate}
-Three findings stand out. Simulated tools keep decisions: grounded in recorded outputs, a
-simulator matched the full workflow on 19 of 20 clear decisions in the agent workflow and on all 8
-in the research pipeline, close to the noise ceiling. Merged calls do not: when one LLM call writes
+Three findings stand out. Simulated tools keep decisions when the simulator can know the
+answer: it matched the full workflow on 18--19 of 20 clear decisions in the agent workflow (19 when
+grounded in recorded outputs) and on all 8 in the research pipeline, close to the noise ceiling;
+over $\tau$-bench's private database, which a simulator cannot see, it kept none. Merged calls do not: when one LLM call writes
 an agent's whole run with imagined tool results, every variant scores about the same, because the
 model imagines whatever its plan needs; the effect of a two-step limit, which halves the real
 agent's accuracy, disappears. And the noise ceiling matters: in the research pipeline the full

@@ -14,20 +14,21 @@ Miniature & Ops & Cost & Time & Clear pairs kept & Kendall $\tau$ & MMRV & Reaso
 \quad One call + fewer tasks & C2 B4 & 0.06$\times$ & 0.20$\times$ & 9/20 & 0.25 & 0.14 & 0.13 \\
 \addlinespace
 \multicolumn{8}{@{}l}{\textit{W2 ($\tau$-bench retail; 8 variants)}} \\
-\quad Cheaper simulated customer & B3 & 0.94$\times$ & 1.46$\times$ & 11/14 & 0.73 & 0.10 & -0.47 \\
-\quad Simulated tools, pure & C1 & 0.79$\times$ & 1.28$\times$ & 0/4 & 0.67 & 0.04 & -0.43 \\
-\quad Whole conversation as one call & C2 & 0.23$\times$ & 0.13$\times$ & 1/14 & -0.56 & 0.54 & -0.09 \\
+\quad Cheaper simulated customer & B3 & 1.01$\times$ & 1.46$\times$ & 11/14 & 0.73 & 0.10 & 0.48 \\
+\quad Simulated tools, pure & C1 & 0.88$\times$ & 1.23$\times$ & 0/14 & -- & 0.20 & $-$0.13 \\
+\quad Whole conversation as one call & C2 & 0.23$\times$ & 0.13$\times$ & 1/14 & $-$0.56 & 0.54 & $-$0.09 \\
 \addlinespace
 \multicolumn{8}{@{}l}{\textit{W3, focus: planner (7 variants)}} \\
-\quad Simulated researcher tools & C1 & 1.11$\times$ & 1.03$\times$ & 8/8 & 0.63 & 0.04 & 0.26 \\
-\quad Stubbed researchers & C4 & 0.60$\times$ & 0.41$\times$ & 0/8 & -0.73 & 0.11 & 0.24 \\
+\quad \textbf{Full workflow, re-run (ceiling)} & -- & 0.99$\times$ & 0.95$\times$ & 6/8 & 0.32 & 0.05 & 0.30 \\
+\quad Simulated researcher tools & C1 & 1.16$\times$ & 1.01$\times$ & 8/8 & 0.63 & 0.04 & 0.26 \\
+\quad Stubbed researchers & C4 & 0.60$\times$ & 0.41$\times$ & 0/8 & $-$0.73 & 0.11 & 0.24 \\
 \quad Stubbed + slice + stop early & C4 B1 C5 & 0.51$\times$ & 0.41$\times$ & 5/8 & 0.11 & 0.08 & 0.14 \\
 \quad Whole pipeline as one call & C2 & 0.50$\times$ & 0.14$\times$ & 4/8 & 0.05 & 0.09 & 0.06 \\
 \addlinespace
 \multicolumn{8}{@{}l}{\textit{W3, focus: writer (7 variants)}} \\
-\quad \textbf{Full workflow, re-run (ceiling)} & -- & 1.01$\times$ & 1.44$\times$ & 2/5 & -0.05 & 0.06 & 0.38 \\
-\quad Replay planner and research & A1 A2 A3 & 0.21$\times$ & 0.15$\times$ & 0/5 & -0.47 & 0.08 & 0.41 \\
-\quad Replay + slice + stop early & A B1 C5 & 0.13$\times$ & 0.05$\times$ & 1/5 & -0.50 & 0.08 & 0.23 \\
+\quad \textbf{Full workflow, re-run (ceiling)} & -- & 1.01$\times$ & 1.44$\times$ & 2/5 & $-$0.05 & 0.06 & 0.38 \\
+\quad Replay planner and research & A1 A2 A3 & 0.21$\times$ & 0.15$\times$ & 0/5 & $-$0.47 & 0.08 & 0.41 \\
+\quad Replay + slice + stop early & A B1 C5 & 0.13$\times$ & 0.05$\times$ & 1/5 & $-$0.50 & 0.08 & 0.23 \\
 \quad Stubbed researchers & C4 & 0.66$\times$ & 0.40$\times$ & 5/5 & 0.39 & 0.04 & 0.22 \\
 \bottomrule
 \end{tabular}

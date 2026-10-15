@@ -24,6 +24,10 @@ instead of removing tool cost. In workflows whose tools are paid, slow, rate-lim
 effects, the same operators save far more; their validity, which is what we measure, does not
 depend on the tools' price.
 
+\paragraph{No grounded simulator for the stateful workflow.}
+Budget allowed only the pure tool simulator on W2. A simulator grounded in recorded outputs, or
+given read access to the database, may keep W2's decisions; we leave that test open.
+
 \paragraph{Miniatures can be overfitted.}
 A team that optimises against one miniature for long enough may learn its quirks (a simulator's
 habits, a stub's blind spots), a form of Goodhart's law \citep{manheim2018categorizing}. Periodic

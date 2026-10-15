@@ -12,17 +12,24 @@ differ clearly from the base (caps of two and three agent steps); in W2, two of 
 confirmation, an eight-step cap); in W3's writer group, only two of five clear pairs survive a re-run. The ceiling rows
 make this concrete: re-running the full W1 workflow reproduces its ranking only moderately
 (Kendall $\tau=0.67$) but keeps every clear decision (20/20); re-running W3's writer group
-reproduces neither ($\tau=-0.05$; 2 of 5 ``clear'' pairs). A miniature should therefore be judged by
+reproduces neither ($\tau=-0.05$; 2 of 5 ``clear'' pairs), and re-running its planner group keeps
+6 of 8 ($\tau=0.32$). A miniature should therefore be judged by
 whether it settles the same \emph{clear} decisions, and by how close it comes to the ceiling on the
 rest.
 
-\paragraph{Simulated tools keep decisions.}
+\paragraph{Simulated tools keep decisions, if the simulator can know the answer.}
 Replacing tools by an LLM simulator kept 18--19 of 20 clear W1 decisions and every clear decision
 about W3's planner (8/8), with rankings close to the ceiling (W1: $\tau=0.54$--$0.61$ against
-$0.67$). Grounding helps: the cache-first simulator, which replays recorded outputs and invents only
+$0.67$; W3 planner: $0.63$ against the re-run's $0.32$, a gap within noise at eight pairs). Grounding helps: the cache-first simulator, which replays recorded outputs and invents only
 unseen ones, beat the pure simulator on every measure, including the judge's reasons ($\pi=0.41$
 against $0.27$; ceiling $0.57$). The pure simulator shifts \emph{why} runs fail: retrieval misses
-nearly triple, because invented pages lack the facts. \todo{W2 simulated shop tools.}
+nearly triple, because invented pages lack the facts.
+W2 shows the limit, as the fakeability rule (Section~\ref{sec:method}) predicts. Its tools read and
+write a private shop database. A pure simulator cannot know which customers, orders and items
+exist, so it reported real customers as not found: 260 of 320 simulated runs ended in a hand-over
+to a human agent (63 of 320 in the full workflow), every variant scored 0.07, and no clear decision
+survived (0 of 14). Tools whose answers depend on hidden state must be replayed, or their simulator
+given that state.
 
 \paragraph{Merging calls loses effects that act through tools.}
 Running an agent loop as one call that imagines its tool results kept only half of W1's clear
@@ -43,6 +50,8 @@ full workflow disagrees with its own re-run just as much, because each full run 
 research. With the research held fixed, the writer variants are revealed to differ very little,
 which is consistent with the full workflow's own ``ignore the notes'' mutant scoring 0.81 against
 the base's 0.82. Without the ceiling, the replay miniature would have been wrongly judged invalid.
+For the same reason, the stubbed-researcher miniature's agreement on all five writer pairs
+(Figure~\ref{fig:cost}) says little: the full workflow itself keeps only two of them.
 
 \paragraph{Fewer tasks and shorter outputs.}
 A random quarter of the tasks kept 17 of 20 clear W1 decisions at 0.20$\times$ the cost, and
@@ -54,9 +63,12 @@ the agent read slightly more pages (0.91 per run against 0.83).
 Keeping decisions does not guarantee keeping diagnoses. In W1, cache-first simulation, shorter
 outputs and fewer tasks keep the judge's reasons close to the ceiling ($\pi$ 0.41--0.54 against
 0.57); pure simulation keeps decisions but not reasons ($\pi=0.27$); fused miniatures keep neither
-($\pi$ 0.13--0.17). Fixes transfer accordingly, though the effects are small: three fixes Claude
-wrote from the full workflow's failures improved it by $+2.9$ points on average (two of three
-helped); three written from the fused miniature's failures changed it by $-0.8$ (none helped).
+($\pi$ 0.13--0.17). Fixes transfer in the same order, though the effects are small: a blind
+Claude instance wrote three fixes from each source's failures on 20 development questions. Fixes
+from the full workflow improved it by $+2.9$ points on average (two of three helped), fixes from the
+cache-first simulator by $+1.3$ (two of three), and fixes from the fused miniature by $-0.8$ (none).
+No single fix moved the score by more than two standard errors, so this ordering is a hint, not a
+result.
 
 \paragraph{A different model family.}
 Read as a miniature of the Gemini run, the OpenAI run of W1 kept 13 of 14 clear decisions

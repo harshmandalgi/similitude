@@ -2,8 +2,9 @@
 
 **Cheap mini versions of agent workflows that keep your evals valid.**
 
-Status (14 Oct 2026): library + 3 workflows built; experiments running on Gemini (Vertex), $40 cap.
-Paper draft started in [paper/](paper/). Private repo: github.com/harshmandalgi/similitude.
+Status (15 Oct 2026): experiments done ($72.13 of a $75 Gemini cap, plus $2.30 on OpenAI); results in
+[docs/06-RESULTS.md](docs/06-RESULTS.md); full preprint draft in [paper/](paper/), not yet read
+through or posted. Private repo: github.com/harshmandalgi/similitude.
 
 ---
 

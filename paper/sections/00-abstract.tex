@@ -7,8 +7,9 @@ implement thirteen reduction operators behind a single interception point, so th
 unmodified workflow code, and test sixteen miniatures of three workflows (a Wikipedia question
 answering agent, a $\tau$-bench customer-service agent, and a five-role research pipeline) over
 7--18 variants each, judged blind by an LLM. Simulating tools kept 90--100\% of the decisions the
-full workflow could settle, closest to the ceiling when the simulator was grounded in recorded
-outputs. Merging an agent's calls into one call with imagined tool results kept about half, no
+full workflow could settle when the tools' answers did not depend on hidden state, closest to the
+ceiling when the simulator was grounded in recorded outputs; over a private shop database it kept
+none. Merging an agent's calls into one call with imagined tool results kept about half, no
 better than chance, because it measures what the model knows rather than how the workflow behaves.
 Replaying unchanged steps was lossless, and exposed full evaluations that are mostly noise. We
 release the library, the traces and every judge answer.
