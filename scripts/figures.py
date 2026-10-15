@@ -1,6 +1,6 @@
 """Paper figure: what each miniature costs vs how well it keeps the full workflow's decisions.
 
-    uv run python scripts/figures.py   # reads results/<workflow>.json -> paper/figures/
+    uv run python scripts/figures.py   # reads results/summary.json -> paper/figures/
 
 Two panels on the same x-axis (cost of the miniature as a share of the full workflow's, log
 scale): Kendall's tau between variant rankings, and agreement on clear pairwise decisions. Colour
@@ -38,17 +38,19 @@ def risk_group(recipe: str) -> str | None:
 
 
 def points() -> list[dict]:
+    """One point per (workflow section, miniature) from results/summary.json, the same numbers
+    as the paper's main table."""
+    data = json.loads((ROOT / "results" / "summary.json").read_text())
     out = []
-    for workflow, (label, marker) in WORKFLOWS.items():
-        path = ROOT / "results" / f"{workflow}.json"
-        if not path.exists():
+    for section, results in data.items():
+        if "self-agreement" in section:
             continue
-        for group, result in json.loads(path.read_text()).items():
-            for v in result["validity"]:
-                if not isinstance(v.get("cost_ratio"), float):
-                    continue
-                out.append({**v, "workflow": label, "marker": marker, "group": group,
-                            "risk": risk_group(v["recipe"])})  # fmt: skip
+        label, marker = next(v for k, v in WORKFLOWS.items() if k in section)
+        for v in results:
+            if not isinstance(v.get("cost_ratio"), float):
+                continue
+            out.append({**v, "workflow": label, "marker": marker, "group": section,
+                        "risk": risk_group(v["recipe"])})  # fmt: skip
     return out
 
 
