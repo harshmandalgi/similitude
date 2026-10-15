@@ -19,8 +19,8 @@ Ceiling rows (full-rerun, W-rerun, P-rerun) are the full workflow run again: no 
 
 | recipe | cost × | latency × | Kendall τ | clear pairs kept | clear pairs | MMRV | mutants: same way | mutants: caught | top reason same | reason π |
 |---|---|---|---|---|---|---|---|---|---|---|
-| B3-cheap-user | 0.94 | 1.46 | 0.73 | 0.79 | 14 | 0.10 | 0.50 | 0.50 | 0.00 | -0.47 |
-| C1-pure | 0.79 | 1.28 | 0.67 | 0.00 | 4 | 0.04 | 0.00 | 0.00 | 0.00 | -0.43 |
+| B3-cheap-user | 1.01 | 1.46 | 0.73 | 0.79 | 14 | 0.10 | 0.50 | 0.50 | 0.50 | 0.48 |
+| C1-pure | 0.88 | 1.23 | – | 0.00 | 14 | 0.20 | 0.00 | 0.00 | 0.00 | -0.13 |
 | C2-all | 0.23 | 0.13 | -0.56 | 0.07 | 14 | 0.54 | 0.00 | 0.00 | 0.12 | -0.09 |
 
 ## W3 research, focus writer
@@ -36,7 +36,8 @@ Ceiling rows (full-rerun, W-rerun, P-rerun) are the full workflow run again: no 
 
 | recipe | cost × | latency × | Kendall τ | clear pairs kept | clear pairs | MMRV | mutants: same way | mutants: caught | top reason same | reason π |
 |---|---|---|---|---|---|---|---|---|---|---|
-| P-C1-pure | 1.11 | 1.03 | 0.63 | 1.00 | 8 | 0.04 | 1.00 | 0.50 | 0.71 | 0.26 |
+| P-rerun | 0.99 | 0.95 | 0.32 | 0.75 | 8 | 0.05 | 1.00 | 0.00 | 0.71 | 0.30 |
+| P-C1-pure | 1.16 | 1.01 | 0.63 | 1.00 | 8 | 0.04 | 1.00 | 0.50 | 0.71 | 0.26 |
 | P-C4-stub | 0.60 | 0.41 | -0.73 | 0.00 | 8 | 0.11 | 0.00 | 0.00 | 0.71 | 0.24 |
 | P-C4+B1+C5 | 0.51 | 0.41 | 0.11 | 0.62 | 8 | 0.08 | 1.00 | 0.00 | 0.71 | 0.14 |
 | P-C2-all | 0.50 | 0.14 | 0.05 | 0.50 | 8 | 0.09 | 0.50 | 0.00 | 0.00 | 0.06 |
@@ -45,4 +46,4 @@ Ceiling rows (full-rerun, W-rerun, P-rerun) are the full workflow run again: no 
 
 | recipe | cost × | latency × | Kendall τ | clear pairs kept | clear pairs | MMRV | mutants: same way | mutants: caught | top reason same | reason π |
 |---|---|---|---|---|---|---|---|---|---|---|
-| W-A-replay-2 | 0.99 | 1.06 | 0.21 | – | 0 | 0.02 | – | – | 0.29 | 0.34 |
+| W-A-replay-2 | 1.00 | 1.06 | 0.23 | – | 0 | 0.02 | – | – | 0.29 | 0.35 |

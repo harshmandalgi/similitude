@@ -30,7 +30,8 @@ CEILING = "#8a8986"
 INK, MUTED = "#0b0b0b", "#52514e"
 WORKFLOWS = {"wikiqa": ("W1", "o"), "tau": ("W2", "s"), "research": ("W3", "^")}
 SHORT = {
-    "full-rerun": "re-run", "W-rerun": "re-run (writer)", "C1-cache-sim": "sim tools, cache",
+    "full-rerun": "re-run", "W-rerun": "re-run (writer)", "P-rerun": "re-run (planner)",
+    "C1-cache-sim": "sim tools, cache",
     "C1-pure": "sim tools, pure", "P-C1-pure": "sim tools (planner)", "C6-short-obs": "short outputs",
     "B4-quarter": "1/4 tasks", "C2-fused": "one call", "C2+B4": "one call + 1/4",
     "B3-cheap-user": "cheaper customer", "C2-all": "one call", "W-A-replay": "replay (writer)",

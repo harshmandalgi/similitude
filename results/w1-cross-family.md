@@ -20,12 +20,12 @@ Same tasks, prompts and tools; only the model family differs. Read the OpenAI ru
 
 | metric | value |
 |---|---|
-| kendall | 0.2937134754038412 |
-| spearman | 0.371836886964293 |
+| kendall | 0.2735583347674307 |
+| spearman | 0.3400680204068024 |
 | decision_acc | 0.5555555555555556 |
 | decision_acc_clear | 0.9285714285714286 |
 | clear_pairs | 14 |
-| mmrv | 0.048076923076923093 |
+| mmrv | 0.04903846153846156 |
 | top1_match | False |
 | mutant_same_direction | 1.0 |
 | reason_js | 0.5511210502777891 |

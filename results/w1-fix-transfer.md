@@ -10,12 +10,16 @@ Each fix was written by a blind Claude Code instance from one evidence source's 
 | fix-C2-fused-read-before-answering | C2-fused | -0.013 ± 0.033 | +0.000 |
 | fix-C2-fused-verify-bridge-entity | C2-fused | -0.013 ± 0.033 | +0.013 |
 | fix-C2-fused-match-question-scope | C2-fused | +0.000 ± 0.036 | +0.000 |
+| fix-C1-cache-sim-read-entity-pages-not-snippets | C1-cache-sim | +0.000 ± 0.031 | +0.000 |
+| fix-C1-cache-sim-follow-surfaced-leads-disambiguate | C1-cache-sim | +0.013 ± 0.042 | +0.000 |
+| fix-C1-cache-sim-answer-exact-attribute-asked | C1-cache-sim | +0.025 ± 0.025 | +0.013 |
 
 ## Do fixes found on a mini help the full workflow?
 
 - Fixes written from **full** evidence: mean gain on full +0.029; 2/3 helped.
 - Fixes written from **C2-fused** evidence: mean gain on full -0.008; 0/3 helped.
+- Fixes written from **C1-cache-sim** evidence: mean gain on full +0.013; 2/3 helped.
 
 ## Does each mini predict whether a fix helps?
 
-- **C2-fused**: same sign as full for 3/4 fixes.
+- **C2-fused**: same sign as full for 4/6 fixes.

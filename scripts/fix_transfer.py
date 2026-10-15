@@ -164,8 +164,9 @@ def analyse(minis: list[str]) -> None:
              "| fix | written from | gain on full (± SE) | " + " | ".join(f"gain on {m}" for m in minis)
              + " |", "|---|---|---|" + "---|" * len(minis)]  # fmt: skip
     summary: dict[str, dict] = {}
+    sources = list(json.loads(FIXES.read_text()))  # every evidence source, run under a mini or not
     for v in variants:
-        source = next(s for s in ["full", *minis] if v.name.startswith(f"fix-{s}-"))
+        source = next(s for s in sources if v.name.startswith(f"fix-{s}-"))
         d_full, se_full, _ = paired(rows, "full", v.name, "base")
         cells = []
         for m in minis:

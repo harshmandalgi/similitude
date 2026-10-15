@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 NAMES = {
     "full-rerun": "Full workflow, re-run (ceiling)", "W-rerun": "Full workflow, re-run (ceiling)",
+    "P-rerun": "Full workflow, re-run (ceiling)",
     "C1-cache-sim": "Simulated tools, cache first", "C1-pure": "Simulated tools, pure",
     "C6-short-obs": "Short tool outputs", "B4-quarter": "Fewer tasks (1/4)",
     "C2-fused": "Agent loop as one call", "C2+B4": "One call + fewer tasks",
@@ -23,7 +24,7 @@ NAMES = {
     "P-C2-all": "Whole pipeline as one call", "C3-shrink-policy": "Shrunk policy",
 }  # fmt: skip
 OPS = {
-    "full-rerun": "--", "W-rerun": "--", "C1-cache-sim": "A1 A2 C1", "C1-pure": "C1",
+    "full-rerun": "--", "W-rerun": "--", "P-rerun": "--", "C1-cache-sim": "A1 A2 C1", "C1-pure": "C1",
     "C6-short-obs": "C6", "B4-quarter": "B4", "C2-fused": "C2", "C2+B4": "C2 B4",
     "B3-cheap-user": "B3", "C2-all": "C2", "W-A-replay": "A1 A2 A3", "W-A+B1+C5": "A B1 C5",
     "W-C4-stub": "C4", "P-C1-pure": "C1", "P-C4-stub": "C4", "P-C4+B1+C5": "C4 B1 C5",
@@ -40,7 +41,7 @@ SECTIONS = [
 def num(x, digits: int = 2) -> str:
     if x is None or (isinstance(x, float) and math.isnan(x)):
         return "--"
-    return f"{x:.{digits}f}"
+    return f"{x:.{digits}f}".replace("-", "$-$")  # a real minus sign, not a hyphen
 
 
 def frac(r: dict) -> str:
