@@ -1,1 +1,14 @@
-\todo{abstract once results are in}
+Evaluating an agentic workflow end to end is slow and expensive, so teams test few changes and
+trust noisy results. We ask whether a workflow can be reduced to a cheap \emph{miniature} whose
+evaluation leads to the same decisions as the full workflow's: the same winner between variants,
+the same ranking, the same diagnosis of failures, and fixes that carry back. We define validity by
+these decisions, and we read every miniature against a noise ceiling, the full workflow re-run. We
+implement thirteen reduction operators behind a single interception point, so that miniatures run
+unmodified workflow code, and test sixteen miniatures of three workflows (a Wikipedia question
+answering agent, a $\tau$-bench customer-service agent, and a five-role research pipeline) over
+7--18 variants each, judged blind by an LLM. Simulating tools kept 90--100\% of the decisions the
+full workflow could settle, closest to the ceiling when the simulator was grounded in recorded
+outputs. Merging an agent's calls into one call with imagined tool results kept about half, no
+better than chance, because it measures what the model knows rather than how the workflow behaves.
+Replaying unchanged steps was lossless, and exposed full evaluations that are mostly noise. We
+release the library, the traces and every judge answer.

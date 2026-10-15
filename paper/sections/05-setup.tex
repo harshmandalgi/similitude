@@ -19,14 +19,20 @@ deliberate breakages that the full workflow should catch.
 
 \paragraph{Miniatures.}
 For each workflow we build miniatures from the operators of Table~\ref{tab:operators}, choosing
-for each workflow the ones its structure admits (Table~\ref{tab:recipes}). Miniatures whose
-simulator calls cost more than the full workflow (W1 and W2 tool simulation) run on a core set of
-ten and eight variants.
-\todo{Table tab:recipes: recipes per workflow, generated from specs.py}
+for each workflow the ones its structure admits. Miniatures that ran after the budget
+was known (W1 simulation, re-run and short outputs; W2 except the fused conversation) use a core
+set of ten (W1) and eight (W2) variants that keeps every clearly broken one; all W1 comparisons in
+Table~\ref{tab:main} use the W1 core set.
+W1 tests simulated tools (pure and cache-first), short tool outputs, fewer tasks and a fused
+agent loop; W2 tests a cheaper simulated customer, simulated shop tools and a fused conversation; W3
+tests, for the writer, replaying the planner and research (alone, and with slicing and early
+stopping) and stubbed researchers, and, for the planner, simulated researcher tools, stubbed
+researchers (alone and with slicing and early stopping) and the whole pipeline as one call.
 
 \paragraph{Ground truth and the noise ceiling.}
 Every variant runs once on every task under the full workflow. A second full run with fresh samples
-gives the noise ceiling (W1, all variants; \todo{W2/W3 if budget allows}).
+gives the noise ceiling, for W1 and for W3's writer group (budget did not allow one for W2 or
+W3's planner group).
 
 \paragraph{Statistics.}
 Scores are task means. Pairwise differences use paired standard errors over tasks; a pair is

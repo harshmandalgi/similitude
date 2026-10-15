@@ -35,7 +35,14 @@ We make four contributions.
   \item \textbf{A library} that applies the operators to unmodified workflow code through a single
   interception point, with a blind LLM judge that returns a score and a reason for every run.
   \item \textbf{A study} on three workflows (a single tool-calling agent on live Wikipedia, a
-  customer-service agent on $\tau$-bench, and a five-role research pipeline) with \todo{N} variants
-  each, including deliberately broken ones.
+  customer-service agent on $\tau$-bench, and a five-role research pipeline) with 7--18 variants
+  each, including deliberately broken ones, and sixteen miniatures.
 \end{enumerate}
-\todo{one paragraph of headline findings once the results are in}
+Three findings stand out. Simulated tools keep decisions: grounded in recorded outputs, a
+simulator matched the full workflow on 19 of 20 clear decisions in the agent workflow and on all 8
+in the research pipeline, close to the noise ceiling. Merged calls do not: when one LLM call writes
+an agent's whole run with imagined tool results, every variant scores about the same, because the
+model imagines whatever its plan needs; the effect of a two-step limit, which halves the real
+agent's accuracy, disappears. And the noise ceiling matters: in the research pipeline the full
+workflow could not reproduce its own ranking of writer variants, so a lossless replay miniature that
+``disagreed'' with it was in fact right.

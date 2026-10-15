@@ -1,2 +1,18 @@
 \section{Conclusion}
-\todo{conclusion}
+
+A miniature of an agent workflow can make the same decisions as the full workflow at a fraction
+of its cost, but only some miniatures can. The rule that held across our three workflows is short:
+keep real what you change, replay what you did not change, fake the tools rather than the agent's
+thinking, and ground the fakes in what the real tools returned. Shortcuts that let the model imagine
+the results of its own actions (merged calls, stubbed sub-agents, a whole pipeline in one call)
+measure the model's knowledge, not the workflow's behaviour, and fail exactly where the change under
+test acts through the tools.
+
+Two lessons concern evaluation itself. First, at realistic test-set sizes the full evaluation
+settles only a few decisions, and sometimes none: a miniature must be read against the full
+workflow's agreement with itself, or a lossless miniature will be blamed for the full workflow's
+noise. Second, keeping decisions does not guarantee keeping diagnoses; a miniature used to decide
+\emph{what to fix} should be checked on the judge's reasons, not only on scores.
+
+The natural next step is to use validated miniatures where they pay most: in optimisation loops
+that evaluate hundreds of candidates, with the full workflow reserved for the few that survive.
