@@ -199,6 +199,11 @@ class _Vertex:
                 )
             return self._client
 
+    def expire(self) -> None:
+        """Force a fresh token on the next call (after a 401 from a token gone stale mid-run)."""
+        with self._lock:
+            self._client = None
+
 
 class LLMClient:
     """Thin wrapper over the openai SDK. Retries rate limits and server errors."""
@@ -278,7 +283,9 @@ class LLMClient:
             except (RateLimitError, APIConnectionError, APITimeoutError) as exc:
                 error = exc
             except APIStatusError as exc:
-                if exc.status_code < 500:
+                if provider == "vertex" and exc.status_code == 401:
+                    self._vertex.expire()  # the token expired mid-run: refresh it and retry
+                elif exc.status_code < 500:
                     raise
                 error = exc
             self.retries += 1
