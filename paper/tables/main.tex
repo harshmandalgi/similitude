@@ -1,0 +1,36 @@
+\begin{table*}[t]
+\centering\small
+\begin{tabular}{@{}llrrrrrr@{}}
+\toprule
+Miniature & Ops & Cost & Time & Clear pairs kept & Kendall $\tau$ & MMRV & Reason $\pi$ \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{W1 (single agent, live Wikipedia; 10 variants)}} \\
+\quad \textbf{Full workflow, re-run (ceiling)} & -- & 1.05$\times$ & 1.14$\times$ & 20/20 & 0.67 & 0.02 & 0.57 \\
+\quad Simulated tools, cache first & A1 A2 C1 & 1.23$\times$ & 0.74$\times$ & 19/20 & 0.61 & 0.03 & 0.41 \\
+\quad Simulated tools, pure & C1 & 1.05$\times$ & 1.49$\times$ & 18/20 & 0.54 & 0.03 & 0.27 \\
+\quad Short tool outputs & C6 & 0.89$\times$ & 1.45$\times$ & 20/20 & 0.48 & 0.02 & 0.54 \\
+\quad Fewer tasks (1/4) & B4 & 0.20$\times$ & 0.86$\times$ & 17/20 & 0.40 & 0.05 & 0.53 \\
+\quad Agent loop as one call & C2 & 0.28$\times$ & 0.21$\times$ & 10/20 & 0.08 & 0.15 & 0.17 \\
+\quad One call + fewer tasks & C2 B4 & 0.06$\times$ & 0.20$\times$ & 9/20 & 0.25 & 0.14 & 0.13 \\
+\addlinespace
+\multicolumn{8}{@{}l}{\textit{W2 ($\tau$-bench retail; 8 variants)}} \\
+\quad Cheaper simulated customer & B3 & 0.94$\times$ & 1.46$\times$ & 11/14 & 0.73 & 0.10 & -0.47 \\
+\quad Simulated tools, pure & C1 & 0.79$\times$ & 1.28$\times$ & 0/4 & 0.67 & 0.04 & -0.43 \\
+\quad Whole conversation as one call & C2 & 0.23$\times$ & 0.13$\times$ & 1/14 & -0.56 & 0.54 & -0.09 \\
+\addlinespace
+\multicolumn{8}{@{}l}{\textit{W3, focus: planner (7 variants)}} \\
+\quad Simulated researcher tools & C1 & 1.11$\times$ & 1.03$\times$ & 8/8 & 0.63 & 0.04 & 0.26 \\
+\quad Stubbed researchers & C4 & 0.60$\times$ & 0.41$\times$ & 0/8 & -0.73 & 0.11 & 0.24 \\
+\quad Stubbed + slice + stop early & C4 B1 C5 & 0.51$\times$ & 0.41$\times$ & 5/8 & 0.11 & 0.08 & 0.14 \\
+\quad Whole pipeline as one call & C2 & 0.50$\times$ & 0.14$\times$ & 4/8 & 0.05 & 0.09 & 0.06 \\
+\addlinespace
+\multicolumn{8}{@{}l}{\textit{W3, focus: writer (7 variants)}} \\
+\quad \textbf{Full workflow, re-run (ceiling)} & -- & 1.01$\times$ & 1.44$\times$ & 2/5 & -0.05 & 0.06 & 0.38 \\
+\quad Replay planner and research & A1 A2 A3 & 0.21$\times$ & 0.15$\times$ & 0/5 & -0.47 & 0.08 & 0.41 \\
+\quad Replay + slice + stop early & A B1 C5 & 0.13$\times$ & 0.05$\times$ & 1/5 & -0.50 & 0.08 & 0.23 \\
+\quad Stubbed researchers & C4 & 0.66$\times$ & 0.40$\times$ & 5/5 & 0.39 & 0.04 & 0.22 \\
+\bottomrule
+\end{tabular}
+\caption{Each miniature against the full workflow. Cost and time are per-run medians relative to the full workflow. \emph{Clear pairs kept}: of the variant pairs whose full-workflow gap exceeds two paired standard errors, how many the miniature orders the same way. MMRV weights ranking errors by the real gap (lower is better). Reason $\pi$: agreement of the judge's failure reasons on the same task (Scott's $\pi$). Bold rows are the noise ceiling: the full workflow run again.}
+\label{tab:main}
+\end{table*}
