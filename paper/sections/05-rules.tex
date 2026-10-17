@@ -1,0 +1,59 @@
+\section{Six rules for a valid miniature}
+\label{sec:rules}
+
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[font=\footnotesize,
+  q/.style={draw=black!65, line width=0.5pt, rounded corners=2pt, fill=black!4, align=center,
+            text width=36mm, inner sep=4pt},
+  act/.style={draw=black!65, line width=0.5pt, rounded corners=6pt, align=center, text width=30mm,
+              inner sep=4pt},
+  arr/.style={-{Latex[length=2mm, width=1.6mm]}, line width=0.7pt, black!70},
+  lab/.style={font=\scriptsize, black!60}]
+\node[font=\footnotesize\bfseries] (start) at (0, 0.9) {For each part of the workflow:};
+\node[q] (q1) at (0, 0) {Do you change this part?};
+\node[q] (q2) at (0, -1.25) {Are its inputs the same as in a recorded run?};
+\node[q] (q3) at (0, -2.6) {Is it a tool whose answers a model can know?};
+\node[q, text width=36mm, fill=white] (no) at (0, -4.05)
+  {Keep it real. You can still use fewer tasks or shorter outputs.};
+\node[act, fill=black!8] (a1) at (4.1, 0) {\textbf{Keep it real}\\{\scriptsize rule 1}};
+\node[act, fill=redblue!14] (a2) at (4.1, -1.25) {\textbf{Replay it}\\{\scriptsize rule 2}};
+\node[act, fill=simgreen!16] (a3) at (4.1, -2.6)
+  {\textbf{Simulate it}, grounded in recorded outputs\\{\scriptsize rules 3 and 4}};
+\node[act, fill=mergeorange!14, text width=74mm] (r5) at (2.05, -5.25)
+  {Never let one call imagine the results of its own actions (rule 5)};
+\node[act, fill=black!8, text width=74mm] (r6) at (2.05, -6.15)
+  {Before you trust the miniature: test mutants, measure the noise ceiling (rule 6)};
+\draw[arr] (start) -- (q1);
+\draw[arr] (q1) -- node[lab, above] {yes} (a1);
+\draw[arr] (q2) -- node[lab, above] {yes} (a2);
+\draw[arr] (q3) -- node[lab, above] {yes} (a3);
+\draw[arr] (q1) -- node[lab, right] {no} (q2);
+\draw[arr] (q2) -- node[lab, right] {no} (q3);
+\draw[arr] (q3) -- node[lab, right] {no} (no);
+\end{tikzpicture}}
+\caption{How to choose a shortcut for each part of a workflow. The two rules at the bottom apply
+to all parts.}
+\label{fig:rules}
+\end{figure}
+
+Our results give six rules. Figure~\ref{fig:rules} puts them in the order in which a team uses
+them.
+\begin{enumerate}
+  \item \textbf{Keep real the part that you change.} A shortcut on the changed part removes the
+  effect that you want to measure.
+  \item \textbf{Replay the parts that you do not change, if their inputs stay the same.} Replay
+  cost 0.21$\times$ and gave the same outputs. A replay after the changed part is not safe,
+  because the change alters what comes next \citep{gonuguntla2026replaygap}.
+  \item \textbf{Simulate a tool only if a model can know its answers.} Simulated Wikipedia and
+  research tools kept 90--100\% of the clear decisions. A simulated private database kept none.
+  \item \textbf{Ground each simulator in recorded real outputs.} The grounded simulator kept more
+  decisions and more of the diagnosis than the pure simulator.
+  \item \textbf{Never let one call imagine the results of its own actions.} Merged calls kept half
+  of the clear decisions, and stubbed researchers kept none.
+  \item \textbf{Test mutants and measure the noise ceiling before you trust or reject a
+  miniature.} In W3, the ceiling showed that a correct miniature only looked wrong.
+\end{enumerate}
+Fewer tasks (\op{B4}) is not a rule for one part. It applies to the full recipe, and it kept 85\%
+of the clear decisions at one fifth of the cost.

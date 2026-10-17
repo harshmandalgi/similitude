@@ -1,0 +1,19 @@
+\begin{table}[t]
+\centering\scriptsize
+\renewcommand{\arraystretch}{1.08}\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}p{12mm}p{17mm}p{18.5mm}p{19.5mm}@{}}
+\toprule
+& \textbf{W1} & \textbf{W2} & \textbf{W3} \\
+\midrule
+Tasks & 80 HotpotQA questions & 40 $\tau$-bench retail tasks & 80 FRAMES questions \\
+Parts & one agent, live Wikipedia search & one agent, 16 shop tools, simulated customer &
+planner, researchers, writer, reviewer, reviser \\
+Variants & 18 (core set: 10) & 11 (core set: 8) & 13, in two groups \\
+Clear pairs & 20 & 14 & 8 (planner), 5 (writer) \\
+Ceiling & yes & no & yes \\
+Full run, per task & \$0.003 & \$0.022 & \$0.006 \\
+\bottomrule
+\end{tabular}
+\caption{The three workflows. We count the clear pairs on the variant set of the main results.}
+\label{tab:workflows}
+\end{table}

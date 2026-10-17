@@ -1,62 +1,46 @@
-\section{Workflows in detail}
-\label{app:workflows}
+\section{Test record: models, runs and cost}
+\label{app:record}
 
-\paragraph{W1: Wikipedia question answering.}
-One tool-calling agent (at most 10 steps) with two live tools over the English Wikipedia API:
-\texttt{search\_wikipedia} (up to five titles with snippets) and \texttt{read\_page} (3{,}000
-characters of plain text at a time, from an offset). Tasks: 80 test and 20 development questions
-sampled from the HotpotQA distractor validation split \citep{yang2018hotpotqa}, keeping its natural
-mix (64 bridge, 16 comparison). The agent ends with \texttt{FINAL ANSWER: <answer>}; a normalised
-exact match is correct by rule, anything else goes to the judge. Base prompt:
+Table~\ref{tab:record} gives the models, the runs and the cost of the full study. All runs occurred
+on 14--15 October 2026. Each cost comes from the token counts of the provider and the published
+prices. Before each call, the system compared the total cost with a hard limit.
+The judge and the writer of variants and fixes ran on a subscription, with no cost per call.
 
-\begin{quote}\small\ttfamily
-You answer questions using Wikipedia. You have two tools: search\_wikipedia finds pages, and
-read\_page reads a page. Questions often need facts from two pages: find the first fact, then use
-it to find the second. Do not answer from memory: check the facts on Wikipedia. When you are done,
-reply with one line: FINAL ANSWER: <answer>. The answer must be short: a name, date, number, or
-yes/no. No explanation.
-\end{quote}
+\begin{table}[h]
+\centering\scriptsize
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{@{}p{24mm}p{47.5mm}@{}}
+\toprule
+\textbf{Item} & \textbf{Value} \\
+\midrule
+Main model & \texttt{gemini-3.5-flash-lite} (Google Vertex AI), all parts of all workflows \\
+Simulator, cheaper variant & \texttt{gemini-3.1-flash-lite} \\
+Stronger variant & \texttt{gemini-3.8-flash} \\
+Other model family & \texttt{gpt-5.4-nano} (OpenAI), W1 only \\
+Judge & Claude Sonnet~5.5, blind, no tools \\
+Edits and fixes & Claude Opus~5.5, in a separate instance \\
+\midrule
+Runs, W1 & 8{,}300 (main model) and 1{,}280 (other family) \\
+Runs, W2 & 1{,}520 \\
+Runs, W3 & 6{,}640 \\
+Runs, total & 17{,}740, which include fix tests and development runs \\
+\midrule
+Cost, W1 & \$19.91 (main model) and \$2.18 (other family) \\
+Cost, W2 & \$26.52 \\
+Cost, W3 & \$24.63 \\
+Cost, total & \$74.43 billed (\$72.13 Google, \$2.30 OpenAI). The total includes failed and
+pilot runs. \\
+Judge, edits, fixes & no API cost (subscription) \\
+\bottomrule
+\end{tabular}
+\caption{The test record. Run costs come from the saved traces. The billed total comes from the
+cost ledger.}
+\label{tab:record}
+\end{table}
 
-\paragraph{W2: $\tau$-bench retail.}
-The retail domain of $\tau$-bench \citep{yao2024taubench}, vendored unchanged (tools, data, policy,
-tasks; MIT licence). The agent's system prompt is the shop policy, optionally preceded by a
-preamble (the edit variants change only the preamble); it has the 16 retail tools and at most 30
-steps. The customer is simulated by an LLM with $\tau$-bench's own user prompt, verbatim. Tasks:
-the first 40 test tasks. Pass/fail is $\tau$-bench's check (database state and required facts),
-computed by replaying the agent's write calls on a fresh database (\S\ref{sec:method}).
+\section{All measures for each miniature}
+\label{app:all}
 
-\paragraph{W3: research pipeline.}
-A planner splits a FRAMES question \citep{krishna2024fact} into two to four sub-questions; for each,
-a researcher (a tool-calling agent with the W1 tools, at most six steps, seeing earlier notes)
-returns notes; a writer combines the notes into an answer; a reviewer flags concrete errors; a
-reviser applies them if asked. A side branch writes a two-sentence log summary that nobody scores.
-Tasks: 80 test and 10 development questions sampled from FRAMES among those that need two or three
-Wikipedia pages and no table reading.
+Table~\ref{tab:measures} gives the main measures for each miniature, next to the noise ceiling.
 
-\paragraph{Models.}
-Every node runs on \texttt{gemini-3.5-flash-lite} through Vertex AI, with
-\texttt{gemini-3.1-flash-lite} as the cheaper model (\op{B3}) and tool simulator (\op{C1}), and
-\texttt{gemini-3.8-flash} for the stronger-model variants. A first W1 ground truth on
-\texttt{gpt-5.4-nano} is used for the cross-family comparison.
-
-\section{Variants}
-\label{app:variants}
-Each workflow has a base, \emph{edits}, \emph{mutants} and \emph{model} variants. Edits are
-plausible improvements written by a separate Claude Code instance (Claude Opus 5.5) shown the base
-prompts and five development questions, asked for one idea per edit. Mutants are deliberate
-breakages written by hand (for example: answer from memory; read at most one page; a two-step cap;
-the policy without its authentication rule). Model variants swap the focus node's model.
-Table~\ref{tab:variants} lists them all.
-\input{tables/variants}
-
-\section{Judging}
-\label{app:judge}
-The judge is Claude Sonnet~5.5 at medium effort through Claude Code, with no tools, no project
-files and no memory, in batches of 25 runs under random codes; the OpenAI W1 runs were judged by
-Claude Opus~5.5 at high effort. Failure taxonomies:
-W1: \emph{gave up, retrieval miss, wrong hop, reasoning error, unsupported, format, gold issue}.
-W2: \emph{auth failure, wrong action, missing action, extra action, policy violation, missing info,
-transferred, user-simulator issue}.
-W3: \emph{gave up, plan error, retrieval miss, synthesis error, reasoning error, unsupported,
-format, gold issue}.
-All judge prompts and every raw judge answer are released with the code.
+\input{tables/measures}

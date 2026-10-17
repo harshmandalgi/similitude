@@ -1,0 +1,34 @@
+\section{Related work}
+\label{sec:related}
+
+\paragraph{Simulated tools and environments.}
+LLM-simulated tools and environments make agent tests cheaper and more stable
+\citep{ruan2023identifying,guo2024stabletoolbench,hu2026occubench}. C-World reports that simulated
+tools rank models like live tools \citep{xi2026cworld}, and a large production team screens its
+agents in simulation \citep{alcoba2026screen}. Other work shows gaps between simulation and reality
+for tools \citep{zhou2026when} and for simulated users \citep{seshadri2026lost}. We ask a different
+question: does a simulator keep the decisions between variants of one workflow?
+
+\paragraph{Cheaper evaluation.}
+Item selection keeps the ranking of models with fewer test items \citep{polo2024tinybenchmarks},
+also for agents \citep{ndzomga2026efficient,ayyad2026trajectory}, and proxies predict the results
+of agents \citep{song2026pace}. Fewer tasks is one of our shortcuts. We also shrink the workflow
+itself.
+
+\paragraph{Replay and regression tests.}
+Chronicle replays an agent run from a cut point \citep{chawla2026chronicle}. AgentAssay applies
+mutants and a cheaper proxy to agent tests \citep{bhardwaj2026agentassay}. The Replay Gap shows
+that a replay after a model switch scores the wrong world \citep{gonuguntla2026replaygap}, which
+agrees with our rule~2.
+
+\paragraph{Optimisers.}
+Prompt and workflow optimisers evaluate many candidates
+\citep{khattab2023dspy,agrawal2025gepa,wu2025optimas}. Some transfer results from cheap models to
+strong models \citep{oved2026optimize}, or use multi-fidelity search \citep{li2018hyperband}. A
+validated miniature can be the cheap level of such a search.
+
+\paragraph{Noise and validity.}
+Agent results change from run to run \citep{chen2026noisefloor,wiedmann2026agents}, and judges
+disagree on close pairs \citep{bodhwani2026gauge}. SIMPLER checks a robot simulator by the rankings
+that it keeps \citep{li2024evaluating}, and DataDecide asks which small experiments give the same
+decisions \citep{magnusson2025datadecide}. We apply the same view of validity to agent workflows.

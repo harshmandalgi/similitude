@@ -3,8 +3,9 @@
 **Cheap mini versions of agent workflows that keep your evals valid.**
 
 Status (15 Oct 2026): experiments done ($72.13 of a $75 Gemini cap, plus $2.30 on OpenAI); results in
-[docs/06-RESULTS.md](docs/06-RESULTS.md); full preprint draft in [paper/](paper/), not yet read
-through or posted. Private repo: github.com/harshmandalgi/similitude.
+[docs/06-RESULTS.md](docs/06-RESULTS.md). Paper (17 Oct): short 8-page version in [paper/](paper/) on
+branch `m2-mini-paper`, written to ASD-STE100 Simplified Technical English; the longer first
+draft stays on `m1-core`. Not yet read through or posted. Private repo: github.com/harshmandalgi/similitude.
 
 ---
 

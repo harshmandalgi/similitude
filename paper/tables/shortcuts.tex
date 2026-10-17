@@ -1,0 +1,31 @@
+\begin{table}[t]
+\centering\scriptsize
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{@{}l@{\hspace{5pt}}p{19mm}p{47.5mm}@{}}
+\toprule
+& \textbf{Shortcut} & \textbf{What it does} \\
+\midrule
+\multicolumn{3}{@{}l}{\textcolor{redblue}{\textbf{A. Replay}}: no loss when the inputs are the same} \\
+\op{A1} & Prefix replay & Steps before the changed part get the same inputs as in a recorded run.
+Use the recorded outputs. \\
+\op{A2} & Tool cache & Use the recorded output of the same tool call. \\
+\op{A3} & Paired runs & Run each variant on the same tasks, and compare task by task. \\
+\addlinespace
+\multicolumn{3}{@{}l}{\textcolor{redblue}{\textbf{B. Reduce}}: less work, low risk} \\
+\op{B1} & Slice & Do not run parts whose output does not reach the judge. \\
+\op{B2} & Step cap & Limit the number of agent steps. \\
+\op{B3} & Cheaper model & Use a cheaper model for the parts that you do not change. \\
+\op{B4} & Fewer tasks & Use a fixed random subset of the tasks. \\
+\addlinespace
+\multicolumn{3}{@{}l}{\textcolor{simgreen!80!black}{\textbf{C. Simulate}}: most savings, check first} \\
+\op{C1} & Simulated tools & A model plays the tool (pure or grounded). \\
+\op{C2} & Merged calls & One call writes the full agent run, with imagined tool results. \\
+\op{C3} & Shorter prompts & Compress the fixed part of a prompt. \\
+\op{C4} & Stubbed sub-agent & One call replaces a full sub-agent. \\
+\op{C5} & Early stop & Stop the run after the part that you test. \\
+\op{C6} & Short outputs & Cut each tool output to a fixed length. \\
+\bottomrule
+\end{tabular}
+\caption{The thirteen shortcuts. A recipe can combine shortcuts from all groups.}
+\label{tab:shortcuts}
+\end{table}

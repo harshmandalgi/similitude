@@ -1,0 +1,41 @@
+\begin{table*}[t]
+\centering\footnotesize
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{@{}p{14mm}p{141mm}@{}}
+\toprule
+\textbf{What}\newline{\scriptsize\itshape the idea} &
+A \emph{miniature} of an agent workflow: the same workflow code, with shortcuts on some of its
+model calls and tool calls. A \emph{recipe} names the shortcuts of one miniature. One workflow can
+give many miniatures.
+\eli{a cheaper copy of your AI system that you can test many times.} \\
+\midrule
+\textbf{Why}\newline{\scriptsize\itshape the problem} &
+A full evaluation of an agent workflow is slow and costly. Teams test few changes and trust noisy
+results. A valid miniature lets a team test more variants for the same cost, or the same variants
+for less.
+\eli{test five ideas for the price of one.} \\
+\midrule
+\textbf{When}\newline{\scriptsize\itshape the use} &
+Use a miniature to choose between variants: two prompts, two models or two tools. First, check the
+miniature on a small set of variants with known results, which include variants that you break on
+purpose (mutants). Then use it for the many variants that you cannot test in full.
+\eli{trust the copy only after it agrees with the real system on cases where you know the answer.} \\
+\midrule
+\textbf{Where}\newline{\scriptsize\itshape the place} &
+At one interception point. Each model call and each tool call of the workflow goes through one
+runtime. The runtime applies the recipe to each call: it runs, replays, simulates, cuts or skips
+the call. The workflow code does not change.
+\eli{a switchboard between your code and the AI services.} \\
+\midrule
+\textbf{How}\newline{\scriptsize\itshape the method} &
+Thirteen shortcuts in three groups (Table~\ref{tab:shortcuts}). \emph{Replay} uses recorded
+outputs, \emph{reduce} does less work, and \emph{simulate} lets a model play a part of the
+workflow. A validity check then compares the decisions of the miniature with the decisions of the
+full workflow, and with the noise ceiling.
+\eli{pick shortcuts, then check that the copy picks the same winners as the real system.} \\
+\bottomrule
+\end{tabular}
+\caption{\sys{} in the 4W1H form (what, why, when, where, how). The grey line in each row gives the
+same idea in plain words.}
+\label{tab:4w1h}
+\end{table*}

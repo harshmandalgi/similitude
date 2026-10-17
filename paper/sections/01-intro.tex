@@ -1,49 +1,80 @@
+\begin{note}
+\textbf{About the language of this paper.} We wrote this paper to the writing rules of ASD-STE100
+Simplified Technical English (STE), Issue~9 \citep{asdste100}. These rules give short sentences,
+the active voice and a dictionary in which each word has one definition. STE lets a writer use technical names and technical
+verbs that are not in its dictionary. Table~\ref{tab:terms} gives a short definition of each of
+these terms.
+\end{note}
+
 \section{Introduction}
+\label{sec:intro}
 
-Agentic workflows (an LLM that plans, calls tools, delegates to sub-agents, and revises) are
-evaluated end to end: run the whole workflow on a test set and score the outcome. That is slow and
-expensive. A single public agent leaderboard spent about \$40{,}000 on 21{,}730 runs
-\citep{kapoor2025holistic}, and cost is now reported next to accuracy because it decides which evaluations get
-run at all \citep{kapoor2024ai}. In practice, teams test few changes, on few tasks, and trust
-noisy results.
+Teams that build agent workflows change them often. A change can be a new prompt, a new model or a
+new tool. Before a team keeps a change, it must know if the change makes the workflow better. The
+usual method is a full evaluation: the team runs the full workflow on a set of tasks and compares
+the scores. For an agent workflow, this is slow and costly, because one task can need tens of model
+calls and tool calls. Thus, teams test few changes, and they trust results that contain much noise.
 
-Existing ways to cut this cost shrink something else. Benchmark compression keeps a few
-informative test items \citep{polo2024tinybenchmarks,kipnis2024metabench,ndzomga2026efficient}. Simulators replace one
-expensive component, such as the tools \citep{ruan2023identifying,guo2024stabletoolbench} or the user
-\citep{yao2024taubench}, often to build a new benchmark rather than to stand in for an existing system.
-Prompt optimisers search on a cheaper model and carry the result to a stronger one
-\citep{oved2026optimize,agrawal2025gepa}. None of these asks the question a developer faces every day: \emph{can
-I run a smaller version of my own workflow, and still make the same decisions about it?}
+In engineering, this problem is old. Engineers test a scale model of a ship or a wing before they
+build the real object. The theory of \emph{similitude} tells them when the results of the model are
+also correct for the real object \citep{buckingham1914physically}. We ask the same question for
+agent workflows: when does a small, cheap copy of a workflow give the same results as the full
+workflow?
 
-Engineers faced the same question a century ago with aircraft. A wind-tunnel model is not a small
-aeroplane; it is valid because the few dimensionless quantities that govern the flow match those of
-the real aircraft \citep{buckingham1914physically}. This is the theory of \emph{similitude}. We ask what
-similitude means for agent workflows: which parts of a workflow can be replayed, simulated, merged
-or cut, and which properties must be kept, so that an evaluation of the miniature leads to the
-same decisions as an evaluation of the original.
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[font=\footnotesize,
+  box/.style={draw=black!65, line width=0.5pt, rounded corners=3pt, align=center, inner sep=4pt},
+  arr/.style={-{Latex[length=2mm, width=1.6mm]}, line width=0.7pt, black!70}]
+\node[box, fill=black!5, text width=72mm] (full) at (0, 0)
+  {\textbf{Full workflow}: every model call and tool call is real\\[1pt]
+   {\scriptsize planner $\rightarrow$ agent $\leftrightarrows$ tools $\rightarrow$ writer
+   $\rightarrow$ judge}\\[1pt] correct, but slow and costly};
+\node[box, fill=redblue!12, text width=21mm] (rep) at (-2.55, -1.6)
+  {\textbf{Replay}\\{\scriptsize use recorded outputs of the steps that do not change}};
+\node[box, fill=redblue!12, text width=21mm] (red) at (0, -1.6)
+  {\textbf{Reduce}\\{\scriptsize fewer tasks, shorter outputs, cheaper models}};
+\node[box, fill=simgreen!14, text width=21mm] (sim) at (2.55, -1.6)
+  {\textbf{Simulate}\\{\scriptsize a model plays a tool or a sub-agent}};
+\node[box, fill=black!5, text width=72mm] (mini) at (0, -3.15)
+  {\textbf{Miniature}: the same workflow code, with a recipe of shortcuts on its calls};
+\node[box, fill=simgreen!8, text width=72mm] (check) at (0, -4.55)
+  {\textbf{Validity check}: for each pair of variants, do the full workflow and the miniature
+   pick the same winner?\\[1pt]{\scriptsize read against the \emph{noise ceiling}: the full
+   workflow, run a second time}};
+\foreach \n in {rep, red, sim} { \draw[arr] (full.south -| \n.north) -- (\n.north);
+  \draw[arr] (\n.south) -- (mini.north -| \n.south); }
+\draw[arr] (mini) -- (check);
+\draw[arr] (full.west) -- ++(-0.25, 0) |- (check.west);
+\node[font=\scriptsize, black!60, rotate=90] at (-4.15, -2.3) {scores of the full workflow};
+\end{tikzpicture}}
+\caption{\sys{} in one picture. Shortcuts from three groups turn a full workflow into a miniature.
+The miniature is valid if it picks the same winners as the full workflow.}
+\label{fig:overview}
+\end{figure}
 
-We make four contributions.
-\begin{enumerate}
-  \item \textbf{A problem and its yardstick.} We define \emph{evaluation-preserving reduction} and
-  measure validity by decisions rather than scores: the same winner between variants, the same
-  ranking, the same \emph{diagnosis} (the judge's reasons for failure) and \emph{fix transfer}
-  (fixes found on the miniature improve the original). We read every miniature against a noise
-  ceiling: the full workflow re-run with fresh samples.
-  \item \textbf{A toolbox.} Thirteen reduction operators in three risk groups, from lossless
-  prefix replay to fusing a whole pipeline into one LLM call with imagined tool results, and six
-  rules for choosing among them.
-  \item \textbf{A library} that applies the operators to unmodified workflow code through a single
-  interception point, with a blind LLM judge that returns a score and a reason for every run.
-  \item \textbf{A study} on three workflows (a single tool-calling agent on live Wikipedia, a
-  customer-service agent on $\tau$-bench, and a five-role research pipeline) with 7--18 variants
-  each, including deliberately broken ones, and sixteen miniatures.
-\end{enumerate}
-Three findings stand out. Simulated tools keep decisions when the simulator can know the
-answer: it matched the full workflow on 18--19 of 20 clear decisions in the agent workflow (19 when
-grounded in recorded outputs) and on all 8 in the research pipeline, close to the noise ceiling;
-over $\tau$-bench's private database, which a simulator cannot see, it kept none. Merged calls do not: when one LLM call writes
-an agent's whole run with imagined tool results, every variant scores about the same, because the
-model imagines whatever its plan needs; the effect of a two-step limit, which halves the real
-agent's accuracy, disappears. And the noise ceiling matters: in the research pipeline the full
-workflow could not reproduce its own ranking of writer variants, so a lossless replay miniature that
-``disagreed'' with it was in fact right.
+\input{tables/4w1h}
+
+We do not ask the miniature for the same scores. A miniature can give lower scores and still be
+useful. We ask it for the same \emph{decisions}. A decision is the answer to one question: of two
+variants of the workflow, which one is better? If the miniature and the full evaluation pick the
+same winners, a team can use the miniature to test its changes.
+
+This paper gives four contributions:
+\begin{itemize}
+  \item A definition of validity for a miniature, based on decisions, with a check against a noise
+  ceiling (Section~\ref{sec:system}).
+  \item \sys{}, a system that applies thirteen shortcuts to a workflow, with no change to its
+  code (Section~\ref{sec:system}).
+  \item A study of sixteen miniatures of three workflows, with about 17{,}700 runs
+  (Sections~\ref{sec:setup} and~\ref{sec:results}).
+  \item Six rules that tell a team which shortcut to use for each part of a workflow
+  (Section~\ref{sec:rules}).
+\end{itemize}
+
+The main results are positive. Simulated tools kept 90--100\% of the clear decisions when a model
+can know the answers of the tool. Replay of the steps that do not change gives the same outputs, at
+0.21$\times$ the cost. A quarter of the tasks kept 85\% of the clear decisions at 0.20$\times$ the
+cost. The noise ceiling also found a full evaluation that did not agree with itself. Without this
+check, a team can reject a correct miniature by mistake.

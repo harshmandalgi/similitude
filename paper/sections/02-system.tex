@@ -1,0 +1,46 @@
+\section{\sys{}}
+\label{sec:system}
+
+\input{tables/terms}
+
+Table~\ref{tab:4w1h} describes \sys{} in the 4W1H form: what, why, when, where and how. This
+section gives more detail on its three parts: the interception point, the shortcuts and the
+validity check.
+
+\paragraph{One interception point.}
+\sys{} does not change the code of a workflow. Each model call and each tool call goes through one
+runtime, and a recipe tells the runtime what to do with each call. Thus, one workflow can give many
+miniatures, and each miniature runs the same code as the full workflow.
+
+\paragraph{Honest simulation.}
+Two design rules keep the simulated parts honest. A simulator sees only the description of the tool
+and the arguments of the call. It never sees the task, because a real tool does not see the task.
+Also, the runtime keeps each simulated output, so all variants see the same simulated world.
+
+\input{tables/shortcuts}
+
+\paragraph{Thirteen shortcuts.}
+Table~\ref{tab:shortcuts} lists the shortcuts in three groups. Group~A replays recorded outputs: if the
+inputs of a call do not change, its output does not change. Thus, group~A loses no information. Group~B does less work: fewer tasks, fewer steps, or a cheaper model
+for the parts that you do not test. Group~C lets a model play a part of the workflow. It saves the
+most work, but it can also change the behaviour that you want to test.
+
+\paragraph{The validity check.}
+A miniature is valid for a team if it makes the same decisions as the full workflow. We measure
+this in five ways:
+\begin{itemize}
+  \item \textbf{Clear decisions kept}, our main measure. A pair of variants is \emph{clear} if
+  their full scores differ by more than two standard errors. We count the clear pairs where the
+  miniature picks the same winner.
+  \item \textbf{Ranking agreement}: Kendall's $\tau$ between the two rankings of all variants.
+  \item \textbf{Mutants caught}: the miniature must also find the variants that we broke.
+  \item \textbf{Reason agreement}: Scott's $\pi$ between the failure reasons of the judge, run by
+  run.
+  \item \textbf{Fix transfer}: fixes written from the failures of the miniature must also improve
+  the full workflow.
+\end{itemize}
+
+\paragraph{The noise ceiling.}
+We read each measure against the noise ceiling: the same measure between the full workflow and a
+second full run. A workflow is random, and test sets are small. Thus, the full workflow does not
+fully agree with itself. A miniature cannot do better than this ceiling, except by chance.

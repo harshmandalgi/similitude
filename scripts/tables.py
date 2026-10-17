@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 NAMES = {
     "full-rerun": "Full workflow, re-run (ceiling)", "W-rerun": "Full workflow, re-run (ceiling)",
     "P-rerun": "Full workflow, re-run (ceiling)",
-    "C1-cache-sim": "Simulated tools, cache first", "C1-pure": "Simulated tools, pure",
+    "C1-cache-sim": "Simulated tools, grounded", "C1-pure": "Simulated tools, pure",
     "C6-short-obs": "Short tool outputs", "B4-quarter": "Fewer tasks (1/4)",
     "C2-fused": "Agent loop as one call", "C2+B4": "One call + fewer tasks",
     "B3-cheap-user": "Cheaper simulated customer", "C2-all": "Whole conversation as one call",
@@ -79,12 +79,13 @@ def main() -> None:
     rows[-1] = "\\bottomrule"
     rows += [
         "\\end{tabular}",
-        ("\\caption{Each miniature against the full workflow. Cost and time are per-run medians "
-        "relative to the full workflow. \\emph{Clear pairs kept}: of the variant pairs whose "
-        "full-workflow gap exceeds two paired standard errors, how many the miniature orders the "
-        "same way. MMRV weights ranking errors by the real gap (lower is better). Reason $\\pi$: "
-        "agreement of the judge's failure reasons on the same task (Scott's $\\pi$). Bold rows are "
-        "the noise ceiling: the full workflow run again.}"),
+        ("\\caption{Each miniature against the full workflow. Cost and time are per run, "
+         "relative to the full workflow (1$\\times$ is the same). \\emph{Clear pairs kept}: of "
+         "the pairs of variants whose full scores differ by more than two standard errors, the "
+         "number that the miniature puts in the same order. MMRV is the mean ranking error, "
+         "weighted by the real score gap (lower is better). Reason $\\pi$: agreement of the "
+         "failure reasons of the judge on the same task (Scott's $\\pi$). Bold rows are the "
+         "noise ceiling: the full workflow, run a second time.}"),
         "\\label{tab:main}", "\\end{table*}",
     ]  # fmt: skip
     out = ROOT / "paper" / "tables"
@@ -93,5 +94,36 @@ def main() -> None:
     print(f"wrote {out / 'main.tex'}")
 
 
+def compact() -> None:
+    """One-column version for the short paper's appendix (paper/tables/measures.tex)."""
+    data = json.loads((ROOT / "results" / "summary.json").read_text())
+    titles = {"W1 wikiqa (10 core variants)": "W1, 10 variants",
+              "W2 tau (8 core variants)": "W2, 8 variants",
+              "W3 research, focus planner": "W3 planner, 7 variants",
+              "W3 research, focus writer": "W3 writer, 7 variants"}  # fmt: skip
+    rows = [r"\begin{table}[t]", r"\centering\scriptsize", r"\setlength{\tabcolsep}{4pt}",
+            r"\begin{tabular}{@{}lrrrr@{}}", r"\toprule",
+            r"Miniature & Cost & Clear kept & $\tau$ & $\pi$ \\", r"\midrule"]  # fmt: skip
+    for key, title in titles.items():
+        rows.append(f"\\multicolumn{{5}}{{@{{}}l}}{{\\textit{{{title}}}}} \\\\")
+        for r in data.get(key, []):
+            name = NAMES.get(r["recipe"], r["recipe"])
+            if "rerun" in r["recipe"]:
+                name = r"\textbf{Full re-run (ceiling)}"
+            rows.append(f"\\quad {name} & {num(r.get('cost_ratio'))}$\\times$ & {frac(r)} & "
+                        f"{num(r.get('kendall'))} & {num(r.get('reason_pi'))} \\\\")  # fmt: skip
+        rows.append(r"\addlinespace")
+    rows[-1] = r"\bottomrule"
+    rows += [r"\end{tabular}",
+             (r"\caption{All measures for each miniature. Cost is per run, relative to the full "
+              r"workflow. \emph{Clear kept}: clear pairs in the same order as the full workflow. "
+              r"$\tau$: Kendall's $\tau$ of the two rankings. $\pi$: Scott's $\pi$ of the failure "
+              r"reasons. A dash: the measure is not defined, because all scores are equal.}"),
+             r"\label{tab:measures}", r"\end{table}"]  # fmt: skip
+    (ROOT / "paper" / "tables" / "measures.tex").write_text("\n".join(rows) + "\n")
+    print("wrote paper/tables/measures.tex")
+
+
 if __name__ == "__main__":
     main()
+    compact()

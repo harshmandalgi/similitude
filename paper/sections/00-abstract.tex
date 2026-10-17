@@ -1,15 +1,13 @@
-Evaluating an agentic workflow end to end is slow and expensive, so teams test few changes and
-trust noisy results. We ask whether a workflow can be reduced to a cheap \emph{miniature} whose
-evaluation leads to the same decisions as the full workflow's: the same winner between variants,
-the same ranking, the same diagnosis of failures, and fixes that carry back. We define validity by
-these decisions, and we read every miniature against a noise ceiling, the full workflow re-run. We
-implement thirteen reduction operators behind a single interception point, so that miniatures run
-unmodified workflow code, and test sixteen miniatures of three workflows (a Wikipedia question
-answering agent, a $\tau$-bench customer-service agent, and a five-role research pipeline) over
-7--18 variants each, judged blind by an LLM. Simulating tools kept 90--100\% of the decisions the
-full workflow could settle when the tools' answers did not depend on hidden state, closest to the
-ceiling when the simulator was grounded in recorded outputs; over a private shop database it kept
-none. Merging an agent's calls into one call with imagined tool results kept about half, no
-better than chance, because it measures what the model knows rather than how the workflow behaves.
-Replaying unchanged steps was lossless, and exposed full evaluations that are mostly noise. We
-release the library, the traces and every judge answer.
+A full evaluation of an agent workflow is slow and costly, so teams test few changes. We ask if a
+small copy of the workflow, a \emph{miniature}, can make the same decisions as the full
+evaluation. A decision is the choice of the better of two variants of the workflow. We built
+\sys{}, a system that applies thirteen shortcuts to the model calls and tool calls of a workflow,
+with no change to its code.
+
+We tested sixteen miniatures of three workflows: a Wikipedia agent, a $\tau$-bench shop agent and
+a five-role research pipeline. The best miniatures kept 90--100\% of the clear decisions of the
+full evaluation. Simulated tools kept 18--19 of 20 clear decisions for the Wikipedia agent and all
+8 for the research planner. Replay of unchanged steps and a quarter of the tasks each cost about
+one fifth of a full evaluation. We also found two limits: merged calls that imagine tool results,
+and simulators that must replace private data. From these results, we give six rules to build a
+valid miniature.

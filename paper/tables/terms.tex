@@ -1,0 +1,40 @@
+\begin{table}[t]
+\centering\scriptsize
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{@{}p{17mm}p{54.5mm}@{}}
+\toprule
+\textbf{Term} & \textbf{Definition} \\
+\midrule
+LLM, model & A large language model: a neural network that writes text. \\
+Agent & A program in which a model selects the next action, for example a tool call, until the
+task ends. \\
+Tool & A function that an agent can call, for example a search or a database query. \\
+Workflow & A program that connects model calls and tool calls to do a task. \\
+Task & One input to a workflow, with a known correct result. \\
+Evaluation & A run of a workflow on a set of tasks. It gives a score for each task. \\
+Prompt & The text that a model receives as its instruction. \\
+Runtime & The part of \sys{} that receives each call of a workflow and applies the recipe. \\
+Trace & The record of all calls and outputs of one run. \\
+Token & A small unit of text. Providers charge for each token. \\
+API & The interface through which a program calls a model provider. \\
+Variant & One version of a workflow. An \emph{edit} tries to improve a prompt. A \emph{mutant} is a
+variant that we break on purpose. \\
+Miniature & A copy of a workflow with shortcuts on its calls. \\
+Shortcut, recipe & A shortcut changes how the runtime handles a call. A recipe is the set of
+shortcuts of one miniature. \\
+Replay & To use the recorded output of a call, not a new call. \\
+Simulated tool & A model writes the output of a tool. A \emph{pure} simulator invents each
+output. A \emph{grounded} simulator uses recorded real outputs first. \\
+Merged call & One model call writes a full agent run and imagines each tool result. \\
+Stub & One model call that replaces a full sub-agent. \\
+Judge & A separate model that grades each run and gives a reason for each failure. \\
+Standard error & The expected size of the random error in a mean score. \\
+Clear decision & A pair of variants whose full scores differ by more than two standard errors. \\
+Noise ceiling & The agreement of the full workflow with a second full run of itself. \\
+Kendall's $\tau$ & Agreement of two rankings, from $-1$ (opposite order) to $1$ (same order). \\
+Scott's $\pi$ & Agreement of two lists of labels. $0$ is chance and $1$ is full agreement. \\
+\bottomrule
+\end{tabular}
+\caption{Technical terms that are not in the STE dictionary.}
+\label{tab:terms}
+\end{table}

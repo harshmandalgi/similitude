@@ -6,7 +6,7 @@ Miniature & Ops & Cost & Time & Clear pairs kept & Kendall $\tau$ & MMRV & Reaso
 \midrule
 \multicolumn{8}{@{}l}{\textit{W1 (single agent, live Wikipedia; 10 variants)}} \\
 \quad \textbf{Full workflow, re-run (ceiling)} & -- & 1.05$\times$ & 1.14$\times$ & 20/20 & 0.67 & 0.02 & 0.57 \\
-\quad Simulated tools, cache first & A1 A2 C1 & 1.23$\times$ & 0.74$\times$ & 19/20 & 0.61 & 0.03 & 0.41 \\
+\quad Simulated tools, grounded & A1 A2 C1 & 1.23$\times$ & 0.74$\times$ & 19/20 & 0.61 & 0.03 & 0.41 \\
 \quad Simulated tools, pure & C1 & 1.05$\times$ & 1.49$\times$ & 18/20 & 0.54 & 0.03 & 0.27 \\
 \quad Short tool outputs & C6 & 0.89$\times$ & 1.45$\times$ & 20/20 & 0.48 & 0.02 & 0.54 \\
 \quad Fewer tasks (1/4) & B4 & 0.20$\times$ & 0.86$\times$ & 17/20 & 0.40 & 0.05 & 0.53 \\
@@ -32,6 +32,6 @@ Miniature & Ops & Cost & Time & Clear pairs kept & Kendall $\tau$ & MMRV & Reaso
 \quad Stubbed researchers & C4 & 0.66$\times$ & 0.40$\times$ & 5/5 & 0.39 & 0.04 & 0.22 \\
 \bottomrule
 \end{tabular}
-\caption{Each miniature against the full workflow. Cost and time are per-run medians relative to the full workflow. \emph{Clear pairs kept}: of the variant pairs whose full-workflow gap exceeds two paired standard errors, how many the miniature orders the same way. MMRV weights ranking errors by the real gap (lower is better). Reason $\pi$: agreement of the judge's failure reasons on the same task (Scott's $\pi$). Bold rows are the noise ceiling: the full workflow run again.}
+\caption{Each miniature against the full workflow. Cost and time are per run, relative to the full workflow (1$\times$ is the same). \emph{Clear pairs kept}: of the pairs of variants whose full scores differ by more than two standard errors, the number that the miniature puts in the same order. MMRV is the mean ranking error, weighted by the real score gap (lower is better). Reason $\pi$: agreement of the failure reasons of the judge on the same task (Scott's $\pi$). Bold rows are the noise ceiling: the full workflow, run a second time.}
 \label{tab:main}
 \end{table*}

@@ -1,0 +1,102 @@
+\section{Results}
+\label{sec:results}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{decisions}
+\caption{The share of clear decisions that each miniature keeps, with the count and the cost per
+run. A cost of 1$\times$ is the cost of the full workflow. The dashed line is the noise ceiling: the full
+workflow, run a second time. W2 has no ceiling. Section~\ref{sec:ceiling} discusses the writer group
+of W3.}
+\label{fig:decisions}
+\end{figure}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{tracking}
+\caption{Each dot is one variant: its mean score on the full workflow ($x$) and on the miniature
+($y$). Hollow dots are mutants. A valid miniature keeps the order of the dots (a, b). An invalid
+miniature gives all variants about the same score (c, d). $r$ is the Pearson correlation.}
+\label{fig:tracking}
+\end{figure*}
+
+Figure~\ref{fig:decisions} gives the main result for each miniature. Figure~\ref{fig:tracking}
+shows why some miniatures keep decisions and others do not. Appendix~\ref{app:all} gives all the
+measures for each miniature.
+
+\subsection{Simulated tools keep decisions}
+Simulated tools were the best shortcut of group~C. For the Wikipedia agent (W1), they kept 19 of 20
+clear decisions when grounded in recorded outputs, and 18 of 20 when pure. The noise ceiling kept
+20 of 20. For the research planner (W3), simulated researcher tools kept all 8 clear decisions,
+and the second full run kept only 6 of 8. In Figure~\ref{fig:tracking}a--b, the scores of the
+miniature follow the scores of the full workflow ($r = 0.95$ and $0.74$).
+
+The grounded simulator also kept the diagnosis better. The failure reasons of the judge agreed
+with the full workflow at $\pi = 0.41$ for the grounded simulator and at $0.27$ for the pure
+simulator. The ceiling is $0.57$. A pure simulator invents pages that do not contain the facts, so
+it shows more retrieval failures. Thus, a simulator must use real recorded outputs when it can.
+
+\subsection{Replay and reduction are cheap and safe}
+The cheapest valid miniatures came from groups~A and~B. A random quarter of the tasks kept 17 of 20
+clear decisions at 0.20$\times$ the cost, and it combines with any other shortcut. Short tool
+outputs kept all 20 clear decisions. A cheaper simulated customer in W2 kept 11 of 14, with a
+ranking agreement of $\tau = 0.73$. Replay of the planner and the researchers in W3 cost
+0.21$\times$ the full run and gave the same outputs for the same inputs.
+
+\subsection{The noise ceiling protects a good miniature}
+\label{sec:ceiling}
+The writer group of W3 shows why a team must measure the noise ceiling. The replay miniature gave
+each writer variant the same research. Its ranking of the writer variants disagreed with the full
+workflow ($\tau = -0.47$). But the full workflow also disagreed with its own second run
+($\tau = -0.05$), and only 2 of its 5 clear decisions came back. Each full run collects new
+research, and this noise is larger than the effect of the writer variants.
+
+Two runs of the replay miniature differed by only 0.005 in mean score. Under replay, all writer
+variants scored 0.82--0.85. This agrees with the full workflow, where a mutant that ignores the
+research notes scored 0.81 and the base scored 0.82. Thus, the replay miniature was correct: the
+writer variants differ very little. Without the ceiling, we can reject this good miniature by
+mistake.
+
+\subsection{Two limits}
+\label{sec:limits-found}
+Two shortcuts failed. Both failures have one cause: the miniature must imagine information that
+only the real system has. These limits are useful, because they tell a team where not to use a
+shortcut.
+
+\paragraph{Merged calls.}
+One model call wrote the full agent run and imagined each tool result. This miniature kept 10 of
+20 clear decisions, the same as chance. In Figure~\ref{fig:tracking}c, all variants get about the
+same score. A limit of two agent steps drops the real agent from 0.74 to 0.40. The merged call
+still scores 0.62, because the model imagines the facts that it did not have the steps to find. In
+W3, stubbed researchers kept 0 of 8 clear decisions and a full pipeline in one call kept 4 of 8.
+
+\paragraph{Private data.}
+In W2, the tools read and write a private shop database. A simulator cannot know which customers
+and orders exist. Box~1 shows a real example. In 260 of 320 runs with simulated tools, the agent
+did not find the customer and sent the customer to a human agent. With real tools, this
+occurred in 63 of 320 runs. All variants then scored 0.07, so the miniature kept no clear decisions
+(Figure~\ref{fig:tracking}d).
+
+\begin{note}
+\textbf{Box 1. W2, task \texttt{retail-10}.} The customer wants to return all items.\\[2pt]
+\textcolor{simgreen!70!black}{\textbf{Real tool.}}
+A search by the e-mail address of the customer $\rightarrow$ \texttt{mia\_garcia\_4516}.
+The agent finds the two orders of the customer and starts the return.\\[2pt]
+\textcolor{mergeorange}{\textbf{Simulated tool.}} The same call $\rightarrow$
+\texttt{"Email not found"}. The agent asks for a zip code. The customer cannot give it, and the
+agent sends the customer to a human agent.
+\end{note}
+
+\subsection{Diagnoses and fixes carry back}
+A miniature is more useful if a team can also learn from its failures. A blind LLM instance read
+the failures from three sources and wrote three fixes from each source. Fixes from the full
+workflow improved it by 2.9 points on average. Fixes from the grounded simulator improved it by
+1.3 points, and fixes from the merged calls changed it by $-0.8$ points. This order follows the
+reason agreement, but no single fix moved the score by more than two standard errors. We take this
+result as first evidence, not as proof.
+
+\paragraph{Another model family.}
+We also read a run of W1 on a model of another family as a miniature of the main run. It kept 13
+of 14 clear decisions. Its failure reasons were different: the most frequent reason was the same
+for only 15\% of the variants. Thus, a cheaper model can choose between variants, but it can give
+different diagnoses.

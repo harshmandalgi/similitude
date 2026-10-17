@@ -1,4 +1,6 @@
-% Similitude — preprint draft. Build: tectonic main.tex  (refs.bib, sections/, figures/ local)
+% Similitude — short preprint (v2, 17 Oct 2026). Written to the ASD-STE100 writing rules.
+% Build: tectonic -X compile main.tex   (refs.bib, sections/, tables/, figures/ are local)
+% Figures: uv run python scripts/mini_figures.py ; appendix table: scripts/tables.py
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[11pt]{article}
 \usepackage[preprint]{acl}
@@ -12,23 +14,44 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,calc}
 \usepackage{xcolor}
 \usepackage{enumitem}
 \usepackage{multirow}
-\usepackage{longtable}
 \setlist{nosep,leftmargin=*}
 \graphicspath{{figures/}}
 
-\newcommand{\sys}{\textsc{Similitude}}
-\newcommand{\op}[1]{\textsf{#1}}            % a reduction operator, e.g. \op{C1}
-\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+\newcommand{\sys}{Similitude}
+\newcommand{\op}[1]{\textsf{#1}}          % a shortcut, e.g. \op{C1}
+% The plain-English line under each cell of Table 1 (as in the authors' earlier paper).
+\newcommand{\eli}[1]{\newline\textcolor{black!60}{\itshape Plainly: #1}}
+\definecolor{simgreen}{HTML}{1BAF7A}
+\definecolor{redblue}{HTML}{2A78D6}
+\definecolor{mergeorange}{HTML}{EB6834}
+% Boxed notes and examples: a thin frame that does not break across columns.
+\setlength{\fboxrule}{0.4pt}\setlength{\fboxsep}{4pt}
+\newsavebox{\notebox}
+\newenvironment{note}{\par\medskip\noindent\begin{lrbox}{\notebox}\begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule-1pt\relax}\footnotesize}{\end{minipage}\end{lrbox}\fbox{\usebox{\notebox}}\par\medskip}
+\renewcommand{\dbltopfraction}{0.9}\renewcommand{\topfraction}{0.9}\renewcommand{\textfraction}{0.07}
 
-\title{Similitude: Cheap Miniature Workflows\\that Keep Agent Evaluations Valid}
+\title{Similitude: Miniature Agent Workflows\\that Make the Same Evaluation Decisions}
 
 \author{Harsh Mandalgi \\
   {\small Independent Researcher} \\
   {\small\texttt{harshmandalgi@gmail.com}} \\
-  {\small ORCID: \href{https://orcid.org/0009-0000-9956-3636}{0009-0000-9956-3636}}}
+  {\small ORCID: \href{https://orcid.org/0009-0000-9956-3636}{0009-0000-9956-3636}}
+  \And
+  Mohit Chaturvedi \\
+  {\small Independent Researcher} \\
+  {\small University at Buffalo (SUNY)} \\
+  {\small\texttt{mohit.98@hotmail.com}} \\
+  {\small ORCID: \href{https://orcid.org/0009-0001-7496-1504}{0009-0001-7496-1504}}
+  \And
+  Keshav Likhar \\
+  {\small Independent Researcher} \\
+  {\small\texttt{keshavlikhar007@gmail.com}} \\
+  {\small ORCID: \href{https://orcid.org/0009-0000-1473-8274}{0009-0000-1473-8274}}}
 
 \begin{document}
 \maketitle
@@ -38,11 +61,11 @@
 \end{abstract}
 
 \input{sections/01-intro}
-\input{sections/02-related}
-\input{sections/03-problem}
-\input{sections/04-method}
-\input{sections/05-setup}
-\input{sections/06-results}
+\input{sections/02-system}
+\input{sections/03-setup}
+\input{sections/04-results}
+\input{sections/05-rules}
+\input{sections/06-related}
 \input{sections/07-limits}
 \input{sections/08-conclusion}
 

@@ -1,0 +1,34 @@
+\section{Experiments}
+\label{sec:setup}
+
+\input{tables/workflows}
+
+\paragraph{Workflows.}
+Table~\ref{tab:workflows} shows the three workflows. They increase in size: one agent (W1), one
+agent with a shop database and a simulated customer (W2), and a pipeline of five roles (W3). W1
+answers multi-hop questions from HotpotQA \citep{yang2018hotpotqa} with live Wikipedia search. W2
+uses the retail tasks of $\tau$-bench \citep{yao2024taubench}. W3 answers questions from FRAMES
+\citep{krishna2024fact}. All parts of all workflows use one small model.
+
+\paragraph{Variants.}
+Each workflow has three types of variants. Edits are plausible improvements to a prompt, which a
+separate LLM instance wrote. Mutants are variants that we broke on purpose, for example a limit of
+two agent steps. Model swaps replace the main model with a stronger or a cheaper model. In W3, the
+planner and the writer each have a group of variants.
+
+\paragraph{Ground truth.}
+Each variant ran once on each task under the full workflow. A second full run gave the noise
+ceiling for W1 and for both groups of W3. For W2, the budget did not let us run a ceiling. Later
+miniatures of W1 and W2 ran on a core set of variants. Each core set keeps all the mutants that the
+full workflow catches.
+
+\paragraph{Judge and scores.}
+A blind LLM judge graded each run and gave one reason for each failure, from a fixed list for each
+workflow. The judge did not know the variant or the recipe, or if a run came from a miniature. For
+W2, the check of $\tau$-bench gives pass or fail. A simulated tool does not change the database.
+Thus, we replay the calls of each run that change the database on a new copy of it, and we check
+the result.
+
+\paragraph{Cost.}
+Appendix~\ref{app:record} gives the models, the number of runs and the cost. The full study cost
+\$74.43 in API calls, under a hard limit that we checked before each call.

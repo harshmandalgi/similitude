@@ -1,35 +1,18 @@
 \section{Limitations}
 \label{sec:limits}
 
-\paragraph{Small test sets.}
-With 40--80 tasks per workflow, many variants differ by less than the noise, as the full workflow's
-disagreement with its own re-run shows. Pairwise agreement over \emph{all} pairs is therefore
-bounded well below one for any evaluation, full or miniature; we report clear pairs and the noise
-ceiling for this reason, and we read every miniature against that ceiling rather than against
-perfection.
-
-\paragraph{One model family per workflow.}
-All Gemini runs use one small model, and only W1 was also run on a second family. Larger models may
-follow edits more faithfully, which would widen the gaps between variants and make every
-evaluation, full or miniature, easier.
-
-\paragraph{The judge is an LLM.}
-Scores outside exact matches and every failure reason come from a blind LLM judge (Claude), not from
-people. Reasons are drawn from a fixed taxonomy per workflow; a different taxonomy or judge could
-change the reasoning-agreement numbers. All judge prompts and raw answers are released.
-
-\paragraph{Free tools understate the savings of simulation.}
-Our live tools (Wikipedia, a local database) are free and fast, so tool simulation adds LLM cost
-instead of removing tool cost. In workflows whose tools are paid, slow, rate-limited or have side
-effects, the same operators save far more; their validity, which is what we measure, does not
-depend on the tools' price.
-
-\paragraph{No grounded simulator for the stateful workflow.}
-Budget allowed only the pure tool simulator on W2. A simulator grounded in recorded outputs, or
-given read access to the database, may keep W2's decisions; we leave that test open.
-
-\paragraph{Miniatures can be overfitted.}
-A team that optimises against one miniature for long enough may learn its quirks (a simulator's
-habits, a stub's blind spots), a form of Goodhart's law \citep{manheim2018categorizing}. Periodic
-checks on the full workflow, which our mutant check and noise ceiling make cheap to interpret,
-remain necessary.
+Our study has these limits:
+\begin{itemize}
+  \item \textbf{Small test sets.} With 40--80 tasks, few pairs of variants are clear. Thus, each
+  count of decisions has a large error.
+  \item \textbf{One small model.} All workflows use one small model. Only W1 also ran on a second
+  model family.
+  \item \textbf{An LLM judge.} A model, not people, gave the grades and the failure reasons.
+  \item \textbf{Free tools.} Our tools are free and fast, so simulated tools cost
+  1.05--1.23$\times$ the full run. With paid or slow tools, simulation saves money. Its validity
+  does not depend on the price of the tool.
+  \item \textbf{Open tests.} We did not test a grounded simulator on W2, and W2 has no noise
+  ceiling.
+  \item \textbf{Overfit.} A team that tunes against one miniature for a long time can learn its
+  errors. Checks on the full workflow stay necessary.
+\end{itemize}
