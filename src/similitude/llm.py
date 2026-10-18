@@ -2,7 +2,7 @@
 
 A model is named "provider:model", e.g. "vertex:google/gemini-3.5-flash-lite" or
 "openai:gpt-5.4-nano". Vertex is Gemini on Google Cloud through its OpenAI-compatible endpoint,
-authenticated with Application Default Credentials (as in cheeku-v2's Vertex provider).
+authenticated with Application Default Credentials (`gcloud auth application-default login`).
 Every call is priced from the provider's own token counts and charged to a Ledger, which refuses
 new calls once the cap is reached.
 """
@@ -18,7 +18,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-ENV_FILE = Path.home() / "Desktop" / "projects" / ".env"
+# API keys and settings: a .env file in the repo root, or the file that $SIMILITUDE_ENV_FILE names.
+ROOT = Path(__file__).resolve().parents[2]
+# Settings read from the environment even when no .env file names them.
+ENV_KEYS = ("OPENAI_API_KEY", "XAI_API_KEY", "GOOGLE_CLOUD_PROJECT", "GOOGLE_CLOUD_LOCATION")
 
 PROVIDERS = {
     "openai": (None, "OPENAI_API_KEY"),
@@ -47,8 +50,8 @@ PRICES = {
     "openai:gpt-4.1-mini": Price(0.40, 0.10, 1.60),
     "xai:grok-4.20-0309-non-reasoning": Price(1.25, 0.20, 2.50),
     "xai:grok-4.3": Price(1.25, 0.20, 2.50),
-    # Gemini on Vertex. Flash-Lite: Google's pricing page, 2026-10-14. 3.8 Flash: the higher
-    # rate cheeku-v2 records (Google lists $0.75/$3.75 as an introductory rate), so the cap holds.
+    # Gemini on Vertex. Flash-Lite: Google's pricing page, 2026-10-14. 3.8 Flash: a deliberately
+    # high rate (Google lists $0.75/$3.75 as an introductory rate), so the cap holds.
     "vertex:google/gemini-3.5-flash-lite": Price(0.30, 0.03, 2.50),
     "vertex:google/gemini-3.1-flash-lite": Price(0.25, 0.025, 1.50),
     "vertex:google/gemini-3.8-flash": Price(1.50, 0.15, 7.50),
@@ -157,15 +160,21 @@ class Ledger:
                 tmp.replace(self.path)
 
 
+def env_file() -> Path:
+    return Path(os.environ.get("SIMILITUDE_ENV_FILE") or ROOT / ".env")
+
+
 def load_env() -> dict[str, str]:
+    """Keys from the .env file; a variable set in the environment wins over the file."""
     env = {}
-    if ENV_FILE.exists():
-        for line in ENV_FILE.read_text().splitlines():
+    path = env_file()
+    if path.exists():
+        for line in path.read_text().splitlines():
             line = line.strip()
             if "=" in line and not line.startswith("#"):
                 key, value = line.split("=", 1)
-                env[key] = value.strip().strip('"').strip("'")
-    return {**env, **{k: v for k, v in os.environ.items() if k in env}}
+                env[key.strip()] = value.strip().strip('"').strip("'")
+    return {**env, **{k: v for k, v in os.environ.items() if k in env or k in ENV_KEYS}}
 
 
 class _Vertex:

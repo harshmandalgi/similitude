@@ -1,11 +1,14 @@
 # Similitude
 
-**Cheap mini versions of agent workflows that keep your evals valid.**
+**Scale models for agent evaluation: cheap miniature versions of agent workflows that make the
+same decisions as the full evaluation.**
 
-Status (15 Oct 2026): experiments done ($72.13 of a $75 Gemini cap, plus $2.30 on OpenAI); results in
-[docs/06-RESULTS.md](docs/06-RESULTS.md). Paper (17 Oct): short 8-page version in [paper/](paper/) on
-branch `m2-mini-paper`, written to ASD-STE100 Simplified Technical English; the longer first
-draft stays on `m1-core`. Not yet read through or posted. Private repo: github.com/harshmandalgi/similitude.
+This repo holds the library, the experiments and the paper *Similitude: Scale Models for Agent
+Evaluation* (Harsh Mandalgi, Mohit Chaturvedi, Keshav Likhar; preprint, 2026). The paper source is
+in [paper/](paper/).
+
+Status (Oct 2026): experiments finished. Three workflows, sixteen miniatures, about 17,700 runs,
+$74 in API calls. Plain-English results: [docs/06-RESULTS.md](docs/06-RESULTS.md).
 
 ---
 
@@ -14,44 +17,83 @@ draft stays on `m1-core`. Not yet read through or posted. Private repo: github.c
 | | |
 |---|---|
 | **What** | A method + Python library that shrinks an agent workflow into a cheap **mini workflow**. Evals on the mini lead to the **same decisions** as evals on the full workflow. Plus a research paper that tests this. |
-| **Why** | Running a full agent workflow for every eval is slow and costly. So teams test few changes. A mini that is 10–100× cheaper lets you test many. |
+| **Why** | Running a full agent workflow for every eval is slow and costly. So teams test few changes. A valid mini at a fraction of the cost (about one fifth in our study) lets you test many. |
 | **When** | In the inner loop: trying prompt edits, model swaps, tool changes. The full workflow is still used for the final check. |
 | **Where** | Any multi-step LLM workflow with tools: agents, multi-agent systems, pipelines. |
-| **How** | Record full runs → shrink with a set of operators (replay, simulated tools, merged calls, …) → check the mini on a small test set → iterate on the mini → confirm on the full. |
+| **How** | Record full runs → shrink with a set of operators (replay, simulated tools, merged calls, …) → check the mini against the full workflow and its noise ceiling → iterate on the mini → confirm on the full. |
+
+## Main results
+
+- **Simulated tools keep decisions when a model can know the answers**: 18–19 of 20 clear
+  decisions for a Wikipedia agent, 8 of 8 for a research planner.
+- **Replay of unchanged steps and a quarter of the tasks** cost about one fifth of a full run and
+  keep most decisions.
+- **The noise ceiling** (the full workflow, run again) shows when the full evaluation itself is
+  noise, so a correct mini is not rejected by mistake.
+- **Two limits**: merged calls that imagine tool results keep about half of the decisions (chance),
+  and a simulator cannot replace a tool that reads private data.
 
 ## Why the name
 
-In engineering, **similitude** is the theory of when a small model (e.g. a plane in a wind tunnel) gives
-results that are valid for the real thing. That is exactly our question, for agent workflows.
-The name is free: no LLM tool or paper uses it.
-Other options if you prefer: *ScaleModel*, *AgentTwin*.
+In engineering, **similitude** is the theory of when a small model (e.g. a plane in a wind tunnel)
+gives results that are valid for the real thing. That is exactly our question, for agent workflows.
 
 ## Is this already out there? (short answer)
 
-- **No one does the full idea.** Pieces exist: smaller test sets, LLM-faked tools, cheap-model prompt
-  search, replaying recorded steps.
-- **Our gap:** shrink a whole existing workflow, then check that rankings, the judge's reasons, and
-  fixes carry back. No paper measures the last two.
-- **But the field is moving fast.** Close papers came out in Aug–Sep 2026. Speed matters.
-
-Details: [docs/01-PRIOR-WORK.md](docs/01-PRIOR-WORK.md).
+- **No one does the full idea.** Pieces exist: smaller test sets, LLM-faked tools, cheap-model
+  prompt search, replaying recorded steps.
+- **Our gap:** shrink a whole existing workflow, then check that decisions, the judge's reasons,
+  and fixes carry back, read against a noise ceiling.
+- Details: [docs/01-PRIOR-WORK.md](docs/01-PRIOR-WORK.md) and the paper's related work.
 
 ## Read in this order
 
 | Doc | What's in it | Time |
 |---|---|---|
-| [01-PRIOR-WORK.md](docs/01-PRIOR-WORK.md) | What exists, the 5 closest papers, our gap | 8 min |
+| [06-RESULTS.md](docs/06-RESULTS.md) | Which minis keep the evaluation valid, in plain English | 8 min |
 | [02-IDEAS.md](docs/02-IDEAS.md) | How to build a mini: operators, 6 rules, validity checks, risks | 12 min |
-| [03-PLAN.md](docs/03-PLAN.md) | Research questions, experiments, milestones, **decisions I need from you** | 5 min |
-| [04-PAPER-OUTLINE.md](docs/04-PAPER-OUTLINE.md) | Title, draft abstract, contributions, sections | 3 min |
-| [05-IMPLEMENTATION.md](docs/05-IMPLEMENTATION.md) | How the code works, the 3 workflows, models, money, how to run | 6 min |
-| results/ | Tables per workflow, written by `scripts/run.py <workflow> analyse` | when ready |
+| [05-IMPLEMENTATION.md](docs/05-IMPLEMENTATION.md) | How the code works, the 3 workflows, models, how to run | 6 min |
+| [01-PRIOR-WORK.md](docs/01-PRIOR-WORK.md) | What existed at the start (Oct 2026), the closest papers, our gap | 8 min |
+| [03-PLAN.md](docs/03-PLAN.md), [04-PAPER-OUTLINE.md](docs/04-PAPER-OUTLINE.md) | The original research plan and paper outline (planning notes) | 5 min |
+| [results/](results/) | Tables per workflow, written by `scripts/run.py <workflow> analyse` and `scripts/summary.py` | – |
+
+## Quick start
+
+Needs Python 3.12+ and [uv](https://docs.astral.sh/uv/). The experiments call paid APIs.
+
+```bash
+git clone https://github.com/harshmandalgi/similitude && cd similitude
+uv sync
+uv run pytest                                  # offline tests, no API calls
+cp .env.example .env                           # then fill in your own keys
+gcloud auth application-default login          # for Gemini on Vertex AI
+export SIMILITUDE_CAP_USD=2                    # hard spending cap, checked before every call
+uv run python scripts/run.py wikiqa smoke      # base variant, 3 tasks
+```
+
+- **Judging** uses the [Claude Code](https://docs.claude.com/en/docs/claude-code) CLI (`claude -p`)
+  as a blind judge with no tools. It runs with your local Claude Code login.
+- **Spend** is recorded in `runs/ledger.json`. The cap stops every new call once it is reached.
+- **Runs** are saved under `runs/` (not in git) and are resumable: a finished run is skipped.
+- Full commands: [docs/05-IMPLEMENTATION.md](docs/05-IMPLEMENTATION.md#how-to-run).
+
+## Data and licences
+
+- **Code:** MIT, see [LICENSE](LICENSE).
+- **W1 tasks** (`data/wikiqa/tasks.jsonl`): a subset of [HotpotQA](https://hotpotqa.github.io/),
+  CC BY-SA 4.0.
+- **W3 tasks** (`data/research/tasks.jsonl`): a subset of
+  [FRAMES](https://huggingface.co/datasets/google/frames-benchmark), Apache 2.0.
+- **W2** (`src/similitude/third_party/tau_retail/`): the retail environment of
+  [τ-bench](https://github.com/sierra-research/tau-bench), MIT, vendored with its licence.
+- **Variants and fixes** (`data/*/edits.json`, `data/wikiqa/fixes.json`): written by Claude.
+- Run traces and raw judge answers are not included.
 
 ## Words used in these docs
 
 | Word | Meaning |
 |---|---|
-| **Workflow** | Your agent system: LLM calls + tool calls, in some order. |
+| **Workflow** | An agent system: LLM calls + tool calls, in some order. |
 | **Full** | The real workflow, unchanged. |
 | **Mini** | The cheap, shrunk copy. |
 | **Focus** | The part you are changing and testing. Stays real in the mini. |
@@ -59,3 +101,14 @@ Details: [docs/01-PRIOR-WORK.md](docs/01-PRIOR-WORK.md).
 | **Variant** | One version of the focus (e.g. prompt A vs prompt B). |
 | **Valid** | The mini leads to the same decision as the full workflow would. |
 | **Judge** | An LLM (or rule) that scores a run and explains why. |
+
+## Citation
+
+```bibtex
+@misc{mandalgi2026similitude,
+  title  = {Similitude: Scale Models for Agent Evaluation},
+  author = {Mandalgi, Harsh and Chaturvedi, Mohit and Likhar, Keshav},
+  year   = {2026},
+  note   = {Preprint}
+}
+```

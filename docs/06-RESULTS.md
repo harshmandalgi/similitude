@@ -8,11 +8,11 @@ plus $2.30 on OpenAI (W1 cross-family run).
 
 ## Short answer
 
-1. **Your idea 1, simulated tools, works, if the simulator can know the answer.** It kept
+1. **Idea 1, simulated tools, works, if the simulator can know the answer.** It kept
    90–100% of the clear decisions in W1 and in W3's planner tests. It works best when grounded in
    recorded real outputs ("cache first"). On τ-bench it kept **none**: the tools read a private
    shop database, which the simulator cannot see.
-2. **Your idea 2, merging calls with imagined tool results, fails** whenever the change you test
+2. **Idea 2, merging calls with imagined tool results, fails** whenever the change you test
    acts *through* the tools: step limits, search strategy, planning. It kept ~50% of clear
    decisions, which is a coin flip. On τ-bench it breaks completely: the model invents customer and
    order IDs, so nothing it "does" can be checked against the real database.

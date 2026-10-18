@@ -1,5 +1,8 @@
 # 03 · Plan: research + build
 
+> Planning notes from 14 Oct 2026, kept as a record. The final setup and results are in
+> [05-IMPLEMENTATION.md](05-IMPLEMENTATION.md), [06-RESULTS.md](06-RESULTS.md) and the paper.
+
 ## Goal in one line
 Show that a cheap mini workflow can make the **same decisions** as the full workflow's eval, and give
 people a tool + rules to build such minis.
@@ -38,9 +41,9 @@ plus mutants (deliberately broken versions). These are what the mini must rank c
 4. Compare with the metrics from [02-IDEAS.md §5](02-IDEAS.md): decision agreement, Kendall τ, mutant
    detection, reasoning agreement, fix transfer rate, cost ratio.
 
-**Model.** DeepSeek V4.1 Flash (`deepseek-flash`) for the workflows, per your usual choice for
-`projects/`. Re-check the model list before starting. A second model family for the judge, to avoid a
-model grading itself.
+**Model.** The plan named DeepSeek; the study ran on Gemini on Vertex AI (see
+[05-IMPLEMENTATION.md](05-IMPLEMENTATION.md)). A second model family for the judge, to avoid a model
+grading itself.
 
 **Budget.** First rough guess: the full ground-truth runs are the big cost. Start with the cheap
 workflow, measure real cost per run, then size the rest.
@@ -67,7 +70,7 @@ A small Python library. Plain Python first; framework adapters (LangGraph, DSPy)
 
 | # | Milestone | Done when |
 |---|---|---|
-| **M0** | Research + docs (this folder) | You have reviewed the docs and picked the name |
+| **M0** | Research + docs (this folder) | Docs reviewed and the name chosen |
 | **M1** | Build workflow 1 (full) + tracer | Full runs recorded with cost and time |
 | **M2** | Free wins (Group A) | Cost saving measured, validity unchanged |
 | **M3** | Risky operators (Groups B, C) | Each operator runs on workflow 1 |
@@ -76,7 +79,7 @@ A small Python library. Plain Python first; framework adapters (LangGraph, DSPy)
 | **M6** | Correction trick + auto-reducer | RQ5 answered |
 | **M7** | Paper draft | See [04-PAPER-OUTLINE.md](04-PAPER-OUTLINE.md) |
 
-Each milestone gets its own git branch; `main` holds finished work (same as your V2 workflow).
+Each milestone gets its own git branch; `main` holds finished work.
 
 ---
 
@@ -91,10 +94,9 @@ Each milestone gets its own git branch; `main` holds finished work (same as your
 
 ---
 
-## Decisions I need from you
+## Decisions made (14 Oct 2026)
 
-1. **Name.** My pick is in the README. Keep it or choose another.
-2. **Workflows.** OK with the three candidates above, or do you have a real workflow you are allowed to use?
-3. **Budget.** A rough monthly cap for API spend.
-4. **Repo.** New private repo on `harshmandalgi`, like V2?
-5. **Target.** arXiv preprint first, or a specific workshop/conference deadline?
+1. **Name:** Similitude.
+2. **Workflows:** the three candidates above (W1 wikiqa, W2 τ-bench retail, W3 research).
+3. **Budget:** a hard cap on API spend, raised to $75 as real costs became known.
+4. **Target:** an arXiv preprint first.

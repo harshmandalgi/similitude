@@ -56,11 +56,12 @@ Edits were written by Claude Code (synthetic variants). Mutants are hand-written
 
 ## Models and money
 
-- **Models** (Gemini on Vertex, your credits): `gemini-3.5-flash-lite` everywhere by default;
+- **Models** (Gemini on Vertex AI): `gemini-3.5-flash-lite` everywhere by default;
   `gemini-3.1-flash-lite` as the cheap model and the tool simulator; `gemini-3.8-flash` for the
   "stronger model" variants.
-- **Judge, variant writer, fix writer:** Claude Code (Opus 5.5), on your subscription, blind.
-- **Spending cap:** $40, enforced before every call by a ledger shared across processes
+- **Judge, variant writer, fix writer:** Claude Code, blind and with no tools: Sonnet 5.5
+  judges, Opus 5.5 writes the variants and fixes.
+- **Spending cap:** set with `SIMILITUDE_CAP_USD` (the study used $75), enforced before every call by a ledger shared across processes
   ([llm.py](../src/similitude/llm.py)). OpenAI spend before the switch: $2.30, kept separately.
 - **Bonus data:** the first W1 ground truth ran on OpenAI (gpt-5.4-nano). Kept as `wikiqa-openai`,
   a second model family for robustness checks.
@@ -79,8 +80,8 @@ Edits were written by Claude Code (synthetic variants). Mutants are hand-written
 ## How to run
 
 ```bash
-cd ~/Desktop/projects/similitude
-export SIMILITUDE_CAP_USD=40
+cd similitude
+export SIMILITUDE_CAP_USD=5
 uv run python scripts/run.py <wikiqa|research|tau> full      # ground truth
 uv run python scripts/run.py <workflow> mini                 # all minis for that workflow
 uv run python scripts/run.py <workflow> judge                # Claude judges new runs

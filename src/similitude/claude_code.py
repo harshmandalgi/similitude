@@ -1,9 +1,9 @@
 """Ask a fresh, blind Claude Code instance for a JSON answer (judging, labelling, writing variants).
 
-The same pattern as cheeku-v2/scripts/claude_judges.py: one `claude -p` call, on the owner's
-Claude subscription (API-key variables removed), with no tools, no CLAUDE.md, memory, skills or
-MCP servers (`--safe-mode`), no saved session, in an empty folder, and with our instructions as
-the whole system prompt. Every answer is kept under runs/claude/ so it can be audited.
+One `claude -p` call per question, with the local Claude Code login (API-key variables are
+removed from its environment), no tools, no CLAUDE.md, memory, skills or MCP servers
+(`--safe-mode`), no saved session, in an empty folder, and with our instructions as the whole
+system prompt. Every answer is kept under runs/claude/ so it can be audited.
 """
 
 from __future__ import annotations

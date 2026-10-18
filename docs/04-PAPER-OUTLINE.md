@@ -1,5 +1,8 @@
 # 04 · Paper outline (draft)
 
+> Planning notes from 14 Oct 2026, kept as a record. The final setup and results are in
+> [05-IMPLEMENTATION.md](05-IMPLEMENTATION.md), [06-RESULTS.md](06-RESULTS.md) and the paper.
+
 ## Working title
 **Similitude: Cheap Miniature Workflows that Keep Agent Evaluations Valid**
 

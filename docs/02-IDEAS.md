@@ -61,14 +61,14 @@ Each tool ("operator") makes the workflow cheaper in one way. Grouped by how muc
 
 | # | Operator | What it does | Watch out for |
 |---|---|---|---|
-| C1 | **Simulated tools** *(your idea)* | An LLM pretends to be the tool and writes a believable output. | Too clean: no errors, no timeouts, no messy data |
-| C2 | **Call fusion** *(your idea)* | Merge a chain of LLM calls into one call, with imagined tool results in between. | The model invents tool results that make its own plan work |
+| C1 | **Simulated tools** *(starting idea)* | An LLM pretends to be the tool and writes a believable output. | Too clean: no errors, no timeouts, no messy data |
+| C2 | **Call fusion** *(starting idea)* | Merge a chain of LLM calls into one call, with imagined tool results in between. | The model invents tool results that make its own plan work |
 | C3 | **Prompt shrinking** | Compress long prompts; keep only the parts that matter for this eval. | Behavior quietly changes (one study saw outputs get ~56× longer) |
 | C4 | **Sub-agent stub** | Replace a whole sub-agent with one call that copies its typical output (learned from recorded runs). | Misses rare outputs |
 | C5 | **Early stop + judge** | After the focus, do not run the rest. A judge scores the middle output (e.g. the plan) and predicts the final result. | Plan looks good but fails when run |
 | C6 | **Smaller inputs** | Shorter documents, fewer retrieved chunks. | Changes task difficulty |
 
-### Your two ideas, in more detail
+### The two starting ideas, in more detail
 
 **C1 · Simulated tools (4W1H)**
 - **What:** an LLM plays the tool. It gets the tool's description and the call, and returns an output.
