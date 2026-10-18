@@ -1,43 +1,25 @@
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/banner-dark.svg">
-    <img src="docs/assets/banner-light.svg" alt="Similitude: Scale Models for Agent Evaluation" width="640">
-  </picture>
-</p>
+<h1 align="center">Similitude</h1>
+
+<p align="center"><em>Scale Models for Agent Evaluation</em></p>
 
 <p align="center">
   <a href="paper/"><img src="https://img.shields.io/badge/Paper-Zenodo-0f766e" alt="Paper: Zenodo"></a>
-  <a href="#quick-start"><img src="https://img.shields.io/badge/Python-3.12%2B-334155" alt="Python 3.12+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-334155" alt="License: MIT"></a>
-  <a href="docs/06-RESULTS.md"><img src="https://img.shields.io/badge/Runs-18%2C240-334155" alt="18,240 runs"></a>
+  <a href="#quick-start"><img src="https://img.shields.io/badge/Python-3.12%2B-334155" alt="Python 3.12+"></a>
 </p>
 
-<p align="center">
-  <img src="docs/assets/cli.svg" alt="uv run python scripts/run.py wikiqa mini" width="470">
-</p>
+**The problem.** To choose between two versions of an AI agent (two prompts, two models), teams
+run the full workflow on many tasks. This is slow and costly, so they test only a few changes.
 
-An **agent evaluation** runs your whole workflow on many tasks to pick the better of two versions:
-two prompts, two models, two tool setups. It is slow and costly, so teams test only a few changes.
-
-**Similitude** builds a **miniature** of the workflow: the same code, with shortcuts on its calls.
-Engineers test a small model of a plane in a wind tunnel, and *similitude* is the theory of when
-that small model gives the right answers. We ask the same question for agents, and measure the
-answer:
-
-- **Shrink** with 13 shortcuts: *replay* calls that did not change, *reduce* the work (fewer
-  tasks, cheaper models), and *simulate* tools with a model.
-- **Check** that the miniature picks the same winners as the full evaluation, read against the
-  **noise ceiling**: how often the full workflow agrees with a second run of itself.
-- **Use** a valid miniature to test many changes, then confirm the winner on the full workflow.
-
-**Results** from 3 workflows and 18,240 runs: simulated tools kept 19 of 20 clear decisions (a
-second full run: 20 of 20). A quarter of the tasks kept 85% of them at one fifth of the cost. But
-when a model imagines its own tool results, the miniature misses every broken variant.
+**The solution.** Similitude builds a *miniature* of the workflow, like a scale model of a plane in
+a wind tunnel: the same code, with cheap shortcuts on its calls. Then it checks that the miniature
+picks the same winners as the full evaluation. If it does, you can test many changes for a
+fraction of the cost.
 
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/assets/overview-dark.svg">
-    <img src="docs/assets/overview-light.svg" alt="How Similitude works: record the full workflow, shrink it with shortcuts, run the miniature, and check that it picks the same winners" width="100%">
+    <img src="docs/assets/overview-light.svg" alt="How Similitude works: shrink the full workflow into a miniature, then check that it picks the same winners" width="100%">
   </picture>
 </p>
 
