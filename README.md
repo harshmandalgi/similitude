@@ -3,7 +3,7 @@
 <p align="center"><em>Scale Models for Agent Evaluation</em></p>
 
 <p align="center">
-  <a href="paper/"><img src="https://img.shields.io/badge/Paper-Zenodo-0f766e" alt="Paper: Zenodo"></a>
+  <a href="https://doi.org/10.5281/zenodo.23447613"><img src="https://img.shields.io/badge/Paper-Zenodo-0f766e" alt="Paper: Zenodo"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-334155" alt="License: MIT"></a>
   <a href="#quick-start"><img src="https://img.shields.io/badge/Python-3.12%2B-334155" alt="Python 3.12+"></a>
 </p>
@@ -24,8 +24,8 @@ fraction of the cost.
 </p>
 
 This repo holds the library, the experiments and the paper *Similitude: Scale Models for Agent
-Evaluation* (Harsh Mandalgi, Mohit Chaturvedi, Keshav Likhar; preprint, 2026). The paper source is
-in [paper/](paper/).
+Evaluation* (Harsh Mandalgi, Mohit Chaturvedi, Keshav Likhar; preprint, 2026): [doi.org/10.5281/zenodo.23447613](https://doi.org/10.5281/zenodo.23447613). The paper
+source is in [paper/](paper/).
 
 Status (Oct 2026): experiments finished. Three workflows, sixteen miniatures, about 18,200 runs,
 about $75 in API calls (estimated). Plain-English results: [docs/06-RESULTS.md](docs/06-RESULTS.md).
@@ -135,6 +135,9 @@ uv run python scripts/run.py wikiqa smoke      # base variant, 3 tasks
   title  = {Similitude: Scale Models for Agent Evaluation},
   author = {Mandalgi, Harsh and Chaturvedi, Mohit and Likhar, Keshav},
   year   = {2026},
+  publisher = {Zenodo},
+  doi    = {10.5281/zenodo.23447613},
+  url    = {https://doi.org/10.5281/zenodo.23447613},
   note   = {Preprint}
 }
 ```
