@@ -1,9 +1,9 @@
 \begin{note}
-\textbf{About the language of this paper.} We wrote this paper to the writing rules of ASD-STE100
-Simplified Technical English (STE), Issue~9 \citep{asdste100}. These rules give short sentences,
-the active voice and a dictionary in which each word has one definition. STE lets a writer use technical names and technical
-verbs that are not in its dictionary. Table~\ref{tab:terms} gives a short definition of each of
-these terms.
+\textbf{About the language of this paper.} We used the rules of ASD-STE100 Simplified
+Technical English (STE), Issue~9 \citep{asdste100}, to write this paper. These rules give short
+sentences, the active voice and a dictionary in which each word has one definition. STE lets a
+writer use technical names and technical verbs that are not in its dictionary.
+Table~\ref{tab:terms} defines the main technical terms of this paper.
 \end{note}
 
 \section{Introduction}
@@ -65,16 +65,16 @@ This paper gives four contributions:
 \begin{itemize}
   \item A definition of validity for a miniature, based on decisions, with a check against a noise
   ceiling (Section~\ref{sec:system}).
-  \item \sys{}, a system that applies thirteen shortcuts to a workflow, with no change to its
-  code (Section~\ref{sec:system}).
-  \item A study of sixteen miniatures of three workflows, with about 17{,}700 runs
+  \item \sys{}, a system that applies thirteen shortcuts to a workflow at one interception point
+  (Section~\ref{sec:system}).
+  \item A study of sixteen miniatures of three workflows, with about 18{,}200 runs
   (Sections~\ref{sec:setup} and~\ref{sec:results}).
   \item Six rules that tell a team which shortcut to use for each part of a workflow
   (Section~\ref{sec:rules}).
 \end{itemize}
 
 The main results are positive. Simulated tools kept 90--100\% of the clear decisions when a model
-can know the answers of the tool. Replay of the steps that do not change gives the same outputs, at
-0.21$\times$ the cost. A quarter of the tasks kept 85\% of the clear decisions at 0.20$\times$ the
-cost. The noise ceiling also found a full evaluation that did not agree with itself. Without this
-check, a team can reject a correct miniature by mistake.
+can know the answers of the tool. A quarter of the tasks kept 85\% of the clear decisions at
+0.20$\times$ the cost, and a cheaper simulated customer kept all of them. The noise ceiling also
+found a full evaluation that did not agree with itself. Without this check, a team can reject a
+miniature because of the noise of the full evaluation.

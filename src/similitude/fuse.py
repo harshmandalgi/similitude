@@ -29,13 +29,15 @@ Use at most {max_steps} ACTION steps. Tools available:
 When you are done, write a line "FINAL REPLY:" followed by your final reply, exactly as you \
 would normally give it to the user (same format rules as above)."""
 
-# Lines may carry a speaker prefix ("AGENT: ACTION: ..."), as in fused conversations.
-_WHO = r"(?:[A-Za-z_ ]{1,30}:\s*)?"
+# Lines may be indented and may carry a speaker prefix ("AGENT: ACTION: ..."), as in fused
+# conversations.
+_WHO = r"[ \t]*(?:[A-Za-z_ ]{1,30}:\s*)?"
 _ACTION = re.compile(rf"^{_WHO}ACTION:\s*(\w+)\s*(.*)$", re.MULTILINE)
-_OBS = re.compile(
-    rf"^{_WHO}OBSERVATION:\s*(.*?)(?=^{_WHO}ACTION:|^{_WHO}FINAL REPLY:|\Z)",
-    re.MULTILINE | re.DOTALL,
-)
+_END = rf"^{_WHO}(?:ACTION:|FINAL REPLY:|FINAL ANSWER:)"
+_OBS = re.compile(rf"^{_WHO}OBSERVATION:\s*(.*?)(?={_END}|\Z)", re.MULTILINE | re.DOTALL)
+_REPLY = re.compile(rf"^{_WHO}FINAL REPLY:[ \t]*", re.MULTILINE)
+# The workflows' own answer line. Models often end with it and leave out "FINAL REPLY:".
+_ANSWER = re.compile(rf"^{_WHO}(?=FINAL ANSWER:)", re.MULTILINE | re.IGNORECASE)
 
 
 def fused_system(system: str, tools: list[Tool], max_steps: int) -> str:
@@ -48,7 +50,14 @@ def fused_system(system: str, tools: list[Tool], max_steps: int) -> str:
 
 def parse_fused(text: str) -> tuple[list[tuple[str, Any, str]], str]:
     """Returns ([(tool, args, imagined output)], final reply)."""
-    final = text.split("FINAL REPLY:", 1)[1].strip() if "FINAL REPLY:" in text else ""
+    replies = list(_REPLY.finditer(text))
+    answers = list(_ANSWER.finditer(text))
+    if replies:  # the last marker wins: an earlier one can be part of the transcript
+        final = text[replies[-1].end() :].strip()
+    elif answers:  # keep the answer line itself, so the workflow's own parser can read it
+        final = text[answers[-1].end() :].strip()
+    else:
+        final = ""
     actions = _ACTION.findall(text)
     observations = [o.strip() for o in _OBS.findall(text)]
     steps = []

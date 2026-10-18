@@ -7,8 +7,8 @@ This repo holds the library, the experiments and the paper *Similitude: Scale Mo
 Evaluation* (Harsh Mandalgi, Mohit Chaturvedi, Keshav Likhar; preprint, 2026). The paper source is
 in [paper/](paper/).
 
-Status (Oct 2026): experiments finished. Three workflows, sixteen miniatures, about 17,700 runs,
-$74 in API calls. Plain-English results: [docs/06-RESULTS.md](docs/06-RESULTS.md).
+Status (Oct 2026): experiments finished. Three workflows, sixteen miniatures, about 18,200 runs,
+about $75 in API calls (estimated). Plain-English results: [docs/06-RESULTS.md](docs/06-RESULTS.md).
 
 ---
 
@@ -30,8 +30,8 @@ $74 in API calls. Plain-English results: [docs/06-RESULTS.md](docs/06-RESULTS.md
   keep most decisions.
 - **The noise ceiling** (the full workflow, run again) shows when the full evaluation itself is
   noise, so a correct mini is not rejected by mistake.
-- **Two limits**: merged calls that imagine tool results keep about half of the decisions (chance),
-  and a simulator cannot replace a tool that reads private data.
+- **Two limits**: merged calls that imagine tool results miss the broken variants, and a
+  simulator cannot replace a tool that reads hidden data.
 
 ## Why the name
 
@@ -59,7 +59,8 @@ gives results that are valid for the real thing. That is exactly our question, f
 
 ## Quick start
 
-Needs Python 3.12+ and [uv](https://docs.astral.sh/uv/). The experiments call paid APIs.
+Needs Python 3.12+ and [uv](https://docs.astral.sh/uv/). The experiments call paid APIs. Run from
+a clone: the task files live in `data/`, outside the Python package.
 
 ```bash
 git clone https://github.com/harshmandalgi/similitude && cd similitude
@@ -67,19 +68,20 @@ uv sync
 uv run pytest                                  # offline tests, no API calls
 cp .env.example .env                           # then fill in your own keys
 gcloud auth application-default login          # for Gemini on Vertex AI
-export SIMILITUDE_CAP_USD=2                    # hard spending cap, checked before every call
+export SIMILITUDE_CAP_USD=2                    # spending cap, checked before every call
 uv run python scripts/run.py wikiqa smoke      # base variant, 3 tasks
 ```
 
 - **Judging** uses the [Claude Code](https://docs.claude.com/en/docs/claude-code) CLI (`claude -p`)
   as a blind judge with no tools. It runs with your local Claude Code login.
-- **Spend** is recorded in `runs/ledger.json`. The cap stops every new call once it is reached.
+- **Spend** is estimated from token counts and list prices and recorded in `runs/ledger.json`.
+  The cap is checked before every call and retry; calls already in flight can go slightly over it.
 - **Runs** are saved under `runs/` (not in git) and are resumable: a finished run is skipped.
 - Full commands: [docs/05-IMPLEMENTATION.md](docs/05-IMPLEMENTATION.md#how-to-run).
 
 ## Data and licences
 
-- **Code:** MIT, see [LICENSE](LICENSE).
+- **Code:** MIT, see [LICENSE](LICENSE). The licences below cover the parts that are not ours.
 - **W1 tasks** (`data/wikiqa/tasks.jsonl`): a subset of [HotpotQA](https://hotpotqa.github.io/),
   CC BY-SA 4.0.
 - **W3 tasks** (`data/research/tasks.jsonl`): a subset of
@@ -87,6 +89,11 @@ uv run python scripts/run.py wikiqa smoke      # base variant, 3 tasks
 - **W2** (`src/similitude/third_party/tau_retail/`): the retail environment of
   [τ-bench](https://github.com/sierra-research/tau-bench), MIT, vendored with its licence.
 - **Variants and fixes** (`data/*/edits.json`, `data/wikiqa/fixes.json`): written by Claude.
+- Details and the changes we made: [data/LICENSES.md](data/LICENSES.md). The task subsets keep
+  their own licences; the MIT licence does not cover them.
+- **Paper template:** `paper/acl.sty` and `paper/acl_natbib.bst` come from the
+  [ACL style files](https://github.com/acl-org/acl-style-files); `acl_natbib.bst` is under the
+  LaTeX Project Public License. Neither is covered by the MIT licence.
 - Run traces and raw judge answers are not included.
 
 ## Words used in these docs

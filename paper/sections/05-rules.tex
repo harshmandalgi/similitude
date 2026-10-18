@@ -13,17 +13,17 @@
   lab/.style={font=\scriptsize, black!60}]
 \node[font=\footnotesize\bfseries] (start) at (0, 0.9) {For each part of the workflow:};
 \node[q] (q1) at (0, 0) {Do you change this part?};
-\node[q] (q2) at (0, -1.25) {Are its inputs the same as in a recorded run?};
-\node[q] (q3) at (0, -2.6) {Is it a tool whose answers a model can know?};
-\node[q, text width=36mm, fill=white] (no) at (0, -4.05)
+\node[q] (q2) at (0, -1.15) {Are its inputs the same as in a recorded run?};
+\node[q] (q3) at (0, -2.35) {Is it a tool whose answers a model can know?};
+\node[q, text width=36mm, fill=white] (no) at (0, -3.65)
   {Keep it real. You can still use fewer tasks or shorter outputs.};
 \node[act, fill=black!8] (a1) at (4.1, 0) {\textbf{Keep it real}\\{\scriptsize rule 1}};
-\node[act, fill=redblue!14] (a2) at (4.1, -1.25) {\textbf{Replay it}\\{\scriptsize rule 2}};
-\node[act, fill=simgreen!16] (a3) at (4.1, -2.6)
+\node[act, fill=redblue!14] (a2) at (4.1, -1.15) {\textbf{Replay it}\\{\scriptsize rule 2}};
+\node[act, fill=simgreen!16] (a3) at (4.1, -2.35)
   {\textbf{Simulate it}, grounded in recorded outputs\\{\scriptsize rules 3 and 4}};
-\node[act, fill=mergeorange!14, text width=74mm] (r5) at (2.05, -5.25)
-  {Never let one call imagine the results of its own actions (rule 5)};
-\node[act, fill=black!8, text width=74mm] (r6) at (2.05, -6.15)
+\node[act, fill=mergeorange!14, text width=74mm] (r5) at (2.05, -4.75)
+  {Do not let the tested part imagine the results of its own actions (rule 5)};
+\node[act, fill=black!8, text width=74mm] (r6) at (2.05, -5.55)
   {Before you trust the miniature: test mutants, measure the noise ceiling (rule 6)};
 \draw[arr] (start) -- (q1);
 \draw[arr] (q1) -- node[lab, above] {yes} (a1);
@@ -47,13 +47,13 @@ them.
   cost 0.21$\times$ and gave the same outputs. A replay after the changed part is not safe,
   because the change alters what comes next \citep{gonuguntla2026replaygap}.
   \item \textbf{Simulate a tool only if a model can know its answers.} Simulated Wikipedia and
-  research tools kept 90--100\% of the clear decisions. A simulated private database kept none.
-  \item \textbf{Ground each simulator in recorded real outputs.} The grounded simulator kept more
+  research tools kept 90--100\% of the clear decisions. A simulated database that the simulator
+  cannot see kept none.
+  \item \textbf{Ground each simulator in recorded real outputs.} The grounded recipe kept more
   decisions and more of the diagnosis than the pure simulator.
-  \item \textbf{Never let one call imagine the results of its own actions.} Merged calls kept half
-  of the clear decisions, and stubbed researchers kept none.
+  \item \textbf{Do not let the tested part imagine the results of its own actions.} Merged calls
+  missed all 4 mutants, and stubbed researchers kept none of the planner decisions.
   \item \textbf{Test mutants and measure the noise ceiling before you trust or reject a
-  miniature.} In W3, the ceiling showed that a correct miniature only looked wrong.
+  miniature.} In W3, the ceiling showed that the full evaluation cannot settle the writer
+  decisions.
 \end{enumerate}
-Fewer tasks (\op{B4}) is not a rule for one part. It applies to the full recipe, and it kept 85\%
-of the clear decisions at one fifth of the cost.

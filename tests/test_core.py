@@ -203,3 +203,39 @@ def test_parse_fused_reads_prefixed_lines():
     )
     assert [(s[0], s[1]) for s in steps] == [("lookup", {"q": "x"})]
     assert steps[0][2].startswith("found") and final == "bye"
+
+
+def test_parse_fused_markers_and_indentation():
+    from similitude.fuse import parse_fused
+
+    text = (
+        '  ACTION: search_wikipedia {"query": "Hamlet"}\n'
+        "  OBSERVATION: Hamlet is a play by William Shakespeare.\n"
+        "FINAL ANSWER: William Shakespeare\n"
+    )
+    steps, final = parse_fused(text)
+    assert [s[0] for s in steps] == ["search_wikipedia"]
+    assert steps[0][2] == "Hamlet is a play by William Shakespeare."
+    assert final == "FINAL ANSWER: William Shakespeare"
+
+    text = "AGENT: ACTION: lookup {}\nOBSERVATION: x\nFINAL REPLY: first\nFINAL REPLY: second\n"
+    steps, final = parse_fused(text)
+    assert [s[0] for s in steps] == ["lookup"] and steps[0][2] == "x"
+    assert final == "second"
+    assert parse_fused("ACTION: lookup {}\nOBSERVATION: nothing")[1] == ""
+
+
+def test_missing_mini_pairs_do_not_count_as_agreement():
+    from similitude.validate import Row, compare
+
+    rows = []
+    for i in range(30):  # full: a > b > c clearly; mini: each variant on its own tasks only
+        for v, score in (("a", 1.0), ("b", 0.5 if i % 2 else 1.0), ("c", 0.0)):
+            rows.append(Row("full", v, f"t{i}", 0, score, "x", 0.01, 1.0))
+    for v, offset in (("a", 0), ("b", 100), ("c", 200)):
+        for i in range(10):
+            rows.append(Row("mini", v, f"t{offset + i}", 0, {"a": 0.0, "b": 0.5, "c": 1.0}[v],
+                            "x", 0.01, 1.0))  # fmt: skip
+    out = compare(rows, "mini", ["a", "b", "c"], full="full", base="a", mutants=[])
+    assert out["pairs_without_mini_data"] == 3
+    assert out["decision_acc_clear"] == 0.0

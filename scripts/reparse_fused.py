@@ -2,9 +2,12 @@
 
     uv run python scripts/reparse_fused.py
 
-Needed once (2026-10-14): the first parser missed ACTION lines with a speaker prefix
-("AGENT: ACTION: ..."). Applies to recipes whose every LLM call is a fused call. Verdicts of
-rebuilt runs are removed, so the next judge pass sees the full log.
+Needed twice. 2026-10-14: the first parser missed ACTION lines with a speaker prefix
+("AGENT: ACTION: ..."). 2026-10-18: it also dropped final answers written in the workflow's own
+format ("FINAL ANSWER: ...") without a "FINAL REPLY:" line, and missed indented lines. Applies to
+recipes whose every LLM call is a fused call. The imagined tool calls, the final reply and the
+run's final output are rebuilt; verdicts of changed runs are removed, so the next judge pass sees
+the new log.
 """
 
 from __future__ import annotations
@@ -23,28 +26,28 @@ FUSED = [("wikiqa", "C2-fused"), ("wikiqa", "C2+B4"), ("tau", "C2-all"), ("resea
 
 def rebuild(trace: Trace) -> bool:
     events, changed = [], False
+    old_steps = [(e.name, e.args, e.output) for e in trace.events if e.source == "imagined"]
+    new_steps: list = []
     for e in trace.events:
         if e.source == "imagined":
             continue
         if e.kind == "llm" and e.completion:
-            steps, _ = parse_fused(e.completion["text"])
-            old = sum(1 for x in trace.events if x.source == "imagined")
+            steps, final = parse_fused(e.completion["text"])
             for name, args, imagined in steps:
                 events.append(
-                    Event(
-                        "tool",
-                        e.node,
-                        name,
-                        "imagined",
-                        key_of({"tool": name, "args": args}),
-                        imagined,
-                        args=args,
-                    )
+                    Event("tool", e.node, name, "imagined", key_of({"tool": name, "args": args}),
+                          imagined, args=args)
+                )  # fmt: skip
+            new_steps += [(name, args, imagined) for name, args, imagined in steps]
+            if e.output != final:
+                e.output, changed = final, True
+                # The workflow returns the fused reply as its output (W2 wraps it as JSON).
+                trace.final = (
+                    json.dumps({"responses": [final]}) if trace.workflow == "tau" else final
                 )
-            changed = changed or len(steps) != old
         events.append(e)
     trace.events = events
-    return changed
+    return changed or new_steps != old_steps
 
 
 def main() -> None:

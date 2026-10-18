@@ -27,11 +27,13 @@ Simulated tool & A model writes the output of a tool. A \emph{pure} simulator in
 output. A \emph{grounded} simulator uses recorded real outputs first. \\
 Merged call & One model call writes a full agent run and imagines each tool result. \\
 Stub & One model call that replaces a full sub-agent. \\
+W3 roles & The planner splits the question. Researchers search Wikipedia. The writer answers. The reviewer finds errors, and the reviser corrects them. \\
 Judge & A separate model that grades each run and gives a reason for each failure. \\
 Standard error & The expected size of the random error in a mean score. \\
 Clear decision & A pair of variants whose full scores differ by more than two standard errors. \\
 Noise ceiling & The agreement of the full workflow with a second full run of itself. \\
 Kendall's $\tau$ & Agreement of two rankings, from $-1$ (opposite order) to $1$ (same order). \\
+Pearson's $r$ & Linear agreement of two lists of numbers, from $-1$ to $1$. \\
 Scott's $\pi$ & Agreement of two lists of labels. $0$ is chance and $1$ is full agreement. \\
 \bottomrule
 \end{tabular}

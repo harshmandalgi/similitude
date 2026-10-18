@@ -1,6 +1,7 @@
-\begin{table}[t]
+\begin{table}[h!]
 \centering\scriptsize
 \setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{0.95}
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
 Miniature & Cost & Clear kept & $\tau$ & $\pi$ \\
@@ -11,20 +12,20 @@ Miniature & Cost & Clear kept & $\tau$ & $\pi$ \\
 \quad Simulated tools, pure & 1.05$\times$ & 18/20 & 0.54 & 0.27 \\
 \quad Short tool outputs & 0.89$\times$ & 20/20 & 0.48 & 0.54 \\
 \quad Fewer tasks (1/4) & 0.20$\times$ & 17/20 & 0.40 & 0.53 \\
-\quad Agent loop as one call & 0.28$\times$ & 10/20 & 0.08 & 0.17 \\
-\quad One call + fewer tasks & 0.06$\times$ & 9/20 & 0.25 & 0.13 \\
+\quad Agent loop as one call & 0.28$\times$ & 12/20 & 0.12 & 0.18 \\
+\quad One call + fewer tasks & 0.06$\times$ & 11/20 & 0.47 & 0.09 \\
 \addlinespace
 \multicolumn{5}{@{}l}{\textit{W2, 8 variants}} \\
-\quad Cheaper simulated customer & 1.01$\times$ & 11/14 & 0.73 & 0.48 \\
-\quad Simulated tools, pure & 0.88$\times$ & 0/14 & -- & $-$0.13 \\
-\quad Whole conversation as one call & 0.23$\times$ & 1/14 & $-$0.56 & $-$0.09 \\
+\quad Cheaper simulated customer & 1.01$\times$ & 13/13 & 0.79 & 0.50 \\
+\quad Simulated tools, pure & 0.88$\times$ & 0/13 & -- & $-$0.15 \\
+\quad Whole conversation as one call & 0.23$\times$ & 1/13 & $-$0.55 & $-$0.09 \\
 \addlinespace
 \multicolumn{5}{@{}l}{\textit{W3 planner, 7 variants}} \\
 \quad \textbf{Full re-run (ceiling)} & 0.99$\times$ & 6/8 & 0.32 & 0.30 \\
 \quad Simulated researcher tools & 1.16$\times$ & 8/8 & 0.63 & 0.26 \\
 \quad Stubbed researchers & 0.60$\times$ & 0/8 & $-$0.73 & 0.24 \\
 \quad Stubbed + slice + stop early & 0.51$\times$ & 5/8 & 0.11 & 0.14 \\
-\quad Whole pipeline as one call & 0.50$\times$ & 4/8 & 0.05 & 0.06 \\
+\quad Pipeline as one call, no review & 0.50$\times$ & 6/8 & 0.42 & 0.09 \\
 \addlinespace
 \multicolumn{5}{@{}l}{\textit{W3 writer, 7 variants}} \\
 \quad \textbf{Full re-run (ceiling)} & 1.01$\times$ & 2/5 & $-$0.05 & 0.38 \\
@@ -33,6 +34,6 @@ Miniature & Cost & Clear kept & $\tau$ & $\pi$ \\
 \quad Stubbed researchers & 0.66$\times$ & 5/5 & 0.39 & 0.22 \\
 \bottomrule
 \end{tabular}
-\caption{All measures for each miniature. Cost is per run, relative to the full workflow. \emph{Clear kept}: clear pairs in the same order as the full workflow. $\tau$: Kendall's $\tau$ of the two rankings. $\pi$: Scott's $\pi$ of the failure reasons. A dash: the measure is not defined, because all scores are equal.}
+\caption{Selected measures. Cost: of the evaluation, relative to the full one. $\pi$: on the runs that fail in both. A dash: not defined (all scores equal).}
 \label{tab:measures}
 \end{table}

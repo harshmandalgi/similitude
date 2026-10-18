@@ -88,6 +88,8 @@ uv run python scripts/run.py <workflow> judge                # Claude judges new
 uv run python scripts/run.py <workflow> analyse              # -> results/<workflow>.md
 uv run python scripts/fix_transfer.py evidence|write|run|analyse <mini> ...
 uv run pytest                                                # offline tests, no spend
+# the paper's numbers, figures and tables (offline, from runs/):
+uv run python scripts/summary.py && uv run python scripts/tables.py && uv run python scripts/mini_figures.py
 ```
 
 Runs are resumable: a run whose trace exists is skipped.

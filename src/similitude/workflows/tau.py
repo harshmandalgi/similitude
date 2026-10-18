@@ -12,6 +12,7 @@ the same score works for minis whose tools were faked (their writes changed noth
 from __future__ import annotations
 
 import copy
+import dataclasses
 import functools
 import json
 from pathlib import Path
@@ -31,6 +32,8 @@ WRITES = {
     "return_delivered_order_items",
 }  # fmt: skip
 STOP = "###STOP###"
+# tau-bench ends the episode when the agent hands the customer over to a human.
+TRANSFER = "transfer_to_human_agents"
 
 USER_SYSTEM = """You are a user interacting with an agent.
 
@@ -135,6 +138,8 @@ class TauRetail(Workflow):
                 for call in c.tool_calls:
                     out = rt.tool("agent", call["name"], call["arguments"])
                     agent_msgs.append({"role": "tool", "tool_call_id": call["id"], "content": out})
+                    if call["name"] == TRANSFER:  # the episode ends here, as in tau-bench
+                        return json.dumps({"responses": responses})
                 continue
             # Gemini drops empty messages, and a request that then ends on the model's own turn
             # is refused; so silence is passed on as an explicit marker.
@@ -189,8 +194,36 @@ def _gold_hash(task_json: str) -> str:
     return _apply([(a["name"], a["kwargs"]) for a in task["actions"] if a["name"] in WRITES])
 
 
+def until_transfer(trace: Trace) -> Trace:
+    """The run as tau-bench sees it. A hand-over to a human ends tau-bench's episode, so nothing
+    after the first transfer call counts: not its writes, not the agent's later replies. (Runs
+    saved before 2026-10-18 went on after a transfer; this scores them as tau-bench would.)"""
+    cut = next(
+        (i for i, e in enumerate(trace.events) if e.kind == "tool" and e.name == TRANSFER), None
+    )
+    if cut is None:
+        return trace
+    events = trace.events[: cut + 1]
+    if any(e.source == "imagined" for e in events):  # one fused call: its reply stays whole
+        return dataclasses.replace(trace, events=events)
+    try:
+        responses = json.loads(trace.final)["responses"]
+    except (json.JSONDecodeError, KeyError, TypeError):
+        responses = []
+    # Each agent turn without a tool call added one reply, in order.
+    said = sum(
+        1 for e in events
+        if e.kind == "llm" and e.node == "agent" and not (e.completion or {}).get("tool_calls")
+    )  # fmt: skip
+    return dataclasses.replace(
+        trace, events=events, final=json.dumps({"responses": responses[:said]})
+    )
+
+
 def check(trace: Trace, task: dict[str, Any]) -> tuple[bool, str]:
-    """tau-bench's pass/fail, from the trace alone."""
+    """Pass/fail as tau-bench computes it (the final database, and the facts the agent must tell),
+    from the trace alone."""
+    trace = until_transfer(trace)
     writes = [(e.name, e.args) for e in trace.events if e.kind == "tool" and e.name in WRITES]
     state_ok = _apply(writes) == _gold_hash(json.dumps(task, sort_keys=True))
     try:
@@ -257,7 +290,7 @@ def judge_item(tasks: dict[str, dict[str, Any]]):
         task = tasks[trace.task_id]
         _, detail = check(trace, task)
         expected = [a for a in task["actions"] if a["name"] in WRITES]
-        log = trace.trajectory(obs_chars=160).splitlines()
+        log = until_transfer(trace).trajectory(obs_chars=160).splitlines()
         if len(log) > 40:
             log = log[:20] + [f"... ({len(log) - 36} lines skipped) ..."] + log[-16:]
         return "\n".join(

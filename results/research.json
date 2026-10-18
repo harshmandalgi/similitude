@@ -238,6 +238,7 @@
     "top1_match": false,
     "regret": 0.09999999999999998,
     "pairs": 21,
+    "pairs_without_mini_data": 0,
     "decision_acc": 0.09523809523809523,
     "clear_pairs": 5,
     "decision_acc_clear": 0.2,
@@ -264,6 +265,7 @@
     "top1_match": false,
     "regret": 0.08749999999999991,
     "pairs": 21,
+    "pairs_without_mini_data": 0,
     "decision_acc": 0.14285714285714285,
     "clear_pairs": 5,
     "decision_acc_clear": 0.0,
@@ -290,6 +292,7 @@
     "top1_match": false,
     "regret": 0.02499999999999991,
     "pairs": 21,
+    "pairs_without_mini_data": 0,
     "decision_acc": 0.38095238095238093,
     "clear_pairs": 5,
     "decision_acc_clear": 0.4,
@@ -316,6 +319,7 @@
     "top1_match": false,
     "regret": 0.03749999999999998,
     "pairs": 21,
+    "pairs_without_mini_data": 0,
     "decision_acc": 0.5238095238095238,
     "clear_pairs": 5,
     "decision_acc_clear": 1.0,
@@ -342,6 +346,7 @@
     "top1_match": true,
     "regret": 0.0,
     "pairs": 21,
+    "pairs_without_mini_data": 0,
     "decision_acc": 0.38095238095238093,
     "clear_pairs": 5,
     "decision_acc_clear": 0.4,
@@ -377,8 +382,8 @@
      80
     ],
     "P-C2-all": [
-     0.4125,
-     0.05538630160123792,
+     0.625,
+     0.05446808379132438,
      80
     ],
     "P-C4+B1+C5": [
@@ -409,8 +414,8 @@
      80
     ],
     "P-C2-all": [
-     0.5,
-     0.05625439504630119,
+     0.625,
+     0.05446808379132438,
      80
     ],
     "P-C4+B1+C5": [
@@ -441,8 +446,8 @@
      80
     ],
     "P-C2-all": [
-     0.525,
-     0.05618403304872527,
+     0.6,
+     0.05511782546095504,
      80
     ],
     "P-C4+B1+C5": [
@@ -473,8 +478,8 @@
      80
     ],
     "P-C2-all": [
-     0.3375,
-     0.05320056985513776,
+     0.575,
+     0.05561793263309728,
      80
     ],
     "P-C4+B1+C5": [
@@ -505,8 +510,8 @@
      80
     ],
     "P-C2-all": [
-     0.4625,
-     0.05609595644174295,
+     0.6,
+     0.05511782546095504,
      80
     ],
     "P-C4+B1+C5": [
@@ -537,8 +542,8 @@
      80
     ],
     "P-C2-all": [
-     0.4,
-     0.05511782546095504,
+     0.5625,
+     0.055813177292586294,
      80
     ],
     "P-C4+B1+C5": [
@@ -602,6 +607,7 @@
     "top1_match": false,
     "regret": 0.03749999999999998,
     "pairs": 19,
+    "pairs_without_mini_data": 0,
     "decision_acc": 0.7894736842105263,
     "clear_pairs": 8,
     "decision_acc_clear": 1.0,
@@ -620,24 +626,25 @@
    {
     "recipe": "P-C2-all",
     "variants": 7,
-    "pearson": -0.08701327103081122,
-    "spearman": 0.09092412093166351,
-    "kendall": 0.05006261743217588,
-    "mmrv": 0.09285714285714279,
-    "mae": 0.2875,
+    "pearson": 0.15871794970893702,
+    "spearman": 0.49074074074074076,
+    "kendall": 0.4210526315789473,
+    "mmrv": 0.06249999999999995,
+    "mae": 0.15178571428571427,
     "top1_match": false,
     "regret": 0.08749999999999991,
     "pairs": 19,
-    "decision_acc": 0.5263157894736842,
+    "pairs_without_mini_data": 0,
+    "decision_acc": 0.6842105263157895,
     "clear_pairs": 8,
-    "decision_acc_clear": 0.5,
+    "decision_acc_clear": 0.75,
     "mutants_caught_by_full": 2,
-    "mutant_same_direction": 0.5,
+    "mutant_same_direction": 1.0,
     "mutant_caught_by_mini": 0.0,
-    "reason_js": 0.6222276131956341,
-    "top_reason_match": 0.0,
-    "reason_pi": 0.05902480752780151,
-    "reason_pairs": 110,
+    "reason_js": 0.36592310836635633,
+    "top_reason_match": 0.5714285714285714,
+    "reason_pi": 0.08612045440121854,
+    "reason_pairs": 100,
     "cost_ratio": 0.5031466836059921,
     "latency_ratio": 0.20149214303724217,
     "latency_ratio_median": 0.14427354948516344,
@@ -654,6 +661,7 @@
     "top1_match": false,
     "regret": 0.03749999999999998,
     "pairs": 19,
+    "pairs_without_mini_data": 0,
     "decision_acc": 0.5263157894736842,
     "clear_pairs": 8,
     "decision_acc_clear": 0.625,
@@ -680,6 +688,7 @@
     "top1_match": false,
     "regret": 0.03749999999999998,
     "pairs": 19,
+    "pairs_without_mini_data": 0,
     "decision_acc": 0.0,
     "clear_pairs": 8,
     "decision_acc_clear": 0.0,
@@ -706,6 +715,7 @@
     "top1_match": false,
     "regret": 0.0,
     "pairs": 19,
+    "pairs_without_mini_data": 0,
     "decision_acc": 0.5789473684210527,
     "clear_pairs": 8,
     "decision_acc_clear": 0.75,

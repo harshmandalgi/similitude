@@ -70,7 +70,7 @@ W3_PLANNER = [
            off_focus_model=CHEAP),
     Recipe("P-C4+B1+C5", "Stubbed researchers, no summary, stop after the writer.",
            focus="planner", fuse=frozenset({"researcher"}), skip=_W, stop_after="writer"),
-    Recipe("P-C2-all", "The whole pipeline as ONE call: plan, imagined research, answer.",
+    Recipe("P-C2-all", "Planner, researchers and writer as ONE call (imagined research), with no review.",
            focus="planner", fuse_all=True),
 ]  # fmt: skip
 

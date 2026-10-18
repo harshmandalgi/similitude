@@ -9,6 +9,7 @@
  "top1_match": false,
  "regret": 0.012500000000000067,
  "pairs": 72,
+ "pairs_without_mini_data": 0,
  "decision_acc": 0.5555555555555556,
  "clear_pairs": 14,
  "decision_acc_clear": 0.9285714285714286,

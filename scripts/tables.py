@@ -21,7 +21,7 @@ NAMES = {
     "W-A-replay": "Replay planner and research", "W-A+B1+C5": "Replay + slice + stop early",
     "W-C4-stub": "Stubbed researchers", "P-C1-pure": "Simulated researcher tools",
     "P-C4-stub": "Stubbed researchers", "P-C4+B1+C5": "Stubbed + slice + stop early",
-    "P-C2-all": "Whole pipeline as one call", "C3-shrink-policy": "Shrunk policy",
+    "P-C2-all": "Pipeline as one call, no review", "C3-shrink-policy": "Shrunk policy",
 }  # fmt: skip
 OPS = {
     "full-rerun": "--", "W-rerun": "--", "P-rerun": "--", "C1-cache-sim": "A1 A2 C1", "C1-pure": "C1",
@@ -101,7 +101,8 @@ def compact() -> None:
               "W2 tau (8 core variants)": "W2, 8 variants",
               "W3 research, focus planner": "W3 planner, 7 variants",
               "W3 research, focus writer": "W3 writer, 7 variants"}  # fmt: skip
-    rows = [r"\begin{table}[t]", r"\centering\scriptsize", r"\setlength{\tabcolsep}{4pt}",
+    rows = [r"\begin{table}[h!]", r"\centering\scriptsize", r"\setlength{\tabcolsep}{4pt}",
+            r"\renewcommand{\arraystretch}{0.95}",
             r"\begin{tabular}{@{}lrrrr@{}}", r"\toprule",
             r"Miniature & Cost & Clear kept & $\tau$ & $\pi$ \\", r"\midrule"]  # fmt: skip
     for key, title in titles.items():
@@ -115,15 +116,12 @@ def compact() -> None:
         rows.append(r"\addlinespace")
     rows[-1] = r"\bottomrule"
     rows += [r"\end{tabular}",
-             (r"\caption{All measures for each miniature. Cost is per run, relative to the full "
-              r"workflow. \emph{Clear kept}: clear pairs in the same order as the full workflow. "
-              r"$\tau$: Kendall's $\tau$ of the two rankings. $\pi$: Scott's $\pi$ of the failure "
-              r"reasons. A dash: the measure is not defined, because all scores are equal.}"),
+             (r"\caption{Selected measures. Cost: of the evaluation, relative to the full one. "
+              r"$\pi$: on the runs that fail in both. A dash: not defined (all scores equal).}"),
              r"\label{tab:measures}", r"\end{table}"]  # fmt: skip
     (ROOT / "paper" / "tables" / "measures.tex").write_text("\n".join(rows) + "\n")
     print("wrote paper/tables/measures.tex")
 
 
 if __name__ == "__main__":
-    main()
-    compact()
+    compact()  # the short paper uses the one-column table; main() writes the long one

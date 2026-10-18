@@ -3,8 +3,10 @@
 A model is named "provider:model", e.g. "vertex:google/gemini-3.5-flash-lite" or
 "openai:gpt-5.4-nano". Vertex is Gemini on Google Cloud through its OpenAI-compatible endpoint,
 authenticated with Application Default Credentials (`gcloud auth application-default login`).
-Every call is priced from the provider's own token counts and charged to a Ledger, which refuses
-new calls once the cap is reached.
+Every call is priced from the provider's own token counts and list prices and charged to a
+Ledger, which refuses new calls (and retries) once the cap is reached. Calls already in flight
+when the cap is reached still finish, so the total can go over the cap by up to one call per
+worker.
 """
 
 from __future__ import annotations
@@ -214,6 +216,25 @@ class _Vertex:
             self._client = None
 
 
+def _usage_cost(response, provider: str, model: str) -> tuple[Usage, float]:
+    """Token counts and cost of one reply, from the provider's own counts."""
+    u = response.usage
+    if u is None:  # an empty reply may carry no usage either
+        from types import SimpleNamespace
+
+        u = SimpleNamespace(prompt_tokens=0, completion_tokens=0, prompt_tokens_details=None)
+    output = u.completion_tokens or 0  # Vertex sometimes leaves counts out
+    if provider == "vertex":  # Vertex leaves thinking out of completion_tokens, bills it
+        details = getattr(u, "completion_tokens_details", None)
+        output += (getattr(details, "reasoning_tokens", 0) or 0) if details else 0
+    usage = Usage(
+        input=u.prompt_tokens or 0,
+        cached=getattr(getattr(u, "prompt_tokens_details", None), "cached_tokens", 0) or 0,
+        output=output,
+    )
+    return usage, usage.cost(PRICES[model])
+
+
 class LLMClient:
     """Thin wrapper over the openai SDK. Retries rate limits and server errors."""
 
@@ -276,9 +297,11 @@ class LLMClient:
 
         from openai import APIConnectionError, APIStatusError, APITimeoutError, RateLimitError
 
-        empties = 0
+        empties, discarded = 0, 0.0
+        start = time.perf_counter()  # latency covers the whole call, retries and waits included
         for attempt in range(self.max_retries):
-            start = time.perf_counter()
+            if attempt:
+                self.ledger.check()  # the cap is checked again before each retry
             try:
                 response = self._client_for(provider).chat.completions.create(**kwargs)
                 if response.choices and response.choices[0].message is not None:
@@ -289,6 +312,10 @@ class LLMClient:
                 error = RuntimeError("the reply had no message")
                 if empties >= 3:
                     break
+                # A discarded empty reply can still carry billed tokens: charge them now.
+                _, lost = _usage_cost(response, provider, model)
+                self.ledger.charge(lost, tag or model)
+                discarded += lost
             except (RateLimitError, APIConnectionError, APITimeoutError) as exc:
                 error = exc
             except APIStatusError as exc:
@@ -305,22 +332,9 @@ class LLMClient:
 
         empty = not response.choices or response.choices[0].message is None
         choice = None if empty else response.choices[0].message
-        u = response.usage
-        if u is None:  # an empty reply may carry no usage either
-            from types import SimpleNamespace
-
-            u = SimpleNamespace(prompt_tokens=0, completion_tokens=0, prompt_tokens_details=None)
-        output = u.completion_tokens or 0  # Vertex sometimes leaves counts out
-        if provider == "vertex":  # Vertex leaves thinking out of completion_tokens, bills it
-            details = getattr(u, "completion_tokens_details", None)
-            output += (getattr(details, "reasoning_tokens", 0) or 0) if details else 0
-        usage = Usage(
-            input=u.prompt_tokens or 0,
-            cached=getattr(getattr(u, "prompt_tokens_details", None), "cached_tokens", 0) or 0,
-            output=output,
-        )
-        cost = usage.cost(PRICES[model])
+        usage, cost = _usage_cost(response, provider, model)
         self.ledger.charge(cost, tag or model)
+        cost += discarded  # the run's cost includes discarded replies, as the ledger does
 
         tool_calls = []
         raw_calls = []

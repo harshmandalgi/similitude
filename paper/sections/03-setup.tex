@@ -23,12 +23,17 @@ miniatures of W1 and W2 ran on a core set of variants. Each core set keeps all t
 full workflow catches.
 
 \paragraph{Judge and scores.}
-A blind LLM judge graded each run and gave one reason for each failure, from a fixed list for each
-workflow. The judge did not know the variant or the recipe, or if a run came from a miniature. For
-W2, the check of $\tau$-bench gives pass or fail. A simulated tool does not change the database.
-Thus, we replay the calls of each run that change the database on a new copy of it, and we check
-the result.
+Rules graded the clear cases: an exact match of the answer in W1 and W3, and the check of
+$\tau$-bench in W2. A blind LLM judge graded the other runs and gave one reason for each failure,
+from a fixed list for each workflow. The judge did not know the variant or the recipe, or if a run
+came from a miniature.
+
+\paragraph{Scores for W2.}
+A simulated tool does not change the database. Thus, we replay the calls of each run that change
+the database on a new copy of it, and we check the result. As in $\tau$-bench, a hand-over to a
+human agent ends the run.
 
 \paragraph{Cost.}
 Appendix~\ref{app:record} gives the models, the number of runs and the cost. The full study cost
-\$74.43 in API calls, under a hard limit that we checked before each call.
+about \$75 in API calls, which we estimate from the token counts and the list prices. Before each
+call, the system compared the total cost with a limit.

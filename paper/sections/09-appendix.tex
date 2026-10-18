@@ -1,10 +1,9 @@
 \section{Test record: models, runs and cost}
 \label{app:record}
 
-Table~\ref{tab:record} gives the models, the runs and the cost of the full study. All runs occurred
-on 14--15 October 2026. Each cost comes from the token counts of the provider and the published
-prices. Before each call, the system compared the total cost with a hard limit.
-The judge and the writer of variants and fixes ran on a subscription, with no cost per call.
+Table~\ref{tab:record} gives the models, the runs and the cost. All runs occurred on 14--18
+October 2026. We estimate each cost from the token counts and the list prices. Before each call and
+each retry, the system compared the total cost with a limit.
 
 \begin{table}[h]
 \centering\scriptsize
@@ -17,30 +16,21 @@ Main model & \texttt{gemini-3.5-flash-lite} (Google Vertex AI), all parts of all
 Simulator, cheaper variant & \texttt{gemini-3.1-flash-lite} \\
 Stronger variant & \texttt{gemini-3.8-flash} \\
 Other model family & \texttt{gpt-5.4-nano} (OpenAI), W1 only \\
-Judge & Claude Sonnet~5.5, blind, no tools \\
+Judge & Claude Sonnet~5.5, blind, no tools (other-family run: Claude Opus~5.5) \\
 Edits and fixes & Claude Opus~5.5, in a separate instance \\
 \midrule
-Runs, W1 & 8{,}300 (main model) and 1{,}280 (other family) \\
-Runs, W2 & 1{,}520 \\
-Runs, W3 & 6{,}640 \\
-Runs, total & 17{,}740, which include fix tests and development runs \\
-\midrule
-Cost, W1 & \$19.91 (main model) and \$2.18 (other family) \\
-Cost, W2 & \$26.52 \\
-Cost, W3 & \$24.63 \\
-Cost, total & \$74.43 billed (\$72.13 Google, \$2.30 OpenAI). The total includes failed and
-pilot runs. \\
-Judge, edits, fixes & no API cost (subscription) \\
+Runs & 18{,}240 in total: W1 8{,}800 (and 1{,}280 on the other family), W2 1{,}520, W3 6{,}640.
+They include fix tests and development runs. \\
+Cost of runs & W1 \$20.92 (and \$2.18), W2 \$26.52, W3 \$24.63 \\
+Total cost & \$75.43 (\$73.13 Google, \$2.30 OpenAI), with failed and pilot runs \\
+Judge, edits, fixes & no API cost (a subscription) \\
 \bottomrule
 \end{tabular}
-\caption{The test record. Run costs come from the saved traces. The billed total comes from the
-cost ledger.}
+\caption{The test record. Run costs come from the saved traces, the total from the cost ledger.}
 \label{tab:record}
 \end{table}
 
-\section{All measures for each miniature}
+\section{Selected measures for each miniature}
 \label{app:all}
-
-Table~\ref{tab:measures} gives the main measures for each miniature, next to the noise ceiling.
 
 \input{tables/measures}

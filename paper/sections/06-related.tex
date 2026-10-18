@@ -3,11 +3,12 @@
 
 \paragraph{Simulated tools and environments.}
 LLM-simulated tools and environments make agent tests cheaper and more stable
-\citep{ruan2023identifying,guo2024stabletoolbench,hu2026occubench}. C-World reports that simulated
-tools rank models like live tools \citep{xi2026cworld}, and a large production team screens its
-agents in simulation \citep{alcoba2026screen}. Other work shows gaps between simulation and reality
-for tools \citep{zhou2026when} and for simulated users \citep{seshadri2026lost}. We ask a different
-question: does a simulator keep the decisions between variants of one workflow?
+\citep{ruan2023identifying,guo2024stabletoolbench,hu2026occubench}. C-World reports that its simulated
+environments rank models close to live ones \citep{xi2026cworld}. A large production team screens
+new agent versions with simulated customers and tools \citep{alcoba2026screen}. Other work shows
+gaps between simulation and reality for tools \citep{zhou2026when} and for simulated users
+\citep{seshadri2026lost}. We add a test of the result. Does the miniature keep the decisions, the
+failure reasons and the fixes of the full workflow?
 
 \paragraph{Cheaper evaluation.}
 Item selection keeps the ranking of models with fewer test items \citep{polo2024tinybenchmarks},
@@ -24,7 +25,7 @@ agrees with our rule~2.
 \paragraph{Optimisers.}
 Prompt and workflow optimisers evaluate many candidates
 \citep{khattab2023dspy,agrawal2025gepa,wu2025optimas}. Some transfer results from cheap models to
-strong models \citep{oved2026optimize}, or use multi-fidelity search \citep{li2018hyperband}. A
+strong models \citep{oved2026optimize}, or test candidates at several levels of cost \citep{li2018hyperband}. A
 validated miniature can be the cheap level of such a search.
 
 \paragraph{Noise and validity.}

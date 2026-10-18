@@ -60,7 +60,7 @@ GROUPS = [
         [
             ("P-C1-pure", "Simulated researcher tools", "sim"),
             ("P-C4+B1+C5", "Stubs + slice + early stop", "merge"),
-            ("P-C2-all", "Whole pipeline as one call", "merge"),
+            ("P-C2-all", "Pipeline as one call, no review", "merge"),
             ("P-C4-stub", "Stubbed researchers", "merge"),
         ],
     ),
@@ -93,7 +93,7 @@ def decisions() -> None:
         for recipe, label, kind in minis:
             r = by[recipe]
             rows.append((label, r["decision_acc_clear"], r["clear_pairs"], r["cost_ratio"], kind))
-    fig, ax = plt.subplots(figsize=(3.15, 3.6))
+    fig, ax = plt.subplots(figsize=(3.15, 3.25))
     fig.subplots_adjust(left=0.455, right=0.995, top=0.985, bottom=0.135)
     to_left = matplotlib.transforms.blended_transform_factory(fig.transFigure, ax.transData)
     y, ticks, labels, spans = 0.0, [], [], []

@@ -40,6 +40,14 @@ from similitude.workflows import wikiqa
 ROOT = Path(__file__).resolve().parents[1]
 FIXES = ROOT / "data" / "wikiqa" / "fixes.json"
 RECIPES = {r.name: r for r in W1_RECIPES}
+# Evidence from simulated tools must not replay the agent: the base variant's calls are identical
+# to the recorded ones, so C1-cache-sim would just replay the full run (as the first run of this
+# test did, 2026-10-15; its "C1-cache-sim" fixes are in effect a second set written from full
+# evidence). C1-sim samples the agent afresh; tools answer from the recording first, else simulated.
+RECIPES["C1-sim"] = RECIPES["C1-cache-sim"].but(
+    "C1-sim", llm_replay=False,
+    description="Fresh agent calls; recorded tool outputs first, simulated outputs for the rest.",
+)  # fmt: skip
 
 WRITE_SYSTEM = """\
 You are an engineer improving an LLM agent that answers multi-hop questions with Wikipedia tools. \
@@ -173,9 +181,12 @@ def analyse(minis: list[str]) -> None:
             d_mini, _, _ = paired(rows, m, v.name, "base")
             cells.append(f"{d_mini:+.3f}")
             agree = summary.setdefault(m, {"agree": 0, "n": 0})
-            if not math.isnan(d_full) and d_full != 0:
+            # Same sign, strictly: a zero gain on the mini does not agree with a loss on full.
+            if not math.isnan(d_full) and d_full != 0 and not math.isnan(d_mini):
                 agree["n"] += 1
-                agree["agree"] += (d_mini > 0) == (d_full > 0)
+                agree["agree"] += (
+                    math.copysign(1, d_full) == math.copysign(1, d_mini) and d_mini != 0
+                )
         s = summary.setdefault(f"from:{source}", {"gains": []})
         s["gains"].append(d_full)
         lines.append(f"| {v.name} | {source} | {d_full:+.3f} ± {se_full:.3f} | " + " | ".join(cells)
@@ -185,7 +196,8 @@ def analyse(minis: list[str]) -> None:
         if key.startswith("from:"):
             gains = [g for g in s["gains"] if not math.isnan(g)]
             helped = sum(g > 0 for g in gains)
-            lines.append(f"- Fixes written from **{key[5:]}** evidence: mean gain on full "
+            label = {"C1-cache-sim": "C1-cache-sim (in effect full: it replayed the full run)"}
+            lines.append(f"- Fixes written from **{label.get(key[5:], key[5:])}** evidence: mean gain on full "
                          f"{sum(gains) / len(gains):+.3f}; {helped}/{len(gains)} helped.")  # fmt: skip
     lines.append("\n## Does each mini predict whether a fix helps?\n")
     for m in minis:

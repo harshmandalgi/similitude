@@ -1,8 +1,15 @@
 # 06 · Results: which minis keep the evaluation valid?
 
-Data from 14–15 Oct 2026. Gemini on Vertex; Claude Code (Sonnet 5.5) as the blind judge.
-Full tables: [results/summary.md](../results/summary.md). Spend: $72.13 of the $75 Gemini cap,
-plus $2.30 on OpenAI (W1 cross-family run).
+Data from 14–18 Oct 2026. Gemini on Vertex; Claude Code (Sonnet 5.5) as the blind judge.
+Full tables: [results/summary.md](../results/summary.md). Estimated spend: $73.13 on Gemini
+(cap $75), plus $2.30 on OpenAI (W1 cross-family run).
+
+> **Corrected on 18 Oct 2026** after a code review: (1) the merged-call parser dropped answers
+> written as "FINAL ANSWER:" without "FINAL REPLY:"; 779 saved runs were re-parsed and re-judged;
+> (2) τ-bench runs went on after a hand-over to a human, which ends the episode in τ-bench; saved
+> runs are now scored up to the first hand-over (19 pass/fail results changed); (3) the first
+> simulated-tools fix test replayed the full run, so it was redone. All numbers below are the
+> corrected ones.
 
 ---
 
@@ -12,13 +19,14 @@ plus $2.30 on OpenAI (W1 cross-family run).
    90–100% of the clear decisions in W1 and in W3's planner tests. It works best when grounded in
    recorded real outputs ("cache first"). On τ-bench it kept **none**: the tools read a private
    shop database, which the simulator cannot see.
-2. **Idea 2, merging calls with imagined tool results, fails** whenever the change you test
-   acts *through* the tools: step limits, search strategy, planning. It kept ~50% of clear
-   decisions, which is a coin flip. On τ-bench it breaks completely: the model invents customer and
-   order IDs, so nothing it "does" can be checked against the real database.
-3. **Replaying the unchanged part of the workflow is cheap (0.2× cost) and safe**, because the
-   replayed calls have identical inputs. It can still disagree with a full evaluation that is
-   itself mostly noise (W3 writer).
+2. **Idea 2, merging calls with imagined tool results, misses what matters most.** It kept
+   60–75% of the clear decisions (W1 12/20, W3 6/8), but it missed **all 4 broken variants** the
+   full workflow caught, and its scores barely follow the full ones (r = 0.31, 0.16). The model
+   imagines the facts its plan needs. On τ-bench it breaks completely: the model invents customer
+   and order IDs, so nothing it "does" can be checked against the real database.
+3. **Replaying the unchanged part of the workflow is cheap (0.2× cost)**, and a replayed call is
+   a real sample when its inputs are identical. Our one test of it (W3 writer) was inconclusive:
+   the full evaluation was itself mostly noise.
 4. **Fewer tasks keeps most clear decisions at 0.2× cost** (85% in W1). It combines with any mini.
 5. **Most prompt changes barely matter.** In every workflow, most variants sat within noise of the
    base. Only big breakages (step caps, skipping confirmation) were clear. So the honest test of a
@@ -58,8 +66,8 @@ plus $2.30 on OpenAI (W1 cross-family run).
 | Simulated tools, pure | 1.05× | 1.49× | 90% | 2/2 | 0.54 | 0.27 |
 | Short tool outputs | 0.89× | 1.45× | 100% | 2/2 | 0.48 | 0.54 |
 | Fewer tasks (¼) | 0.20× | 0.86× | 85% | 1/2 | 0.40 | 0.53 |
-| **Merged calls** | 0.28× | 0.21× | 50% | 0/2 | 0.08 | 0.17 |
-| Merged calls + fewer tasks | 0.06× | 0.20× | 45% | 0/2 | 0.25 | 0.13 |
+| **Merged calls** | 0.28× | 0.21× | 60% | 0/2 | 0.12 | 0.18 |
+| Merged calls + fewer tasks | 0.06× | 0.20× | 55% | 0/2 | 0.47 | 0.09 |
 
 - Under merged calls, every variant scores about the same. The 2-step limit drops the real agent
   to 40%, but the merged version scores 62%: the model simply *imagines* the facts it never had
@@ -77,7 +85,7 @@ plus $2.30 on OpenAI (W1 cross-family run).
 | Simulated researcher tools | 1.16× | 1.01× | **100%** (8/8) | 0.63 | 0.26 |
 | Stubbed researchers (one imagined call each) | 0.60× | 0.41× | 0% | −0.73 | 0.24 |
 | Stubbed + no review + no summary | 0.51× | 0.41× | 62% | 0.11 | 0.14 |
-| Whole pipeline as one call | 0.50× | 0.14× | 50% | 0.05 | 0.06 |
+| Pipeline as one call (no review) | 0.50× | 0.14× | 75% | 0.42 | 0.09 |
 
 The planner's effect acts through what gets searched. Faking the *tools* keeps it. Faking the
 *researchers* erases it. Simulated tools even matched the full workflow better than its own
@@ -101,36 +109,41 @@ the mini.**
 
 | Mini | Cost | Speed | Clear kept | Broken caught | Ranking τ |
 |---|---|---|---|---|---|
-| Cheaper simulated customer | 1.01× | 1.46× | 79% | 1/2 | 0.73 |
+| Cheaper simulated customer | 1.01× | 1.46× | **100%** (13/13) | 1/2 | 0.79 |
 | **Simulated shop tools (pure)** | 0.88× | 1.23× | 0% | 0/2 | – (all tied) |
-| **Whole conversation as one call** | 0.23× | 0.13× | 7% | 0/2 | −0.56 |
+| **Whole conversation as one call** | 0.23× | 0.13× | 8% | 0/2 | −0.55 |
 
 As one call, the model invents IDs (`yusuf_rossi_123`, `item_kb_02`). Its "actions" fail on the real
-database, so every variant scores 7%: just the tasks that need no changes.
+database, so every variant scores 7.5–10%: just the tasks that need no changes.
 
 Simulated shop tools fail the same way, for a different reason. The simulator cannot see the
-database, so it says real customers are "not found". The agent cannot verify the customer and
-hands over to a human: 260 of 320 runs, against 63 of 320 in the full workflow. Every variant
-again scores 7%. A grounded simulator (recordings, or read access to the database) may fix this;
+database: it returned a real customer ID in only 22 of 320 runs (real tools: 309 of 320). It says
+customers are "not found", or invents IDs. 260 of 320 runs end with a hand-over to a human, against
+63 of 320 in the full workflow. Every variant scores 7.5%. A grounded simulator (recordings, or read access to the database) may fix this;
 the budget did not allow that test.
 
 ## Fix transfer (W1)
 
 Claude wrote 3 fixes from each source's failures (20 dev questions), without knowing the source.
-All 9 were scored on the full workflow (80 test questions).
+All fixes were scored on the full workflow (80 test questions).
 
 | Fixes written from | Mean change on the full workflow | Helped |
 |---|---|---|
 | Full workflow's failures | +2.9 points | 2 of 3 |
-| Simulated-tools mini's failures (cache first) | +1.3 points | 2 of 3 |
+| Full workflow's failures, second set* | +1.3 points | 2 of 3 |
+| Simulated-tools mini's failures | +0.4 points | 2 of 3 |
 | Merged-call mini's failures | −0.8 points | 0 of 3 |
 
-Same direction as everything else, but small and within noise. Treat it as a hint.
+\* The first "simulated tools" arm replayed the full run for the unchanged base variant, so its
+fixes came from full-workflow evidence. It was redone with fresh agent calls (the third row).
+
+Two fix sets from the *same* evidence differ by 1.6 points, so this test cannot rank the sources.
+No single fix moved the score by more than two standard errors.
 
 ## Cross-family check (W1: OpenAI run read as a mini of the Gemini run)
 
 Same prompts, tools and tasks, different model family: 93% of clear decisions kept (13 of 14),
-ranking τ 0.29. The failure *reasons* differ a lot (top reason matched for 15% of variants):
+ranking τ 0.27. The failure *reasons* differ a lot (top reason matched for 15% of variants):
 different models fail differently.
 
 ---
@@ -140,14 +153,15 @@ different models fail differently.
 | Rule | Evidence |
 |---|---|
 | Replay what didn't change | Identical inputs → identical outputs. Cheapest valid mini. |
-| Fake tools, not the agent's thinking | Simulated tools kept decisions; merged/stubbed calls didn't. |
+| Fake tools, not the agent's thinking | Simulated tools kept decisions; merged calls missed all 4 broken variants; stubs lost the planner. |
 | Ground fakes in recordings | Cache-first beat pure on every column in W1. |
-| Don't fake stateful worlds from scratch | τ-bench: one-call mini invented IDs; pure simulated tools could not find real customers. Both: every variant 7%. |
-| Always measure the noise ceiling | W3 writer: the "invalid" mini was really a noisy full eval. |
+| Don't fake hidden state from scratch | τ-bench: one-call mini invented IDs; pure simulated tools rarely found real customers. Both: every variant 7.5–10%. |
+| Always measure the noise ceiling | W3 writer: the full eval could not settle its own decisions, so the "invalid" verdict on replay was a false alarm. |
 
 ## Caveats
 
 - Small test sets (40–80 tasks). Most variant differences are within noise.
+- Most clear decisions involve a broken variant (W1 17/20, W2 13/13, W3 planner 6/8).
 - One model family per workflow (W1 also on OpenAI).
 - The judge is Claude, not people. Its reasons come from a fixed list per workflow.
 - No noise ceiling for τ-bench, and no grounded tool simulator there (budget).

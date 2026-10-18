@@ -1,11 +1,11 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-A miniature of an agent workflow can make the same decisions as the full evaluation, at a fraction
-of its cost. In our study, the best miniatures kept 90--100\% of the clear decisions. Simulated
-tools work when a model can know the answers, and grounded simulators also keep the diagnosis.
-Replay and fewer tasks cost one fifth of a full run, with little loss. The noise ceiling shows
-when the full evaluation itself is noise.
+A miniature of an agent workflow can make the same decisions as the full evaluation. In our study,
+simulated tools kept 90--100\% of the clear decisions when a model can know the answers of the
+tools. The grounded recipe also kept the diagnosis best. A quarter of the tasks kept 85\% of the
+clear decisions at one fifth of the cost. The noise ceiling shows when the full evaluation itself
+is noise.
 
 The next step is to use validated miniatures inside optimisation loops that test hundreds of
 candidates. The full workflow then tests only the few candidates that survive.

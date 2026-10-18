@@ -169,7 +169,10 @@ class Runtime:
             return output
 
         output, source, cost, latency = None, "", 0.0, 0.0
-        if self.recipe.tool_cache:
+        # A stateful tool's recorded output is never replayed: a replayed write would leave the
+        # real state unchanged, and a replayed read can be stale after a write.
+        replayable = self.recipe.tool_cache and not tool.stateful
+        if replayable:
             output, source = self.records.tool.get(key), "record"
             if output is None:
                 output, source = self.cache.get(self.pool, "tool:" + key), "pool"
@@ -177,7 +180,7 @@ class Runtime:
             output, source, cost, latency = self._simulate(tool, args, key)
         if output is None:
             output, source, latency = self._real(tool, args, key)
-            if self.recipe.tool_cache:
+            if replayable:
                 self.cache.put(self.pool, "tool:" + key, "tool", output)
 
         if self.recipe.obs_chars is not None and len(output) > self.recipe.obs_chars:
@@ -210,6 +213,9 @@ class Runtime:
             failure = injected_failure(tool, recorded, self.trace.task_id, args)
             if failure is not None:
                 return failure, "sim", 0.0, 0.0
+        # Simulated outputs are kept per (task, call), so all variants see the same simulated
+        # world. For a stateful tool this world has no state: the same call gets the same answer
+        # even after a simulated write. (A known limit; pure simulation of W2 failed anyway.)
         sim_key = f"sim:{mode}:{self.recipe.sim_model}:{self.trace.task_id}:{key}"
         hit = self.cache.get(self.pool, sim_key)
         if hit is not None:

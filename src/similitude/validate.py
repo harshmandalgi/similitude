@@ -106,18 +106,21 @@ def compare(
     out["regret"] = max(x) - real[pick]
 
     # Pairwise decisions: does the mini pick the same winner of each pair?
-    agree_all, agree_clear, n_clear = [], [], 0
+    agree_all, agree_clear, n_clear, missing = [], [], 0, 0
     for a, b in combinations(present, 2):
         d_full, se_full, _ = paired(rows, full, a, b)
         d_mini, _, _ = paired(rows, mini, a, b)
-        if d_full == 0:
+        if math.isnan(d_full) or d_full == 0:
             continue
-        same = (d_mini > 0) == (d_full > 0) and d_mini != 0
+        if math.isnan(d_mini):  # no shared tasks on the mini: no evidence, so no agreement
+            missing += 1
+        same = not math.isnan(d_mini) and d_mini != 0 and (d_mini > 0) == (d_full > 0)
         agree_all.append(same)
         if not math.isnan(se_full) and abs(d_full) > z * se_full:
             n_clear += 1
             agree_clear.append(same)
     out["pairs"] = len(agree_all)
+    out["pairs_without_mini_data"] = missing
     out["decision_acc"] = float(np.mean(agree_all)) if agree_all else math.nan
     out["clear_pairs"] = n_clear
     out["decision_acc_clear"] = float(np.mean(agree_clear)) if agree_clear else math.nan
