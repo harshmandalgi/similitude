@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1194" height="478" viewBox="0 0 1194 478" role="img" aria-label="How Similitude works: full workflow, shrink, miniature, check">
+<title>How Similitude works: full workflow, shrink, miniature, check</title>
+<style>
+  text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; fill: #e6edf3; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .muted { fill: #8b949e; }
+  .accent { fill: #2dd4bf; }
+  .b { font-weight: 700; }
+  .sb { font-weight: 600; }
+</style>
+<defs>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#8b949e"/>
+  </marker>
+  <marker id="aha" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#2dd4bf"/>
+  </marker>
+</defs>
+<rect x="3" y="3" width="1188" height="472" rx="20" fill="#0d1117" stroke="#30363d" stroke-width="1.5"/>
+<text x="26" y="47" font-size="21" class="b">How Similitude works</text>
+<text x="1168" y="47" font-size="15.5" class="muted" text-anchor="end">Build a cheap scale model of an agent workflow. Check that it picks the same winners.</text>
+<rect x="22" y="70" width="228" height="318" rx="14" fill="#161b22" stroke="#30363d" stroke-width="1.4"/>
+<rect x="302" y="70" width="262" height="318" rx="14" fill="#161b22" stroke="#30363d" stroke-width="1.4"/>
+<rect x="616" y="70" width="242" height="318" rx="14" fill="#161b22" stroke="#30363d" stroke-width="1.4"/>
+<rect x="910" y="70" width="262" height="318" rx="14" fill="#161b22" stroke="#30363d" stroke-width="1.4"/>
+<line x1="255" y1="229.0" x2="295" y2="229.0" stroke="#8b949e" stroke-width="1.8" marker-end="url(#ah)"/>
+<text x="276.0" y="218.0" font-size="13.5" class="muted" text-anchor="middle">record</text>
+<line x1="569" y1="229.0" x2="609" y2="229.0" stroke="#8b949e" stroke-width="1.8" marker-end="url(#ah)"/>
+<text x="590.0" y="218.0" font-size="13.5" class="muted" text-anchor="middle">build</text>
+<line x1="863" y1="229.0" x2="903" y2="229.0" stroke="#8b949e" stroke-width="1.8" marker-end="url(#ah)"/>
+<text x="884.0" y="218.0" font-size="13.5" class="muted" text-anchor="middle">run</text>
+<circle cx="49" cy="101" r="14" fill="#2dd4bf"/><text x="49" y="106.5" font-size="15" class="b" text-anchor="middle" style="fill:#0d1117">1</text><text x="72" y="108" font-size="18.5" class="b">Full workflow</text>
+<rect x="62.0" y="134" width="148" height="36" rx="18" fill="#21262d" stroke="#6e7681" stroke-width="1.6"/><text x="136.0" y="157.5" font-size="15" text-anchor="middle" class="">model call</text>
+<line x1="136.0" y1="170" x2="136.0" y2="186" stroke="#8b949e" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="62.0" y="188" width="148" height="36" rx="6" fill="#21262d" stroke="#6e7681" stroke-width="1.6"/><text x="136.0" y="211.5" font-size="15" text-anchor="middle" class="">tool call</text>
+<line x1="136.0" y1="224" x2="136.0" y2="240" stroke="#8b949e" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="62.0" y="242" width="148" height="36" rx="18" fill="#21262d" stroke="#6e7681" stroke-width="1.6"/><text x="136.0" y="265.5" font-size="15" text-anchor="middle" class="">model call</text>
+<line x1="136.0" y1="278" x2="136.0" y2="294" stroke="#8b949e" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="62.0" y="296" width="148" height="36" rx="6" fill="#21262d" stroke="#6e7681" stroke-width="1.6"/><text x="136.0" y="319.5" font-size="15" text-anchor="middle" class="">judge</text>
+<text x="218.0" y="211" font-size="14" class="muted">× N</text>
+<text x="136.0" y="358" font-size="14.5" class="muted" text-anchor="middle">every call is real</text>
+<text x="136.0" y="378" font-size="14.5" class="sb" text-anchor="middle">cost: 1×</text>
+<circle cx="329" cy="101" r="14" fill="#2dd4bf"/><text x="329" y="106.5" font-size="15" class="b" text-anchor="middle" style="fill:#0d1117">2</text><text x="352" y="108" font-size="18.5" class="b">Shrink</text><text x="550" y="107" font-size="13.5" class="muted" text-anchor="end">13 shortcuts</text>
+<rect x="315" y="128" width="236" height="68" rx="10" fill="#21262d" stroke="#30363d" stroke-width="1.2"/>
+<circle cx="340" cy="162" r="14" fill="#161b22" stroke="#2dd4bf" stroke-width="1.8"/>
+<text x="340" y="167.5" font-size="15" class="b accent" text-anchor="middle">A</text>
+<text x="365" y="152" font-size="16" class="b">Replay</text>
+<text x="365" y="171" font-size="13.5" class="muted">reuse calls whose inputs</text>
+<text x="365" y="187" font-size="13.5" class="muted">did not change</text>
+<rect x="315" y="204" width="236" height="68" rx="10" fill="#21262d" stroke="#30363d" stroke-width="1.2"/>
+<circle cx="340" cy="238" r="14" fill="#161b22" stroke="#2dd4bf" stroke-width="1.8"/>
+<text x="340" y="243.5" font-size="15" class="b accent" text-anchor="middle">B</text>
+<text x="365" y="228" font-size="16" class="b">Reduce</text>
+<text x="365" y="247" font-size="13.5" class="muted">fewer tasks, fewer steps,</text>
+<text x="365" y="263" font-size="13.5" class="muted">cheaper models</text>
+<rect x="315" y="280" width="236" height="68" rx="10" fill="#21262d" stroke="#30363d" stroke-width="1.2"/>
+<circle cx="340" cy="314" r="14" fill="#161b22" stroke="#2dd4bf" stroke-width="1.8"/>
+<text x="340" y="319.5" font-size="15" class="b accent" text-anchor="middle">C</text>
+<text x="365" y="304" font-size="16" class="b">Simulate</text>
+<text x="365" y="323" font-size="13.5" class="muted">a model plays a tool</text>
+<text x="365" y="339" font-size="13.5" class="muted">or a whole sub-agent</text>
+<text x="433.0" y="378" font-size="14.5" class="muted" text-anchor="middle">a recipe picks the shortcuts</text>
+<circle cx="643" cy="101" r="14" fill="#2dd4bf"/><text x="643" y="106.5" font-size="15" class="b" text-anchor="middle" style="fill:#0d1117">3</text><text x="666" y="108" font-size="18.5" class="b">Miniature</text>
+<rect x="630.0" y="134" width="120" height="36" rx="18" fill="#21262d" stroke="#30363d" stroke-width="1.6"/><text x="690" y="157.5" font-size="15" text-anchor="middle" class="">model call</text>
+<text x="762" y="157" font-size="13.5" class="muted">A · replay</text>
+<line x1="690" y1="170" x2="690" y2="186" stroke="#8b949e" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="630.0" y="188" width="120" height="36" rx="6" fill="#21262d" stroke="#6e7681" stroke-width="1.6" stroke-dasharray="5 4"/><text x="690" y="211.5" font-size="15" text-anchor="middle" class="">tool call</text>
+<text x="762" y="211" font-size="13.5" class="muted">C · simulate</text>
+<line x1="690" y1="224" x2="690" y2="240" stroke="#8b949e" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="630.0" y="242" width="120" height="36" rx="18" fill="#0f2a2a" stroke="#2dd4bf" stroke-width="1.6"/><text x="690" y="265.5" font-size="15" text-anchor="middle" class="sb">model call</text>
+<text x="762" y="265" font-size="13.5" class="accent sb">tested, real</text>
+<line x1="690" y1="278" x2="690" y2="294" stroke="#8b949e" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="630.0" y="296" width="120" height="36" rx="6" fill="#21262d" stroke="#6e7681" stroke-width="1.6"/><text x="690" y="319.5" font-size="15" text-anchor="middle" class="">judge</text>
+<text x="762" y="319" font-size="13.5" class="muted">same judge</text>
+<text x="737.0" y="358" font-size="14.5" class="muted" text-anchor="middle">same code, shortcuts on calls</text>
+<text x="737.0" y="378" font-size="14.5" class="sb accent" text-anchor="middle">cost: down to 0.2×</text>
+<circle cx="937" cy="101" r="14" fill="#2dd4bf"/><text x="937" y="106.5" font-size="15" class="b" text-anchor="middle" style="fill:#0d1117">4</text><text x="960" y="108" font-size="18.5" class="b">Check</text>
+<text x="928" y="146" font-size="16" class="sb">Does it pick the same</text>
+<text x="928" y="166" font-size="16" class="sb">winners as the full run?</text>
+<circle cx="938" cy="198" r="9.5" fill="none" stroke="#2dd4bf" stroke-width="1.7"/><path d="M-4.8,0.5 L-1.4,3.9 L4.9,-3.6" transform="translate(938,198)" fill="none" stroke="#2dd4bf" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="957" y="203" font-size="14.5">keeps the clear decisions</text>
+<circle cx="938" cy="228" r="9.5" fill="none" stroke="#2dd4bf" stroke-width="1.7"/><path d="M-4.8,0.5 L-1.4,3.9 L4.9,-3.6" transform="translate(938,228)" fill="none" stroke="#2dd4bf" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="957" y="233" font-size="14.5">catches the broken variants</text>
+<circle cx="938" cy="258" r="9.5" fill="none" stroke="#2dd4bf" stroke-width="1.7"/><path d="M-4.8,0.5 L-1.4,3.9 L4.9,-3.6" transform="translate(938,258)" fill="none" stroke="#2dd4bf" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="957" y="263" font-size="14.5">as good as a 2nd full run</text>
+<text x="957" y="282" font-size="13.5" class="muted">(the noise ceiling)</text>
+<rect x="924" y="300" width="234" height="34" rx="17" fill="#2dd4bf"/>
+<text x="1041.0" y="322.5" font-size="14.5" class="b" text-anchor="middle" style="fill:#0d1117">valid → use it</text>
+<rect x="924" y="342" width="234" height="34" rx="17" fill="none" stroke="#6e7681" stroke-width="1.4"/>
+<text x="1041.0" y="364.5" font-size="14.5" class="muted" text-anchor="middle">not valid → change the recipe</text>
+<path d="M1041.0,392 L1041.0,426 Q1041.0,438 1029.0,438 L148.0,438 Q136.0,438 136.0,426 L136.0,396" fill="none" stroke="#2dd4bf" stroke-width="2" marker-end="url(#aha)"/>
+<rect x="272.0" y="422" width="650" height="32" rx="16" fill="#0d1117"/>
+<text x="597.0" y="443.5" font-size="15.5" class="sb" text-anchor="middle">test many changes on the miniature, then confirm the winner on the full workflow</text>
+</svg>
