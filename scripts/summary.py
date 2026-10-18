@@ -95,8 +95,9 @@ def main() -> None:
             groups["writer"], ["W-A-replay-2"], full="replay-1"),
     }  # fmt: skip
     lines = ["# Main results: each miniature vs the full workflow\n",
-             ("Ceiling rows (full-rerun, W-rerun, P-rerun) are the full workflow run again: no "
-              "miniature can agree with the full workflow more than it agrees with itself.\n")]  # fmt: skip
+             ("Ceiling rows (full-rerun, W-rerun, P-rerun) are the full workflow run again: a "
+              "reference point, not a hard limit. A miniature that agrees as often is as reliable "
+              "as a second full evaluation.\n")]  # fmt: skip
     for title, results in sections.items():
         lines.append(f"\n## {title}\n")
         lines.append("| recipe | " + " | ".join(k[1] for k in KEYS) + " |")

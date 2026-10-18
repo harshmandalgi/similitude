@@ -2,12 +2,18 @@
 
     uv run python scripts/reparse_fused.py
 
-Needed twice. 2026-10-14: the first parser missed ACTION lines with a speaker prefix
+Needed three times. 2026-10-14: the first parser missed ACTION lines with a speaker prefix
 ("AGENT: ACTION: ..."). 2026-10-18: it also dropped final answers written in the workflow's own
-format ("FINAL ANSWER: ...") without a "FINAL REPLY:" line, and missed indented lines. Applies to
-recipes whose every LLM call is a fused call. The imagined tool calls, the final reply and the
-run's final output are rebuilt; verdicts of changed runs are removed, so the next judge pass sees
-the new log.
+format ("FINAL ANSWER: ...") without a "FINAL REPLY:" line, and missed indented lines; later the
+same day, an answer line inside an imagined observation stopped counting.
+
+Two kinds of recipe:
+- every LLM call is fused (FUSED): the imagined tool calls, the final reply and the run's final
+  output are rebuilt;
+- stubbed researchers (STUBS): later calls read each stub's reply. If a reply changes, the run is
+  deleted, so `scripts/run.py research mini <recipe>` runs it again; if only the imagined tool
+  calls change, they are rebuilt.
+Verdicts of changed runs are removed, so the next judge pass sees the new log.
 """
 
 from __future__ import annotations
@@ -22,16 +28,19 @@ from similitude.fuse import parse_fused
 
 ROOT = Path(__file__).resolve().parents[1]
 FUSED = [("wikiqa", "C2-fused"), ("wikiqa", "C2+B4"), ("tau", "C2-all"), ("research", "P-C2-all")]
+STUBS = [("research", "W-C4-stub"), ("research", "P-C4-stub"), ("research", "P-C4+B1+C5")]
 
 
-def rebuild(trace: Trace) -> bool:
-    events, changed = [], False
+def rebuild(trace: Trace, fused_nodes: set[str] | None = None) -> str:
+    """Returns "same", "rebuilt" (saved again) or "rerun" (a stub's reply changed).
+    `fused_nodes` None means every LLM call is fused."""
+    events, changed, rerun = [], False, False
     old_steps = [(e.name, e.args, e.output) for e in trace.events if e.source == "imagined"]
     new_steps: list = []
     for e in trace.events:
         if e.source == "imagined":
             continue
-        if e.kind == "llm" and e.completion:
+        if e.kind == "llm" and e.completion and (fused_nodes is None or e.node in fused_nodes):
             steps, final = parse_fused(e.completion["text"])
             for name, args, imagined in steps:
                 events.append(
@@ -39,34 +48,47 @@ def rebuild(trace: Trace) -> bool:
                           imagined, args=args)
                 )  # fmt: skip
             new_steps += [(name, args, imagined) for name, args, imagined in steps]
-            if e.output != final:
-                e.output, changed = final, True
+            if fused_nodes is not None:
+                rerun = rerun or e.output != final
+            else:
                 # The workflow returns the fused reply as its output (W2 wraps it as JSON).
-                trace.final = (
-                    json.dumps({"responses": [final]}) if trace.workflow == "tau" else final
-                )
+                out = json.dumps({"responses": [final]}) if trace.workflow == "tau" else final
+                if e.output != final or trace.final != out:
+                    e.output, trace.final, changed = final, out, True
         events.append(e)
+    if rerun:
+        return "rerun"
+    if not changed and new_steps == old_steps:
+        return "same"
     trace.events = events
-    return changed or new_steps != old_steps
+    return "rebuilt"
 
 
 def main() -> None:
     runs = ROOT / "runs"
-    rebuilt: set[str] = set()
-    for workflow, recipe in FUSED:
+    removed: set[str] = set()
+    jobs = [(w, r, None) for w, r in FUSED] + [(w, r, {"researcher"}) for w, r in STUBS]
+    for workflow, recipe, nodes in jobs:
+        counts = {"same": 0, "rebuilt": 0, "rerun": 0}
         for t in load_traces(runs, workflow, recipe):
-            if rebuild(t):
-                t.save(trace_path(runs, t.workflow, t.recipe, t.variant, t.task_id, t.replicate))
-                rebuilt.add(t.run_id)
-    for workflow in {w for w, _ in FUSED}:
+            status = rebuild(t, nodes)
+            counts[status] += 1
+            path = trace_path(runs, t.workflow, t.recipe, t.variant, t.task_id, t.replicate)
+            if status == "rebuilt":
+                t.save(path)
+            elif status == "rerun":
+                path.unlink()
+            if status != "same":
+                removed.add(t.run_id)
+        print(f"{workflow}/{recipe}: {counts}")
+    for workflow in {w for w, _, _ in jobs}:
         path = runs / "verdicts" / f"{workflow}.jsonl"
         if not path.exists():
             continue
         lines = [ln for ln in path.read_text().splitlines() if ln.strip()]
-        kept = [ln for ln in lines if json.loads(ln)["run_id"] not in rebuilt]
+        kept = [ln for ln in lines if json.loads(ln)["run_id"] not in removed]
         path.write_text("".join(ln + "\n" for ln in kept))
         print(f"{workflow}: removed {len(lines) - len(kept)} verdicts")
-    print(f"rebuilt {len(rebuilt)} traces")
 
 
 if __name__ == "__main__":

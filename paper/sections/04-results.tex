@@ -15,8 +15,8 @@ discusses the writer group of W3.}
 \centering
 \includegraphics[width=\textwidth]{tracking}
 \caption{Each dot is one variant: its mean score on the full workflow ($x$) and on the miniature
-($y$). Hollow dots are mutants. A valid miniature keeps the order of the dots (a, b). An invalid
-miniature compresses the scores, so most variants get about the same score (c, d). $r$ is
+($y$). Hollow dots are mutants. The valid miniatures keep the order of the dots (a, b). The two
+invalid miniatures here compress the scores, so most variants get about the same score (c, d). $r$ is
 Pearson's $r$.}
 \label{fig:tracking}
 \end{figure*}
@@ -76,7 +76,7 @@ did not have the steps to find (Figure~\ref{fig:tracking}c).
 
 \paragraph{Hidden data.}
 In W2, the tools read and write a shop database that the simulator cannot see. The simulator
-returned a real customer ID in only 22 of 320 runs (real tools: 309 of 320). Box~1 shows an
+returned a real customer ID in only 22 of 320 runs (real tools: 308 of 320). Box~1 shows an
 example. With simulated tools, 260 of 320 runs ended with a hand-over to a human agent, against 63
 of 320 with real tools. All variants scored 0.075, so the miniature kept no clear decisions
 (Figure~\ref{fig:tracking}d). Stubbed researchers failed in the same way for the W3 planner (0 of

@@ -204,8 +204,10 @@ def until_transfer(trace: Trace) -> Trace:
     if cut is None:
         return trace
     events = trace.events[: cut + 1]
-    if any(e.source == "imagined" for e in events):  # one fused call: its reply stays whole
-        return dataclasses.replace(trace, events=events)
+    if any(e.source == "imagined" for e in events):
+        # One fused call. Its final reply follows the whole imagined transcript, so it also
+        # follows the transfer, and it does not count.
+        return dataclasses.replace(trace, events=events, final=json.dumps({"responses": []}))
     try:
         responses = json.loads(trace.final)["responses"]
     except (json.JSONDecodeError, KeyError, TypeError):

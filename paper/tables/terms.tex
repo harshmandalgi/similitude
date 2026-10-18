@@ -24,7 +24,8 @@ Shortcut, recipe & A shortcut changes how the runtime handles a call. A recipe i
 shortcuts of one miniature. \\
 Replay & To use the recorded output of a call, not a new call. \\
 Simulated tool & A model writes the output of a tool. A \emph{pure} simulator invents each
-output. A \emph{grounded} simulator uses recorded real outputs first. \\
+output. The \emph{grounded} recipe replays a recorded real output if one exists. For a new call,
+the simulator sees real outputs of the tool as examples. \\
 Merged call & One model call writes a full agent run and imagines each tool result. \\
 Stub & One model call that replaces a full sub-agent. \\
 W3 roles & The planner splits the question. Researchers search Wikipedia. The writer answers. The reviewer finds errors, and the reviser corrects them. \\

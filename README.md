@@ -26,8 +26,9 @@ about $75 in API calls (estimated). Plain-English results: [docs/06-RESULTS.md](
 
 - **Simulated tools keep decisions when a model can know the answers**: 18–19 of 20 clear
   decisions for a Wikipedia agent, 8 of 8 for a research planner.
-- **Replay of unchanged steps and a quarter of the tasks** cost about one fifth of a full run and
-  keep most decisions.
+- **A quarter of the tasks** costs one fifth of the full evaluation and keeps 85% of the clear
+  decisions. **Replay of unchanged steps** costs about one fifth too; our one test of it was
+  inconclusive, because the full evaluation was itself mostly noise.
 - **The noise ceiling** (the full workflow, run again) shows when the full evaluation itself is
   noise, so a correct mini is not rejected by mistake.
 - **Two limits**: merged calls that imagine tool results miss the broken variants, and a
@@ -40,7 +41,7 @@ gives results that are valid for the real thing. That is exactly our question, f
 
 ## Is this already out there? (short answer)
 
-- **No one does the full idea.** Pieces exist: smaller test sets, LLM-faked tools, cheap-model
+- **We found no earlier work that does the full idea.** Pieces exist: smaller test sets, LLM-faked tools, cheap-model
   prompt search, replaying recorded steps.
 - **Our gap:** shrink a whole existing workflow, then check that decisions, the judge's reasons,
   and fixes carry back, read against a noise ceiling.
@@ -76,7 +77,9 @@ uv run python scripts/run.py wikiqa smoke      # base variant, 3 tasks
   as a blind judge with no tools. It runs with your local Claude Code login.
 - **Spend** is estimated from token counts and list prices and recorded in `runs/ledger.json`.
   The cap is checked before every call and retry; calls already in flight can go slightly over it.
-- **Runs** are saved under `runs/` (not in git) and are resumable: a finished run is skipped.
+- **Runs** are saved under `runs/` (not in git) and are resumable: a finished run is skipped. A run
+  is found by its name only (workflow, recipe, variant, task, replicate), so move `runs/` away after
+  you change a prompt, a recipe or a model.
 - Full commands: [docs/05-IMPLEMENTATION.md](docs/05-IMPLEMENTATION.md#how-to-run).
 
 ## Data and licences
@@ -92,8 +95,9 @@ uv run python scripts/run.py wikiqa smoke      # base variant, 3 tasks
 - Details and the changes we made: [data/LICENSES.md](data/LICENSES.md). The task subsets keep
   their own licences; the MIT licence does not cover them.
 - **Paper template:** `paper/acl.sty` and `paper/acl_natbib.bst` come from the
-  [ACL style files](https://github.com/acl-org/acl-style-files); `acl_natbib.bst` is under the
-  LaTeX Project Public License. Neither is covered by the MIT licence.
+  [ACL style files](https://github.com/acl-org/acl-style-files), which ACL provides for authors to
+  format their papers. `acl_natbib.bst` is under the LaTeX Project Public License; `acl.sty` and
+  its source repo state no licence. Neither file is covered by the MIT licence.
 - Run traces and raw judge answers are not included.
 
 ## Words used in these docs

@@ -1,6 +1,6 @@
 # Main results: each miniature vs the full workflow
 
-Ceiling rows (full-rerun, W-rerun, P-rerun) are the full workflow run again: no miniature can agree with the full workflow more than it agrees with itself.
+Ceiling rows (full-rerun, W-rerun, P-rerun) are the full workflow run again: a reference point, not a hard limit. A miniature that agrees as often is as reliable as a second full evaluation.
 
 
 ## W1 wikiqa (10 core variants)
@@ -30,7 +30,7 @@ Ceiling rows (full-rerun, W-rerun, P-rerun) are the full workflow run again: no 
 | W-rerun | 1.01 | 1.44 | -0.05 | 0.40 | 5 | 0.06 | – | – | 0.29 | 0.38 |
 | W-A-replay | 0.21 | 0.15 | -0.47 | 0.00 | 5 | 0.08 | – | – | 0.14 | 0.41 |
 | W-A+B1+C5 | 0.13 | 0.05 | -0.50 | 0.20 | 5 | 0.08 | – | – | 0.86 | 0.23 |
-| W-C4-stub | 0.66 | 0.40 | 0.39 | 1.00 | 5 | 0.04 | – | – | 0.86 | 0.22 |
+| W-C4-stub | 0.66 | 0.40 | 0.26 | 1.00 | 5 | 0.05 | – | – | 0.86 | 0.23 |
 
 ## W3 research, focus planner
 
@@ -38,8 +38,8 @@ Ceiling rows (full-rerun, W-rerun, P-rerun) are the full workflow run again: no 
 |---|---|---|---|---|---|---|---|---|---|---|
 | P-rerun | 0.99 | 0.95 | 0.32 | 0.75 | 8 | 0.05 | 1.00 | 0.00 | 0.71 | 0.30 |
 | P-C1-pure | 1.16 | 1.01 | 0.63 | 1.00 | 8 | 0.04 | 1.00 | 0.50 | 0.71 | 0.26 |
-| P-C4-stub | 0.60 | 0.41 | -0.73 | 0.00 | 8 | 0.11 | 0.00 | 0.00 | 0.71 | 0.24 |
-| P-C4+B1+C5 | 0.51 | 0.41 | 0.11 | 0.62 | 8 | 0.08 | 1.00 | 0.00 | 0.71 | 0.14 |
+| P-C4-stub | 0.60 | 0.41 | -0.59 | 0.00 | 8 | 0.12 | 0.00 | 0.00 | 0.71 | 0.19 |
+| P-C4+B1+C5 | 0.51 | 0.41 | 0.05 | 0.50 | 8 | 0.09 | 1.00 | 0.00 | 0.71 | 0.22 |
 | P-C2-all | 0.50 | 0.14 | 0.42 | 0.75 | 8 | 0.06 | 1.00 | 0.00 | 0.57 | 0.09 |
 
 ## W3 writer: replay vs replay (self-agreement)

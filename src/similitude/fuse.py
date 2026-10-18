@@ -30,8 +30,10 @@ When you are done, write a line "FINAL REPLY:" followed by your final reply, exa
 would normally give it to the user (same format rules as above)."""
 
 # Lines may be indented and may carry a speaker prefix ("AGENT: ACTION: ..."), as in fused
-# conversations.
-_WHO = r"[ \t]*(?:[A-Za-z_ ]{1,30}:\s*)?"
+# conversations. A marker is never a speaker: "OBSERVATION: FINAL ANSWER: x" is part of an imagined
+# observation, not the agent's answer.
+_MARK = r"(?:ACTION|OBSERVATION|FINAL REPLY|FINAL ANSWER)[ \t]*:"
+_WHO = rf"[ \t]*(?:(?![ \t]*{_MARK})[A-Za-z_ ]{{1,30}}:\s*)?"
 _ACTION = re.compile(rf"^{_WHO}ACTION:\s*(\w+)\s*(.*)$", re.MULTILINE)
 _END = rf"^{_WHO}(?:ACTION:|FINAL REPLY:|FINAL ANSWER:)"
 _OBS = re.compile(rf"^{_WHO}OBSERVATION:\s*(.*?)(?={_END}|\Z)", re.MULTILINE | re.DOTALL)
@@ -50,14 +52,15 @@ def fused_system(system: str, tools: list[Tool], max_steps: int) -> str:
 
 def parse_fused(text: str) -> tuple[list[tuple[str, Any, str]], str]:
     """Returns ([(tool, args, imagined output)], final reply)."""
-    replies = list(_REPLY.finditer(text))
-    answers = list(_ANSWER.finditer(text))
-    if replies:  # the last marker wins: an earlier one can be part of the transcript
-        final = text[replies[-1].end() :].strip()
-    elif answers:  # keep the answer line itself, so the workflow's own parser can read it
-        final = text[answers[-1].end() :].strip()
-    else:
-        final = ""
+    # The final reply follows the last tool step; a marker before that step is part of the
+    # transcript. A "FINAL REPLY:" beats an answer line, and the last one wins. The answer line is
+    # kept, so the workflow's own parser can read it. With no marker after the last step, the last
+    # marker anywhere is used.
+    last_step = max((m.start() for m in _ACTION.finditer(text)), default=-1)
+    replies, answers = list(_REPLY.finditer(text)), list(_ANSWER.finditer(text))
+    late = [[m for m in ms if m.start() > last_step] for ms in (replies, answers)]
+    pick = late[0] or late[1] or replies or answers
+    final = text[pick[-1].end() :].strip() if pick else ""
     actions = _ACTION.findall(text)
     observations = [o.strip() for o in _OBS.findall(text)]
     steps = []

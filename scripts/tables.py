@@ -79,8 +79,8 @@ def main() -> None:
     rows[-1] = "\\bottomrule"
     rows += [
         "\\end{tabular}",
-        ("\\caption{Each miniature against the full workflow. Cost and time are per run, "
-         "relative to the full workflow (1$\\times$ is the same). \\emph{Clear pairs kept}: of "
+        ("\\caption{Each miniature against the full workflow. Cost and time are of the "
+         "evaluation, relative to the full one (1$\\times$ is the same). \\emph{Clear pairs kept}: of "
          "the pairs of variants whose full scores differ by more than two standard errors, the "
          "number that the miniature puts in the same order. MMRV is the mean ranking error, "
          "weighted by the real score gap (lower is better). Reason $\\pi$: agreement of the "
@@ -117,7 +117,7 @@ def compact() -> None:
     rows[-1] = r"\bottomrule"
     rows += [r"\end{tabular}",
              (r"\caption{Selected measures. Cost: of the evaluation, relative to the full one. "
-              r"$\pi$: on the runs that fail in both. A dash: not defined (all scores equal).}"),
+              r"$\pi$: on the runs that fail in both (first replicate). A dash: not defined (all scores equal).}"),
              r"\label{tab:measures}", r"\end{table}"]  # fmt: skip
     (ROOT / "paper" / "tables" / "measures.tex").write_text("\n".join(rows) + "\n")
     print("wrote paper/tables/measures.tex")

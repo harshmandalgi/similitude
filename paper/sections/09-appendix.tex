@@ -2,7 +2,8 @@
 \label{app:record}
 
 Table~\ref{tab:record} gives the models, the runs and the cost. All runs occurred on 14--18
-October 2026. We estimate each cost from the token counts and the list prices. Before each call and
+October 2026. We estimate each cost from the token counts and the list prices. For
+\texttt{gemini-3.8-flash}, we used a rate above its list price, to be safe. Before each call and
 each retry, the system compared the total cost with a limit.
 
 \begin{table}[h]
@@ -16,13 +17,13 @@ Main model & \texttt{gemini-3.5-flash-lite} (Google Vertex AI), all parts of all
 Simulator, cheaper variant & \texttt{gemini-3.1-flash-lite} \\
 Stronger variant & \texttt{gemini-3.8-flash} \\
 Other model family & \texttt{gpt-5.4-nano} (OpenAI), W1 only \\
-Judge & Claude Sonnet~5.5, blind, no tools (other-family run: Claude Opus~5.5) \\
+Judge & Claude Sonnet~5.5, blind, no tools (other-family run: Claude Opus~5.5, except 4 runs) \\
 Edits and fixes & Claude Opus~5.5, in a separate instance \\
 \midrule
 Runs & 18{,}240 in total: W1 8{,}800 (and 1{,}280 on the other family), W2 1{,}520, W3 6{,}640.
 They include fix tests and development runs. \\
-Cost of runs & W1 \$20.92 (and \$2.18), W2 \$26.52, W3 \$24.63 \\
-Total cost & \$75.43 (\$73.13 Google, \$2.30 OpenAI), with failed and pilot runs \\
+Cost of runs & W1 \$20.92 (and \$2.18), W2 \$26.52, W3 \$24.61 \\
+Total cost & \$75.47 (\$73.18 Google, \$2.30 OpenAI), with failed and pilot runs \\
 Judge, edits, fixes & no API cost (a subscription) \\
 \bottomrule
 \end{tabular}

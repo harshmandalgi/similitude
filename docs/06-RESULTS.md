@@ -1,15 +1,18 @@
 # 06 · Results: which minis keep the evaluation valid?
 
-Data from 14–18 Oct 2026. Gemini on Vertex; Claude Code (Sonnet 5.5) as the blind judge.
-Full tables: [results/summary.md](../results/summary.md). Estimated spend: $73.13 on Gemini
+Data from 14–18 Oct 2026. Gemini on Vertex; Claude Code (Sonnet 5.5) as the blind judge (Opus 5.5
+for the OpenAI run).
+Full tables: [results/summary.md](../results/summary.md). Estimated spend: $73.18 on Gemini
 (cap $75), plus $2.30 on OpenAI (W1 cross-family run).
 
 > **Corrected on 18 Oct 2026** after a code review: (1) the merged-call parser dropped answers
 > written as "FINAL ANSWER:" without "FINAL REPLY:"; 779 saved runs were re-parsed and re-judged;
 > (2) τ-bench runs went on after a hand-over to a human, which ends the episode in τ-bench; saved
 > runs are now scored up to the first hand-over (19 pass/fail results changed); (3) the first
-> simulated-tools fix test replayed the full run, so it was redone. All numbers below are the
-> corrected ones.
+> simulated-tools fix test replayed the full run, so it was redone; (4) an answer line inside an
+> imagined tool result no longer counts as the answer, and 12 W3 runs with stubbed researchers had
+> used replies read by an older parser, so they were run again (304 W3 runs re-judged; "stubbed + no
+> review + no summary" went from 62% to 50%). All numbers below are the corrected ones.
 
 ---
 
@@ -24,10 +27,11 @@ Full tables: [results/summary.md](../results/summary.md). Estimated spend: $73.1
    full workflow caught, and its scores barely follow the full ones (r = 0.31, 0.16). The model
    imagines the facts its plan needs. On τ-bench it breaks completely: the model invents customer
    and order IDs, so nothing it "does" can be checked against the real database.
-3. **Replaying the unchanged part of the workflow is cheap (0.2× cost)**, and a replayed call is
+3. **Replaying the unchanged part of the workflow is cheap (0.21× the evaluation cost in W3)**, and
+   a replayed call is
    a real sample when its inputs are identical. Our one test of it (W3 writer) was inconclusive:
    the full evaluation was itself mostly noise.
-4. **Fewer tasks keeps most clear decisions at 0.2× cost** (85% in W1). It combines with any mini.
+4. **Fewer tasks keeps most clear decisions at 0.2× the evaluation cost** (85% in W1). It combines with any mini.
 5. **Most prompt changes barely matter.** In every workflow, most variants sat within noise of the
    base. Only big breakages (step caps, skipping confirmation) were clear. So the honest test of a
    mini is: does it settle the *same few* decisions the full evaluation can settle?
@@ -41,13 +45,15 @@ Full tables: [results/summary.md](../results/summary.md). Estimated spend: $73.1
 | | |
 |---|---|
 | **What** | The full workflow run a second time, with fresh samples. |
-| **Why** | Agents are random, and test sets are small. The full evaluation does not even agree with itself. No mini can beat that. |
+| **Why** | Agents are random, and test sets are small. The full evaluation does not even agree with itself. It is a reference point, not a hard limit: a mini that agrees as often is as reliable as a second full run. |
 | **When** | Read every mini against it, not against perfection. |
 | **Where** | The `full-rerun` / `W-rerun` / `P-rerun` rows. |
 | **How** | Compute the same agreement numbers between the full workflow and its own re-run. |
 
 **Columns**
-- **Cost / speed**: the mini's cost or median time per run, as a share of the full workflow's.
+- **Cost**: the mini's whole evaluation cost, as a share of the full evaluation's. A mini on fewer
+  tasks is cheaper per evaluation, not per run.
+- **Speed**: the mini's median time per run, as a share of the full workflow's.
 - **Clear decisions kept**: of the pairs of variants where the full workflow sees a clear
   winner (gap > 2 standard errors), the share where the mini picks the same winner.
 - **Broken caught**: of the deliberately broken variants the full workflow catches, how many
@@ -83,8 +89,8 @@ Full tables: [results/summary.md](../results/summary.md). Estimated spend: $73.1
 |---|---|---|---|---|---|
 | **Ceiling (full re-run)** | 0.99× | 0.95× | 75% (6/8) | 0.32 | 0.30 |
 | Simulated researcher tools | 1.16× | 1.01× | **100%** (8/8) | 0.63 | 0.26 |
-| Stubbed researchers (one imagined call each) | 0.60× | 0.41× | 0% | −0.73 | 0.24 |
-| Stubbed + no review + no summary | 0.51× | 0.41× | 62% | 0.11 | 0.14 |
+| Stubbed researchers (one imagined call each) | 0.60× | 0.41× | 0% | −0.59 | 0.19 |
+| Stubbed + no review + no summary | 0.51× | 0.41× | 50% | 0.05 | 0.22 |
 | Pipeline as one call (no review) | 0.50× | 0.14× | 75% | 0.42 | 0.09 |
 
 The planner's effect acts through what gets searched. Faking the *tools* keeps it. Faking the
@@ -102,8 +108,8 @@ re-run did, but with only 8 clear pairs that gap is noise: read it as "as good a
 Here the full workflow cannot reproduce *its own* writer ranking. Its 5 "clear" pairs are mostly
 noise (2 of 5 survive a re-run). The writer variants truly differ very little: even "ignore the
 notes" scores 0.81 against the base's 0.82. Replay gives every variant the same research, so it
-shows that (all variants 0.82–0.85). **Lesson: without a noise ceiling, you would wrongly blame
-the mini.**
+shows that (all variants 0.82–0.85). **Lesson: without a noise ceiling, you would reject the mini.
+With it, the test is inconclusive: the full evaluation cannot settle these decisions.**
 
 ## W2 · τ-bench customer service (8 core variants)
 
@@ -117,7 +123,7 @@ As one call, the model invents IDs (`yusuf_rossi_123`, `item_kb_02`). Its "actio
 database, so every variant scores 7.5–10%: just the tasks that need no changes.
 
 Simulated shop tools fail the same way, for a different reason. The simulator cannot see the
-database: it returned a real customer ID in only 22 of 320 runs (real tools: 309 of 320). It says
+database: it returned a real customer ID in only 22 of 320 runs (real tools: 308 of 320). It says
 customers are "not found", or invents IDs. 260 of 320 runs end with a hand-over to a human, against
 63 of 320 in the full workflow. Every variant scores 7.5%. A grounded simulator (recordings, or read access to the database) may fix this;
 the budget did not allow that test.
@@ -154,9 +160,9 @@ different models fail differently.
 |---|---|
 | Replay what didn't change | Identical inputs → identical outputs. Cheapest valid mini. |
 | Fake tools, not the agent's thinking | Simulated tools kept decisions; merged calls missed all 4 broken variants; stubs lost the planner. |
-| Ground fakes in recordings | Cache-first beat pure on every column in W1. |
+| Ground fakes in recordings | In W1, cache-first kept more decisions (95% vs 90%) and closer reasons (π 0.41 vs 0.27) than pure, at a higher cost (1.23× vs 1.05×). |
 | Don't fake hidden state from scratch | τ-bench: one-call mini invented IDs; pure simulated tools rarely found real customers. Both: every variant 7.5–10%. |
-| Always measure the noise ceiling | W3 writer: the full eval could not settle its own decisions, so the "invalid" verdict on replay was a false alarm. |
+| Always measure the noise ceiling | W3 writer: the full eval could not settle its own decisions, so the "invalid" verdict on replay could not be trusted. |
 
 ## Caveats
 

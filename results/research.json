@@ -55,8 +55,8 @@
      80
     ],
     "W-C4-stub": [
-     0.6,
-     0.05511782546095504,
+     0.5875,
+     0.055386301601237926,
      80
     ],
     "W-rerun": [
@@ -311,11 +311,11 @@
    {
     "recipe": "W-C4-stub",
     "variants": 7,
-    "pearson": 0.5052911526399123,
-    "spearman": 0.46291004988627577,
-    "kendall": 0.39440531887330776,
-    "mmrv": 0.044642857142857144,
-    "mae": 0.17142857142857146,
+    "pearson": 0.3017017337872185,
+    "spearman": 0.31810450514017585,
+    "kendall": 0.2646280620124816,
+    "mmrv": 0.05178571428571429,
+    "mae": 0.1732142857142857,
     "top1_match": false,
     "regret": 0.03749999999999998,
     "pairs": 21,
@@ -326,14 +326,14 @@
     "mutants_caught_by_full": 0,
     "mutant_same_direction": NaN,
     "mutant_caught_by_mini": NaN,
-    "reason_js": 0.32291693226874646,
+    "reason_js": 0.3311726699463947,
     "top_reason_match": 0.8571428571428571,
-    "reason_pi": 0.2224699063753901,
+    "reason_pi": 0.2313203111882241,
     "reason_pairs": 109,
-    "cost_ratio": 0.6566078308768597,
-    "latency_ratio": 0.5890031103789165,
-    "latency_ratio_median": 0.40411182846977584,
-    "cost_per_run": 0.00348445
+    "cost_ratio": 0.6559898568817635,
+    "latency_ratio": 0.5887188853688209,
+    "latency_ratio_median": 0.4040616366769218,
+    "cost_per_run": 0.0034828
    },
    {
     "recipe": "W-rerun",
@@ -419,13 +419,13 @@
      80
     ],
     "P-C4+B1+C5": [
-     0.5875,
-     0.055386301601237926,
+     0.575,
+     0.05561793263309727,
      80
     ],
     "P-C4-stub": [
-     0.5875,
-     0.055386301601237926,
+     0.6,
+     0.05511782546095504,
      80
     ],
     "P-rerun": [
@@ -451,8 +451,8 @@
      80
     ],
     "P-C4+B1+C5": [
-     0.6,
-     0.05511782546095503,
+     0.5875,
+     0.05538630160123793,
      80
     ],
     "P-C4-stub": [
@@ -488,8 +488,8 @@
      80
     ],
     "P-C4-stub": [
-     0.6,
-     0.05511782546095504,
+     0.5875,
+     0.05538630160123793,
      80
     ],
     "P-rerun": [
@@ -552,8 +552,8 @@
      80
     ],
     "P-C4-stub": [
-     0.6,
-     0.05511782546095504,
+     0.6125,
+     0.05481196279848756,
      80
     ],
     "P-rerun": [
@@ -653,56 +653,56 @@
    {
     "recipe": "P-C4+B1+C5",
     "variants": 7,
-    "pearson": 0.08323996262240743,
-    "spearman": 0.25000000000000006,
-    "kendall": 0.10526315789473682,
-    "mmrv": 0.08392857142857137,
-    "mae": 0.1892857142857143,
+    "pearson": -0.03281089794448483,
+    "spearman": 0.1574074074074074,
+    "kendall": 0.05263157894736841,
+    "mmrv": 0.0910714285714285,
+    "mae": 0.19285714285714287,
     "top1_match": false,
-    "regret": 0.03749999999999998,
+    "regret": 0.08749999999999991,
     "pairs": 19,
     "pairs_without_mini_data": 0,
-    "decision_acc": 0.5263157894736842,
+    "decision_acc": 0.47368421052631576,
     "clear_pairs": 8,
-    "decision_acc_clear": 0.625,
+    "decision_acc_clear": 0.5,
     "mutants_caught_by_full": 2,
     "mutant_same_direction": 1.0,
     "mutant_caught_by_mini": 0.0,
-    "reason_js": 0.3073769480305647,
+    "reason_js": 0.31433905147764135,
     "top_reason_match": 0.7142857142857143,
-    "reason_pi": 0.13848881010414357,
+    "reason_pi": 0.2248514074240215,
     "reason_pairs": 108,
-    "cost_ratio": 0.5145843148714013,
-    "latency_ratio": 0.41611888747256615,
-    "latency_ratio_median": 0.41378937601056537,
-    "cost_per_run": 0.0027247499999999997
+    "cost_ratio": 0.5136076336421884,
+    "latency_ratio": 0.4150590599376101,
+    "latency_ratio_median": 0.41123842914028025,
+    "cost_per_run": 0.0027226999999999998
    },
    {
     "recipe": "P-C4-stub",
     "variants": 7,
-    "pearson": -0.7787549872351001,
-    "spearman": -0.8084240117141804,
-    "kendall": -0.728492796385774,
-    "mmrv": 0.11249999999999993,
-    "mae": 0.17142857142857146,
+    "pearson": -0.7624563678786225,
+    "spearman": -0.6481812160876687,
+    "kendall": -0.5923488777590923,
+    "mmrv": 0.12321428571428564,
+    "mae": 0.16964285714285715,
     "top1_match": false,
-    "regret": 0.03749999999999998,
+    "regret": 0.1499999999999999,
     "pairs": 19,
     "pairs_without_mini_data": 0,
-    "decision_acc": 0.0,
+    "decision_acc": 0.10526315789473684,
     "clear_pairs": 8,
     "decision_acc_clear": 0.0,
     "mutants_caught_by_full": 2,
     "mutant_same_direction": 0.0,
     "mutant_caught_by_mini": 0.0,
-    "reason_js": 0.24181056545249938,
+    "reason_js": 0.26235731397882694,
     "top_reason_match": 0.7142857142857143,
-    "reason_pi": 0.24337185588035357,
-    "reason_pairs": 106,
-    "cost_ratio": 0.6035863761304022,
-    "latency_ratio": 0.47820497205838364,
-    "latency_ratio_median": 0.4149801446388559,
-    "cost_per_run": 0.0031541
+    "reason_pi": 0.19141240301032614,
+    "reason_pairs": 105,
+    "cost_ratio": 0.5991419950047454,
+    "latency_ratio": 0.47679006703574367,
+    "latency_ratio_median": 0.4133914593176668,
+    "cost_per_run": 0.0031448500000000002
    },
    {
     "recipe": "P-rerun",

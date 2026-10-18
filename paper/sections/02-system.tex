@@ -9,7 +9,8 @@ validity check.
 
 \paragraph{One interception point.}
 The workflow sends each model call and each tool call through one runtime. A recipe tells the
-runtime what to do with each call. No other part of the workflow code changes. Thus, one workflow
+runtime what to do with each call. The workflow code changes only at a few branch points, where a
+recipe can skip a role or stop early. Thus, one workflow
 can give many miniatures, and each miniature runs the same code as the full workflow.
 
 \paragraph{Honest simulation.}

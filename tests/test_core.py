@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import math
 
 import pytest
@@ -239,3 +240,30 @@ def test_missing_mini_pairs_do_not_count_as_agreement():
     out = compare(rows, "mini", ["a", "b", "c"], full="full", base="a", mutants=[])
     assert out["pairs_without_mini_data"] == 3
     assert out["decision_acc_clear"] == 0.0
+
+
+def test_parse_fused_answer_inside_observation_does_not_count():
+    assert parse_fused("ACTION: search {}\nOBSERVATION: FINAL ANSWER: Shakespeare")[1] == ""
+    steps, final = parse_fused('Agent: ACTION: s {}\n\nObservation: OBSERVATION: {"a": 1}\n')
+    assert steps == [("s", {}, '{"a": 1}')] and final == ""  # a speaker label, then the marker
+
+
+def test_parse_fused_final_reply_follows_the_last_step():
+    text = "FINAL REPLY: draft X\nACTION: s {}\nOBSERVATION: y\nFINAL ANSWER: Y"
+    assert parse_fused(text)[1] == "FINAL ANSWER: Y"
+    text = "ACTION: s {}\nOBSERVATION: y\nFINAL REPLY: Because y.\nFINAL ANSWER: Q"
+    assert parse_fused(text)[1] == "Because y.\nFINAL ANSWER: Q"
+
+
+def test_fused_reply_after_a_transfer_does_not_count():
+    from similitude.core import Event
+    from similitude.workflows.tau import TRANSFER, until_transfer
+
+    trace = Trace("tau", "C2-all", "base", "retail-0", 0)
+    trace.events = [
+        Event("tool", "workflow", TRANSFER, "imagined", "k", "ok", args={}),
+        Event("llm", "workflow", "workflow", "real", "k2", "Your order id is 123"),
+    ]
+    trace.final = json.dumps({"responses": ["Your order id is 123"]})
+    cut = until_transfer(trace)
+    assert json.loads(cut.final)["responses"] == [] and len(cut.events) == 1
